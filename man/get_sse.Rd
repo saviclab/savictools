@@ -4,14 +4,14 @@
 \alias{get_sse}
 \title{get_sse}
 \usage{
-
+`get_sse()`
 }
 \value{
 a list of dataframes
 }
 \description{
 Recursively search a directory for SSE results, and combine into dataframes
-for parameter metrics and error.
+for parameter metrics and error rates.
 }
 \examples{
 

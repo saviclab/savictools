@@ -4,21 +4,48 @@
 \alias{parse_sse}
 \title{parse_sse}
 \usage{
-
+`parse_sse(param_colNames, simNames)`
 }
 \arguments{
-\item{summary}{}
+\item{path}{Path to the SSE results file.}
+
+\item{param_rows}{Row numbers of the desired parameter statistics in the
+SSE results.}
+
+\item{n_theta}{Number of THETAs.}
+
+\item{n_omega}{Number of OMEGAs.}
+
+\item{n_sigma}{Number of SIGMAs.}
+
+\item{paramStats}{Parameter statistics to summarize. Must be present in
+param_rows of the SSE results.}
+
+\item{type}{Type of error for ofv statistics. Either "I" or "II".}
+
+\item{ofv_cols}{Column numbers to include from the ofv statistics table.}
+
+\item{ofv_colNames}{Ofv statistics column names. Must be the same length as
+ofv_cols.}
+
+\item{simNames}{Descriptive names for each alternative model, in the same
+order as in the SSE results.
+
+For example, if there are 3 alternative models called "alt_efv.mod",
+"alt_wt.mod", and "alt_age.mod", in that order, then you could use
+\verb{simNames = c("efv", "wt, "age")} or something similar.}
+
+\item{summary}{If TRUE, parse_sse creates a folder called "summary" within
+the current directory and writes two .csv files to it summarizing the
+results.}
 }
 \value{
-
+A named list of dataframes.
+"params" is a dataframe of parameter statistics.
+"error" is a summary of ofv statistics (either type I or II).
 }
 \description{
-Parse a csv file of SSE summary statistics.
-
-To change the paramStats field, make sure you also change the corresponding
-param_rows field so that they match the row numbers in your sse_results.csv.
-
-Choose type I or type II error by changing ofv to either "I" or "II".
+\code{parse_sse()} parses a single .csv file of SSE summary statistics.
 }
 \examples{
 
