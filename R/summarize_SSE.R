@@ -26,7 +26,7 @@
 #' the current directory and writes two .csv files to it summarizing the
 #' results.
 #' @usage
-#' `parse_sse(param_colNames, simNames)`
+#' parse_sse(param_colNames, simNames)
 #' @returns
 #'   A named list of dataframes.
 #'   "params" is a dataframe of parameter statistics.

@@ -4,7 +4,7 @@
 \alias{parse_sse}
 \title{parse_sse}
 \usage{
-`parse_sse(param_colNames, simNames)`
+parse_sse(param_colNames, simNames)
 }
 \arguments{
 \item{path}{Path to the SSE results file.}
