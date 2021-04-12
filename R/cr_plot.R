@@ -151,10 +151,10 @@ panel.covplot <- function(
 
 
 
-cr_plot <- function(x) {
+cr_plot <- function(file) {
 # Read in the variance-covariance matrix from the appropriate .cov file (ex:"run2.cov")
 # run002: 1-comp
-varCov <- read.table(x,skip=1,as.is=T,header=T)
+varCov <- read.table(file,skip=1,as.is=T,header=T)
 theta.cov <- varCov[1:6,c(2:7)]
 
 boot <- MASS::mvrnorm(n=1000, mu=c(3.67E-01, 0.00E+00,  8.23E-01,  1.19E+02,  8.52E+00,  1.10E+00), Sigma=theta.cov)
