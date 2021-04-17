@@ -1,3 +1,5 @@
+#' @export
+
 # The following functios are copied from MIFuns and metrumrg, which were removed
 # from CRAN..
 # Author: Tim Bergsma, Metrum Institute
