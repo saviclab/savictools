@@ -45,7 +45,7 @@ cr_plot <- function(runno, theta, effect_size=0.2, lo=0.025, hi=0.975, ...) {
   boot <- boot[with(boot,
         value >= reapply(value, name, quantile, lo) &
         value <= reapply(value, name, quantile, hi)), ]
-
+  print(boot)
   # plot
   pl1 <- lattice::stripplot(
     name ~ value,
@@ -53,6 +53,7 @@ cr_plot <- function(runno, theta, effect_size=0.2, lo=0.025, hi=0.975, ...) {
     panel = panel.covplot,
     rlim = c(1 - effect_size, 1 + effect_size),
     xlim = c(0, 2),
+    main = paste("Run", runno),
     cuts = c(1 - effect_size, 1, 1 + effect_size),
     xlab = 'Change in parameter value relative to reference',
     shade = 'skyblue'
@@ -72,11 +73,9 @@ get_theta <- function(file) {
   lst <- readLines(file)
   pos <- grep("FINAL PARAMETER ESTIMATE", lst)
 
-  if (!grepl("TH", lst[pos + 9])) {
-    stop("Problem with .lst format")
-  }
-
-  mu <- strsplit(lst[pos + 11], "\\s+")[[1]]
+  # find THETA estimates
+  pos <- (grep("\\d", lst[pos:length(lst)]) + pos - 1)[2]
+  mu <- strsplit(lst[pos], "\\s+")[[1]]
   mu <- as.numeric(mu[2:length(mu)])
   mu
 }
