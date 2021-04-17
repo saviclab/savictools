@@ -1,22 +1,69 @@
-#' @title cr_plot
-#' @author Thomas
+#' Clinical relevance plots
+#'
+#' The `cr_plot()` function creates clinical relevance plots from NONMEM files.
+#' Using the variance-covariance matrix together with parameter estimates,
+#' `cr_plot()`
 
 
+# Example:
+# run number = 201
+# THETA(6) is VWT, and is the only one needed to calculate VWT_5 and VWT_95
+# the other expressions are passed directly to dplyr::mutate()
+# cr_plot(201,
+#         theta = c("VWT" = 6),
+#         VWT_5 = (46.92/57.9)^VWT,
+#         VWT_95 = (79.015/57.9)^VWT)
 
+cr_plot <- function(runno, theta, effect_size=0.2, lo=0.025, hi=0.975, ...) {
 
+  # delay evaluation of `...`, but get variable names
+  exprs <- dplyr::enquos(...)
+  new_varnames <- names(exprs)
 
-# -----------------------------------------------------------------------------
-# Step 2: Using variance-covariance matrix form nonmem output sample parameters
-# Toal number of thetas will depend on the number of covariates in the full model
-# Make sure indexing and referencing of the parameters is appropriate for your model
-# (eg. the 1:9 - corresponds to 9 thetas in the full model,including covariates effects
-#  			look varCov dataframe)
-# -----------------------------------------------------------------------------
+  # get THETA estimates from .lst file
+  mu <- get_theta(paste0("run", runno, ".lst"))
+  mu <- mu[theta]
 
-# The following functions are copied from MIFuns, which is not supported in
-# the current R version.
-# author: Tim Bergsma, Metrum Institute
-reapply <- function (x, INDEX, FUN, ...)
+  # get variance-covariance matrix from .cov file
+  variance_covariance_matrix <- get_cov(paste0("run", runno, ".cov"))
+  theta_cov <- variance_covariance_matrix[theta, theta]
+
+  # sample from multivariate normal distribution
+  boot <- data.frame(MASS::mvrnorm(n = 1000, mu = mu, Sigma = theta_cov))
+  names(boot) <- names(theta)
+
+  # calculate covariate relations
+  boot <- dplyr::mutate(boot, ...)
+  boot <- dplyr::select(boot, dplyr::all_of(new_varnames))
+
+  # change to long format
+  boot <- tidyr::pivot_longer(boot, cols = names(boot))
+
+  # restrict to interval between lo and hi
+  boot <- boot[with(boot,
+        value >= reapply(value, name, quantile, lo) &
+        value <= reapply(value, name, quantile, hi)), ]
+
+  # plot
+  pl1 <- lattice::stripplot(
+    name ~ value,
+    boot,
+    panel = metrumrg::panel.covplot,
+    rlim = c(1 - effect_size, 1 + effect_size),
+    xlim = c(0, 2),
+    cuts = c(1 - effect_size, 1, 1 + effect_size),
+    xlab = 'Change in parameter value relative to reference',
+    shade = 'skyblue'
+  )
+
+  print(pl1)
+}
+
+# Helpers --------------------------------------------------------------------
+
+# The following function is copied from MIFuns, which was removed from CRAN..
+# Author: Tim Bergsma, Metrum Institute
+reapply <- function(x, INDEX, FUN, ...)
 {
   if(!is.list(INDEX)) INDEX <- list(INDEX)
   INDEX <- lapply(INDEX,function(x)as.integer(factor(x)))
@@ -51,145 +98,21 @@ reapply <- function (x, INDEX, FUN, ...)
   )
 }
 
-unitDensity <- function(x,...){
-  res <- safe.call(density.default,x=x,...)
-  res$y <- with(res, y/max(y,na.rm=TRUE))
-  res
+
+get_cov <- function(file) {
+  read.table(file, skip = 1, header = TRUE)[ , -1]
 }
 
-panel.densitystrip <- function(x,y,horizontal,col.line,fill,factor,border=col.line,col=fill,...){
-  ordinal <- if(horizontal) x else y
-  level <- if(horizontal) unique(y)[[1]] else unique(x)[[1]]
-  data <- unitDensity(ordinal,...)
-  data$y <- data$y * factor + level
-  if(missing(col))col <- fill
-  if(is.na(col))col <- fill
-  if(horizontal)panel.polygon(x=data$x,y=data$y,border=border,col=col,...)
-  else          panel.polygon(x=data$y,y=data$x,border=border,col=col,...)
+get_theta <- function(file) {
+  lst <- readLines(file)
+  pos <- grep("FINAL PARAMETER ESTIMATE", lst)
+
+  if (!grepl("TH", lst[pos + 9])) {
+    stop("Problem with .lst format")
+  }
+
+  mu <- strsplit(lst[pos + 11], "\\s+")[[1]]
+  mu <- as.numeric(mu[2:length(mu)])
+  mu
 }
 
-panel.ref <- function(x,y,col='grey90',horizontal,rlim,...){
-  x <- as.numeric(x)
-  y <- as.numeric(y)
-  if(horizontal)panel.rect(xleft=rlim[1],ybottom=0,xright=rlim[2],ytop=max(y) + 1,border='transparent',col=col)
-  else panel.rect(xleft=0,ybottom=rlim[1],xright=max(x) + 1, ytop=rlim[2],border='transparent',
-                  col=col)
-}
-
-panel.cuts <- function(
-  x,
-  y,
-  cuts,
-  col,
-  col.line,
-  text=col.line,
-  horizontal=TRUE,
-  offset=-0.2,
-  increment=0,
-  format=function(x,...)as.numeric(round(x/sum(x)*100)),
-  include.range=TRUE,
-  zero.rm=TRUE,
-  cex=0.7,
-  ...
-){
-  ordinal <- if(horizontal) x else y
-  level <- if(horizontal) unique(y)[[1]] else unique(x)[[1]]
-  cuts <- cuts[cuts >= min(ordinal,na.rm=TRUE) & cuts <= max(ordinal,na.rm=TRUE)]
-  if(include.range) cuts <- c(range(ordinal),cuts)
-  cuts <- sort(unique(cuts))
-  midpoints <- (cuts[1:length(cuts)-1] + cuts[-1])/2
-  count <- bin(ordinal,breaks=cuts,...)
-  value <- format(count,...)
-  if(zero.rm)value[value==0] <- NA
-  value <- as.character(value)
-  value[is.na(value)] <- ''
-  level <- level + offset
-  midpoints <- midpoints + increment
-  if(horizontal)ltext(
-    x=midpoints,
-    y=rep(level,length(midpoints)),
-    labels=value,
-    cex=cex,
-    col=text,
-    ...
-  )
-  else ltext(
-    y=midpoints,
-    x=rep(level,length(midpoints)),
-    labels=value,
-    cex=cex,
-    col=text,
-    ...
-  )
-}
-
-panel.covplot <- function(
-  x,
-  y,
-  ref=1,
-  rlim=ref * c(0.75,1.25),
-  cuts=ref * c(0.75,1,1.25),
-  horizontal=TRUE,
-  border='black',
-  fill='grey',
-  text='black',
-  shade='grey90',
-  col='white',
-  ...
-){
-  x <- as.numeric(x)
-  y <- as.numeric(y)
-  panel.ref(x,y,rlim=rlim,horizontal=horizontal,col=shade,...)
-  panel.stratify(panel.levels=panel.densitystrip,  x=x,y=y,horizontal=horizontal,border=border,col=fill,...)
-  panel.stratify(panel.levels=panel.cuts,          x=x,y=y,horizontal=horizontal,cuts=cuts,    text=text,...)
-  if(horizontal)args <- list(v=cuts,col=col,...)else args<-list(h=cuts,col=col,...)
-  do.call(panel.abline,args)
-  if(horizontal)args <- list(v=ref,...)else args<-list(h=ref,...)
-  do.call(panel.abline,args)
-}
-
-
-
-
-cr_plot <- function(file) {
-# Read in the variance-covariance matrix from the appropriate .cov file (ex:"run2.cov")
-# run002: 1-comp
-varCov <- read.table(file,skip=1,as.is=T,header=T)
-theta.cov <- varCov[1:6,c(2:7)]
-
-boot <- MASS::mvrnorm(n=1000, mu=c(3.67E-01, 0.00E+00,  8.23E-01,  1.19E+02,  8.52E+00,  1.10E+00), Sigma=theta.cov)
-boot <- data.frame(boot[,c(3:6)])
-names(boot) <- c("KA","V","CL","VWT")
-
-# boot <- within(boot, BA <- BA/median(BA))
-boot <- within(boot, VWT_5 <- (46.92/57.9)^VWT) # within is base R and is mainly for interactive use
-boot <- within(boot, VWT_95 <- (79.015/57.9)^VWT)
-
-boot$KA <- NULL
-boot$V <- NULL
-boot$CL <- NULL
-boot$VWT <- NULL
-
-boot <- reshape::melt(rev(boot))
-
-boot <- boot[
-  with(
-    boot,
-    value >= reapply(value,variable,quantile,0.05) &
-      value <= reapply(value,variable,quantile,0.95)
-  ),
-]
-
-pl1 <- lattice::stripplot(
-  variable~value,
-  boot,
-  panel=panel.covplot,
-  rlim=c(0.80,1.20),
-  xlim=c(0,2),
-  cuts=c(0.80,1,1.20),
-  xlab='Change in parameter value relative to reference',
-  shade='skyblue'
-)
-
-pl1
-}
