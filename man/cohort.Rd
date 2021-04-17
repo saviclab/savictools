@@ -2,9 +2,23 @@
 % Please edit documentation in R/cohort.R
 \name{cohort}
 \alias{cohort}
-\title{cohort}
+\title{Create NONMEM ready datasets for simulated clinical PK trials.}
 \usage{
-
+cohort(
+  data = NULL,
+  include = NULL,
+  n = NULL,
+  obs_times = NULL,
+  dose_times = NULL,
+  amt = NULL,
+  param = NULL,
+  original_id = FALSE,
+  group = NULL,
+  seed = NULL,
+  read_fun = NULL,
+  pop_size = NULL,
+  replace = FALSE
+)
 }
 \arguments{
 \item{data}{A dataframe, or the name of a file in the current directory.}
@@ -62,16 +76,22 @@ from it. The default value is 10.}
 \item{replace}{Optional. Whether to sample with replacement. Default: FALSE.}
 }
 \value{
-A dplyr dataframe.
+A dplyr dataframe in NONMEM format.
 }
 \description{
-Create NONMEM ready datasets for simulated clinical PK trials.
-
-This function is used to generate NONMEM-ready datasets for clinical PK trials
-using either real or synthetic data.
+The \code{cohort()} function is used to generate NONMEM-ready datasets for
+clinical PK trials, either by sampling from real datasets or
+generating synthetic data.
+}
+\section{Real Data}{
 
 To sample from an existing dataset, pass a dataframe or filename to
-\code{data}, and leave \code{param} unspecified. To generate synthetic data, leave
+\code{data}, and leave \code{param} unspecified.
+}
+
+\section{Synthetic Data}{
+
+To generate synthetic data, leave
 \code{data} unspecified and pass the details of the distributions from which you
 wish to sample to \code{param}.
 
@@ -89,10 +109,11 @@ the dose for each individual at each dosing event. If using a function, it
 must be Vectorized,  defined in the calling environment, and its arguments
 must match the names of variables used in your data.
 }
+
 \examples{
-1. Reading from a .csv and sampling 20 individuals,above 10kg and below 120cm,
-with a fixed dose of 200mg, observing every 4 hours for one day and dosing at
-times 0, 5, and 12. Note that the data has columns called "WT" and "HT".
+# 1. Reading from a .csv and sampling 20 individuals,above 10kg and below 120cm,
+# with a fixed dose of 200mg, observing every 4 hours for one day and dosing at
+# times 0, 5, and 12. Note that the data has columns called "WT" and "HT".
 
 inc <- "WT > 10 & HT < 120"
 ot <- seq(0, 24, by = 4)
@@ -100,30 +121,30 @@ dt <- c(0, 5, 12)
 df1 <- cohort("my_data.csv", include = inc, n = 20, obs_times = ot,
               dose_times = dt, amt = 200)
 
-2. As in (1), except using tab-delimited data.
+# 2. As in (1), except using tab-delimited data.
 
 df2 <- cohort("my_data.txt", include = inc, n = 20, obs_times = ot,
               dose_times = dt, amt = 200, read_fun = read.table)
 
-3, As in (1), except setting a seed and specifying a group number.
+# 3, As in (1), except setting a seed and specifying a group number.
 
 df3 <- cohort("my_data.csv", include = inc, n = 20, obs_times = ot,
                dose_times = dt, amt = 200, seed = 123, group = 4)
 
-4. As in (1), except we keep the ids from our original dataset.
+# 4. As in (1), except we keep the ids from our original dataset.
 
 df4 <- cohort("my_data.csv", include = inc, n = 20, obs_times = ot,
               dose_times = dt, amt = 200, original_id = TRUE)
 
-5. Simulating data. We assume WT and HT are normally distributed random
-   variables, with means and standard deviations of 16 and 3.4 for WT and 132
-   and 13.6 for HT.
+# 5. Simulating data. We assume WT and HT are normally distributed random
+# variables, with means and standard deviations of 16 and 3.4 for WT and 132
+# and 13.6 for HT.
 
 p1 <- list("WT" = list("rnorm", 16, 3.4), "HT" = list("rnorm", 132, 13.6))
 df5 <- cohort(param = p1, include = inc, n = 20,
               obs_times = ot, dose_times = dt, amt = 200)
 
-6. As in (5), except we now define a dosing function.
+# 6. As in (5), except we now define a dosing function.
 
 dose_fun <- Vectorize(function(WT) {
   if(WT < 16) {
@@ -137,7 +158,4 @@ dose_fun <- Vectorize(function(WT) {
 df6 <- cohort(param = p1, include = inc, n = 20,
               obs_times = ot, dose_times = dt, amt = dose_fun)
 
-}
-\author{
-Alexander Floren
 }

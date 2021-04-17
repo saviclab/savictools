@@ -14,7 +14,8 @@
 #'
 #' @section Synthetic Data:
 #' To generate synthetic data, leave `data` unspecified and pass the details of
-#' the distributions from which you wish to sample to `param`. `cohort()` will
+#' the distributions from which you wish to sample to `param`. Currently, all
+#' variables are assumed to be independent.
 #'
 #' @section Dosing and Observation Events:
 #' After sampling is finsihed, `cohort()` will create duplicate rows for each
