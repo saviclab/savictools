@@ -67,7 +67,6 @@
 #' @param group Optional. An integer indicating a group number. If specified,
 #' output will include an additional column "GR" containing the
 #' group number.
-#' @param seed Optional. An integer seed for random number generation.
 #' @param read_fun Optional. If using data in a format other than
 #' comma-separated valued (csv), supply a function which reads the given format.
 #' For example, if using tab-delimited data, write: read_fun = read.delim
@@ -137,10 +136,8 @@
 
 cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
                    dose_times=NULL, amt=NULL, param=NULL, original_id=FALSE,
-                   group=NULL, seed=NULL, read_fun=NULL, pop_size=NULL,
+                   group=NULL, read_fun=NULL, pop_size=NULL,
                    replace=FALSE) {
-
-  set.seed(seed)
 
   # check inputs
   if (is.null(data) & is.null(param)) {

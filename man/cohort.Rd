@@ -2,7 +2,7 @@
 % Please edit documentation in R/cohort.R
 \name{cohort}
 \alias{cohort}
-\title{Create NONMEM ready datasets for simulated clinical PK trials.}
+\title{Create NONMEM ready datasets for simulated clinical PK trials}
 \usage{
 cohort(
   data = NULL,
@@ -55,9 +55,11 @@ will have already specified).
 For example, to create a normally-distributed random variable
 called "WT" with mean 16.3 and standard deviation 2.5, and a
 binomially distributed random variable called "HIV" with p = 0.34, write:
-param = list("WT" = list("rnorm", 16.3, 2.5), "HIV" = list("rbinom", 1, 0.34))}
+param = list("WT" = list("rnorm", 16.3, 2.5), "HIV" = list("rbinom", 1,
+0.34))}
 
-\item{original_id}{Optional. Use the same ids as the input data? (TRUE or FALSE).}
+\item{original_id}{Optional. Use the same ids as the input data? (TRUE or
+FALSE).}
 
 \item{group}{Optional. An integer indicating a group number. If specified,
 output will include an additional column "GR" containing the
@@ -65,8 +67,8 @@ group number.}
 
 \item{seed}{Optional. An integer seed for random number generation.}
 
-\item{read_fun}{Optional. If using data in a format other than comma-separated
-valued (csv), supply a function which reads the given format.
+\item{read_fun}{Optional. If using data in a format other than
+comma-separated valued (csv), supply a function which reads the given format.
 For example, if using tab-delimited data, write: read_fun = read.delim}
 
 \item{pop_size}{Optional. If using synthetic data, cohort will generate a
@@ -85,64 +87,76 @@ generating synthetic data.
 }
 \section{Real Data}{
 
-To sample from an existing dataset, pass a dataframe or filename to
+To sample from an existing dataset, pass a dataframe or file name to
 \code{data}, and leave \code{param} unspecified.
+
+Data will be filtered by the criteria specified in \code{include}, which must
+use only variable names present in the data. \code{n} individuals will then be
+sampled randomly.
 }
 
 \section{Synthetic Data}{
 
-To generate synthetic data, leave
-\code{data} unspecified and pass the details of the distributions from which you
-wish to sample to \code{param}.
+To generate synthetic data, leave \code{data} unspecified and pass the details of
+the distributions from which you wish to sample to \code{param}. Currently, all
+variables are assumed to be independent.
+}
 
-This data will be filtered by the criteria specified in \code{include}, which must
-use only variable names present in the data. \code{n} individuals will then be
-sampled randomly.
+\section{Dosing and Observation Events}{
 
-After sampling is finsihed, cohort will create duplicate rows for each
+After sampling is finsihed, \code{cohort()} will create duplicate rows for each
 individual corresponding to the timepoints specified in
 \code{dose_times} and \code{obs_times}, and create a column "EVID" distinguishing
 between dosing and observation events.
 
 Finally, the function (or fixed amount) passed to \code{amt} is used to calculate
 the dose for each individual at each dosing event. If using a function, it
-must be Vectorized,  defined in the calling environment, and its arguments
-must match the names of variables used in your data.
+must be Vectorized, defined in the calling environment, and its arguments
+must match the names of variables used in your data. See Example 6 for
+details.
 }
 
 \examples{
-# 1. Reading from a .csv and sampling 20 individuals,above 10kg and below 120cm,
-# with a fixed dose of 200mg, observing every 4 hours for one day and dosing at
-# times 0, 5, and 12. Note that the data has columns called "WT" and "HT".
+# 1. Reading from a .csv and sampling 20 individuals,above 10kg and below
+120cm,
+# with a fixed dose of 200mg, observing every 4 hours for one day and dosing
+# at times 0, 5, and 12. Note that the data has columns called "WT" and "HT".
 
 inc <- "WT > 10 & HT < 120"
 ot <- seq(0, 24, by = 4)
 dt <- c(0, 5, 12)
+
 df1 <- cohort("my_data.csv", include = inc, n = 20, obs_times = ot,
               dose_times = dt, amt = 200)
+
 
 # 2. As in (1), except using tab-delimited data.
 
 df2 <- cohort("my_data.txt", include = inc, n = 20, obs_times = ot,
               dose_times = dt, amt = 200, read_fun = read.table)
 
+
 # 3, As in (1), except setting a seed and specifying a group number.
 
 df3 <- cohort("my_data.csv", include = inc, n = 20, obs_times = ot,
                dose_times = dt, amt = 200, seed = 123, group = 4)
+
 
 # 4. As in (1), except we keep the ids from our original dataset.
 
 df4 <- cohort("my_data.csv", include = inc, n = 20, obs_times = ot,
               dose_times = dt, amt = 200, original_id = TRUE)
 
+
 # 5. Simulating data. We assume WT and HT are normally distributed random
 # variables, with means and standard deviations of 16 and 3.4 for WT and 132
 # and 13.6 for HT.
 
 p1 <- list("WT" = list("rnorm", 16, 3.4), "HT" = list("rnorm", 132, 13.6))
+
 df5 <- cohort(param = p1, include = inc, n = 20,
               obs_times = ot, dose_times = dt, amt = 200)
+
 
 # 6. As in (5), except we now define a dosing function.
 
@@ -153,9 +167,12 @@ dose_fun <- Vectorize(function(WT) {
     return(200)
   } else {
     return(250)
-  }
-})
+  }})
+
 df6 <- cohort(param = p1, include = inc, n = 20,
               obs_times = ot, dose_times = dt, amt = dose_fun)
 
+}
+\author{
+Alexander Floren
 }
