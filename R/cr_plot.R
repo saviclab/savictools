@@ -24,14 +24,15 @@ cr_plot <- function(runno, theta, effect_size=0.2, lo=0.025, hi=0.975, ...) {
 
   # get THETA estimates from .lst file
   mu <- get_theta(paste0("run", runno, ".lst"))
-  mu <- mu[theta]
+  n_theta <- length(mu)
 
   # get variance-covariance matrix from .cov file
   variance_covariance_matrix <- get_cov(paste0("run", runno, ".cov"))
-  theta_cov <- variance_covariance_matrix[theta, theta]
+  theta_cov <- variance_covariance_matrix[1:n_theta, 1:n_theta]
 
   # sample from multivariate normal distribution
   boot <- data.frame(MASS::mvrnorm(n = 1000, mu = mu, Sigma = theta_cov))
+  boot <- boot[, theta]
   names(boot) <- names(theta)
 
   # calculate covariate relations
