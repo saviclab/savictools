@@ -1,29 +1,35 @@
-#' @title cohort
-#' @author Alexander Floren
+#' Create NONMEM ready datasets for simulated clinical PK trials
 #'
-#' @description Create NONMEM ready datasets for simulated clinical PK trials.
+#' The `cohort()` function is used to generate NONMEM-ready datasets for
+#' clinical PK trials, either by sampling from real datasets or
+#' generating synthetic data.
 #'
-#' This function is used to generate NONMEM-ready datasets for clinical PK trials
-#' using either real or synthetic data.
+#' @section Real Data:
+#' To sample from an existing dataset, pass a dataframe or file name to
+#' `data`, and leave `param` unspecified.
 #'
-#' To sample from an existing dataset, pass a dataframe or filename to
-#' `data`, and leave `param` unspecified. To generate synthetic data, leave
-#' `data` unspecified and pass the details of the distributions from which you
-#' wish to sample to `param`.
-#'
-#' This data will be filtered by the criteria specified in `include`, which must
+#' Data will be filtered by the criteria specified in `include`, which must
 #' use only variable names present in the data. `n` individuals will then be
 #' sampled randomly.
 #'
-#' After sampling is finsihed, cohort will create duplicate rows for each
+#' @section Synthetic Data:
+#' To generate synthetic data, leave `data` unspecified and pass the details of
+#' the distributions from which you wish to sample to `param`. `cohort()` will
+#'
+#' @section Dosing and Observation Events:
+#' After sampling is finsihed, `cohort()` will create duplicate rows for each
 #' individual corresponding to the timepoints specified in
 #' `dose_times` and `obs_times`, and create a column "EVID" distinguishing
 #' between dosing and observation events.
 #'
 #' Finally, the function (or fixed amount) passed to `amt` is used to calculate
 #' the dose for each individual at each dosing event. If using a function, it
-#' must be Vectorized,  defined in the calling environment, and its arguments
-#' must match the names of variables used in your data.
+#' must be Vectorized, defined in the calling environment, and its arguments
+#' must match the names of variables used in your data. See Example 6 for
+#' details.
+#'
+#' @return
+#' A dplyr dataframe in NONMEM format.
 #'
 #' @param data A dataframe, or the name of a file in the current directory.
 #' @param include A character string in the form of a logical R statement, to
@@ -53,59 +59,65 @@
 #' For example, to create a normally-distributed random variable
 #' called "WT" with mean 16.3 and standard deviation 2.5, and a
 #' binomially distributed random variable called "HIV" with p = 0.34, write:
-#' param = list("WT" = list("rnorm", 16.3, 2.5), "HIV" = list("rbinom", 1, 0.34))
-#' @param original_id Optional. Use the same ids as the input data? (TRUE or FALSE).
+#' param = list("WT" = list("rnorm", 16.3, 2.5), "HIV" = list("rbinom", 1,
+#'  0.34))
+#' @param original_id Optional. Use the same ids as the input data? (TRUE or
+#' FALSE).
 #' @param group Optional. An integer indicating a group number. If specified,
 #' output will include an additional column "GR" containing the
 #' group number.
 #' @param seed Optional. An integer seed for random number generation.
-#' @param read_fun Optional. If using data in a format other than comma-separated
-#' valued (csv), supply a function which reads the given format.
+#' @param read_fun Optional. If using data in a format other than
+#' comma-separated valued (csv), supply a function which reads the given format.
 #' For example, if using tab-delimited data, write: read_fun = read.delim
 #' @param pop_size Optional. If using synthetic data, cohort will generate a
 #' population of size pop_size * n, and then randomly sample
 #' from it. The default value is 10.
 #' @param replace Optional. Whether to sample with replacement. Default: FALSE.
 #'
-#' @usage
-#'
-#' @returns A dplyr dataframe.
-#'
 #' @examples
-#' 1. Reading from a .csv and sampling 20 individuals,above 10kg and below 120cm,
-#' with a fixed dose of 200mg, observing every 4 hours for one day and dosing at
-#' times 0, 5, and 12. Note that the data has columns called "WT" and "HT".
+#' # 1. Reading from a .csv and sampling 20 individuals,above 10kg and below
+#' 120cm,
+#' # with a fixed dose of 200mg, observing every 4 hours for one day and dosing
+#' # at times 0, 5, and 12. Note that the data has columns called "WT" and "HT".
 #'
 #' inc <- "WT > 10 & HT < 120"
 #' ot <- seq(0, 24, by = 4)
 #' dt <- c(0, 5, 12)
+#'
 #' df1 <- cohort("my_data.csv", include = inc, n = 20, obs_times = ot,
 #'               dose_times = dt, amt = 200)
 #'
-#' 2. As in (1), except using tab-delimited data.
+#'
+#' # 2. As in (1), except using tab-delimited data.
 #'
 #' df2 <- cohort("my_data.txt", include = inc, n = 20, obs_times = ot,
 #'               dose_times = dt, amt = 200, read_fun = read.table)
 #'
-#' 3, As in (1), except setting a seed and specifying a group number.
+#'
+#' # 3, As in (1), except setting a seed and specifying a group number.
 #'
 #' df3 <- cohort("my_data.csv", include = inc, n = 20, obs_times = ot,
 #'                dose_times = dt, amt = 200, seed = 123, group = 4)
 #'
-#' 4. As in (1), except we keep the ids from our original dataset.
+#'
+#' # 4. As in (1), except we keep the ids from our original dataset.
 #'
 #' df4 <- cohort("my_data.csv", include = inc, n = 20, obs_times = ot,
 #'               dose_times = dt, amt = 200, original_id = TRUE)
 #'
-#' 5. Simulating data. We assume WT and HT are normally distributed random
-#'    variables, with means and standard deviations of 16 and 3.4 for WT and 132
-#'    and 13.6 for HT.
+#'
+#' # 5. Simulating data. We assume WT and HT are normally distributed random
+#' # variables, with means and standard deviations of 16 and 3.4 for WT and 132
+#' # and 13.6 for HT.
 #'
 #' p1 <- list("WT" = list("rnorm", 16, 3.4), "HT" = list("rnorm", 132, 13.6))
+#'
 #' df5 <- cohort(param = p1, include = inc, n = 20,
 #'               obs_times = ot, dose_times = dt, amt = 200)
 #'
-#' 6. As in (5), except we now define a dosing function.
+#'
+#' # 6. As in (5), except we now define a dosing function.
 #'
 #' dose_fun <- Vectorize(function(WT) {
 #'   if(WT < 16) {
@@ -114,11 +126,12 @@
 #'     return(200)
 #'   } else {
 #'     return(250)
-#'   }
-#' })
+#'   }})
+#'
 #' df6 <- cohort(param = p1, include = inc, n = 20,
 #'               obs_times = ot, dose_times = dt, amt = dose_fun)
 #'
+#' @author Alexander Floren
 #' @export
 
 cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
@@ -191,14 +204,14 @@ cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
       stop("Error: cannot use orginial ids with synthetic data.")
     }
 
-    df <- tibble("ID" = 1:pop_size)
+    df <- dplyr::tibble("ID" = 1:pop_size)
 
     # convert to uppercase and truncate to 4 letters if needed
     names(param) <- toupper(names(param))
     # names(param) <- lapply(names(param), substring, 1, 4)
 
     # check param names
-    if (length(intersect(names(param),
+    if (length(dplyr::intersect(names(param),
                          c("ID", "TIME", "EVID", "AMT", "DV"))) > 0) {
       stop('Error: `param` cannot contain any of "ID", "TIME", "EVID", "AMT", or
            "DV".')
@@ -206,10 +219,13 @@ cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
 
     # sample distributions for each variable in param
     for (var in names(param)) {
+      # extract name of sampling function, e.g. rnorm
       fun <- param[[var]][[1]]
 
-      # sample pop_size times from the distribution
+      # extract function arguments
       fun_args <- c(pop_size, tail(param[[var]], -1))
+
+      # sample pop_size times from the distribution
       df[var] <- do.call(fun, fun_args)
     }
   }
@@ -218,10 +234,10 @@ cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
   # deal with original ids
   if (original_id != FALSE) {
     if (is.character(original_id) & original_id %in% colnames(df)) {
-      rename(df, "ID" = all_of(original_id))
+      dplyr::rename(df, "ID" = dplyr::all_of(original_id))
     }
   }
-  rename(df, "ID" = matches("^id$", ignore.case = TRUE))
+  dplyr::rename(df, "ID" = dplyr::matches("^id$", ignore.case = TRUE))
 
   if (!"ID" %in% colnames(df)) {
     stop("Error: data does not contain column named `id`
@@ -240,7 +256,9 @@ cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
   }
 
   # ensure one row per ID
-  df <- df %>% group_by(ID) %>% slice(1) %>% ungroup()
+  df <- dplyr::group_by(df, ID)
+  df <- dplyr::slice(df, 1)
+  df <- dplyr::ungroup(df)
 
   if (original_id == FALSE) {
     df$ID <- 1:nrow(df)
@@ -255,7 +273,7 @@ cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
   n <- nrow(df)
 
   # duplicate rows before creating time columns
-  df <- slice(df, rep(1:n, each = n_timepoints))
+  df <- dplyr::slice(df, rep(1:n, each = n_timepoints))
 
   # create TIME, EVID, and DV columns
   df$TIME <- rep(times, n)
@@ -264,11 +282,13 @@ cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
 
   # assign dose amounts
   if (is.numeric(amt)) {
-    df <- mutate(df, AMT = if_else(EVID == 1, amt, 0))
+    df <- dplyr::mutate(df, AMT = dplyr::if_else(EVID == 1, amt, 0))
   } else {
     # extract formals from dosing function and apply where EVID = 1
-    dose_args <- as.list(syms(names(formals(amt))))
-    df <- mutate(df, AMT = if_else(EVID == 1, do.call(amt, eval(dose_args)), 0))
+    dose_args <- as.list(dplyr::syms(names(formals(amt))))
+    df <- dplyr::mutate(df,
+                        AMT = dplyr::if_else(EVID == 1,
+                                             do.call(amt, eval(dose_args)), 0))
   }
 
   # create group column, if specified
@@ -277,28 +297,28 @@ cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
   }
 
   # sort by ID and TIME
-  df <- arrange(df, ID, TIME)
+  df <- dplyr::arrange(df, ID, TIME)
 
   # compute TAD
-  df <- group_by(df, ID) %>%
-    group_modify(~{
-      evid <- pull(.x, EVID)
-      copy <- .x
-      copy$TAD <- 0
-      last_dose <- as.double(pull(.x, TIME)[2])
-      for(j in seq(nrow(.x))) {
-        if(evid[j] == 1) {
-          last_dose <- as.double(pull(.x, TIME)[j])
-        }
-        if(evid[j] == 0) {
-          copy[j, "TAD"] <- as.double(pull(.x, TIME)[j]) - last_dose
-        }
-      }
-      copy
-    }) %>%
-    ungroup() %>%
-    arrange(ID) %>%
-    relocate(ID, TIME, EVID, AMT, DV, TAD)
+  df <- dplyr::group_by(df, ID)
+  df <- dplyr::group_modify(~{
+          evid <- pull(.x, EVID)
+          copy <- .x
+          copy$TAD <- 0
+          last_dose <- as.double(pull(.x, TIME)[2])
+          for(j in seq(nrow(.x))) {
+            if(evid[j] == 1) {
+              last_dose <- as.double(pull(.x, TIME)[j])
+            }
+            if(evid[j] == 0) {
+              copy[j, "TAD"] <- as.double(pull(.x, TIME)[j]) - last_dose
+            }
+          }
+          copy
+        })
+    df <- dplyr::ungroup(df)
+    df <- dplyr::arrange(df, ID)
+    df <- dplyr::relocate(df, ID, TIME, EVID, AMT, DV, TAD)
 
   return(df)
 }
