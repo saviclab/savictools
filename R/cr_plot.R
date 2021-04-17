@@ -2,7 +2,9 @@
 #'
 #' The `cr_plot()` function creates clinical relevance plots from NONMEM files.
 #' Using the variance-covariance matrix together with parameter estimates,
-#' `cr_plot()`
+#' `cr_plot()` shows the position of posterior distributions of covariate values
+#' relative to the range of clinical importance (usually +/- 20%).
+#' @export
 
 
 # Example:
@@ -48,7 +50,7 @@ cr_plot <- function(runno, theta, effect_size=0.2, lo=0.025, hi=0.975, ...) {
   pl1 <- lattice::stripplot(
     name ~ value,
     boot,
-    panel = metrumrg::panel.covplot,
+    panel = panel.covplot,
     rlim = c(1 - effect_size, 1 + effect_size),
     xlim = c(0, 2),
     cuts = c(1 - effect_size, 1, 1 + effect_size),
@@ -60,43 +62,6 @@ cr_plot <- function(runno, theta, effect_size=0.2, lo=0.025, hi=0.975, ...) {
 }
 
 # Helpers --------------------------------------------------------------------
-
-# The following function is copied from MIFuns, which was removed from CRAN..
-# Author: Tim Bergsma, Metrum Institute
-reapply <- function(x, INDEX, FUN, ...)
-{
-  if(!is.list(INDEX)) INDEX <- list(INDEX)
-  INDEX <- lapply(INDEX,function(x)as.integer(factor(x)))
-  INDEX <- as.integer(do.call(interaction,c(INDEX,drop=TRUE)))
-  form <- tapply(x, INDEX)
-  calc <- tapply(x, INDEX, FUN, ...,simplify=FALSE)
-  need <- table(form)
-  calc <- lapply(
-    seq_along(calc),
-    function(cell)rep(
-      calc[[cell]],
-      length.out=need[[
-        as.character(cell)
-        ]]
-    )
-  )
-  calc <- c(calc,list(rep(NA,sum(is.na(form)))))
-  form[is.na(form)] <- length(calc)
-  grps <- split(form,form)
-  grps <- lapply(
-    grps,
-    seq_along
-  )
-  elem <- unsplit(grps,form)
-  sapply(
-    seq_along(form),
-    function(i)calc[[
-      form[[i]]
-      ]][[
-        elem[[i]]
-        ]]
-  )
-}
 
 
 get_cov <- function(file) {
