@@ -32,7 +32,7 @@ cr_plot <- function(runno, theta, effect_size=0.2, lo=0.025, hi=0.975, ...) {
 
   # sample from multivariate normal distribution
   boot <- data.frame(MASS::mvrnorm(n = 1000, mu = mu, Sigma = theta_cov))
-  boot <- boot[, theta]
+  boot <- data.frame(boot[, theta])
   names(boot) <- names(theta)
 
   # calculate covariate relations
@@ -46,7 +46,6 @@ cr_plot <- function(runno, theta, effect_size=0.2, lo=0.025, hi=0.975, ...) {
   boot <- boot[with(boot,
         value >= reapply(value, name, quantile, lo) &
         value <= reapply(value, name, quantile, hi)), ]
-  print(boot)
   # plot
   pl1 <- lattice::stripplot(
     name ~ value,
