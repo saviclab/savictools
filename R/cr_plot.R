@@ -54,9 +54,9 @@ cr_plot <- function(runno, effect_size=0.2, lo=0.025, hi=0.975, ...) {
     panel = panel.covplot,
     rlim = c(1 - effect_size, 1 + effect_size),
     xlim = c(0, 2),
-    main = paste("Run", runno),
+    main = paste("Clinical Relevance of Covariates: Run", runno),
     cuts = c(1 - effect_size, 1, 1 + effect_size),
-    xlab = 'Change in parameter value relative to reference',
+    xlab = 'Value',
     shade = 'skyblue'
   )
 
