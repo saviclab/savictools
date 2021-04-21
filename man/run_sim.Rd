@@ -7,13 +7,37 @@
 
 }
 \arguments{
-\item{seed}{}
+\item{model}{TODO}
+
+\item{dose_fun}{TODO}
+
+\item{data}{TODO}
+
+\item{n}{TODO}
+
+\item{start}{TODO}
+
+\item{end}{TODO}
+
+\item{sample_freq}{TODO}
+
+\item{dose_freq}{TODO}
+
+\item{tail}{TODO}
+
+\item{target}{TODO}
+
+\item{output}{TODO}
+
+\item{params}{TODO}
+
+\item{seed}{TODO}
 }
 \value{
 
 }
 \description{
-
+TODO
 }
 \examples{
 

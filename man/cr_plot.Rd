@@ -4,11 +4,13 @@
 \alias{cr_plot}
 \title{Clinical relevance plots}
 \usage{
-cr_plot(runno, theta, effect_size = 0.2, lo = 0.025, hi = 0.975, ...)
+cr_plot(runno, effect_size = 0.2, lo = 0.025, hi = 0.975, ...)
 }
 \description{
-The \code{cr_plot()} function creates clinical relevance plots from NONMEM files.
+The \code{cr_plot()} function visualizes the clinical relevance of covariate effects.
+}
+\details{
 Using the variance-covariance matrix together with parameter estimates,
-\code{cr_plot()} shows the position of posterior distributions of covariate values
-relative to the range of clinical importance (usually +/- 20\%).
+\code{cr_plot()} displays the posterior distributions of covariate effects
+relative to the range of clinical importance.
 }

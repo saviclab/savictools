@@ -14,7 +14,6 @@ cohort(
   param = NULL,
   original_id = FALSE,
   group = NULL,
-  seed = NULL,
   read_fun = NULL,
   pop_size = NULL,
   replace = FALSE
@@ -64,8 +63,6 @@ FALSE).}
 \item{group}{Optional. An integer indicating a group number. If specified,
 output will include an additional column "GR" containing the
 group number.}
-
-\item{seed}{Optional. An integer seed for random number generation.}
 
 \item{read_fun}{Optional. If using data in a format other than
 comma-separated valued (csv), supply a function which reads the given format.

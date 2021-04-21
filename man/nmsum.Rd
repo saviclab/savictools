@@ -7,7 +7,9 @@
 
 }
 \arguments{
-\item{write}{}
+\item{n}{TODO}
+
+\item{write}{TODO}
 }
 \value{
 
