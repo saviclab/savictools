@@ -1,22 +1,22 @@
 #' @title popPKSim2
 #' @author Alexander Floren
 #'
-#' @description
+#' @description TODO
 #'
-#' @param model
-#' @param dose_fun
-#' @param data
-#' @param n
-#' @param start
-#' @param end
-#' @param sample_freq
-#' @param dose_freq
-#' @param tail
-#' @param target
-#' @param output
-#' @param output
-#' @param params
-#' @param seed
+#' @param model TODO
+#' @param dose_fun TODO
+#' @param data TODO
+#' @param n TODO
+#' @param start TODO
+#' @param end TODO
+#' @param sample_freq TODO
+#' @param dose_freq TODO
+#' @param tail TODO
+#' @param target TODO
+#' @param output TODO
+#' @param output TODO
+#' @param params TODO
+#' @param seed TODO
 #'
 #' @usage
 #'
