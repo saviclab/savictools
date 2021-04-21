@@ -1,15 +1,20 @@
-#' @title zscores
+#' Calculate z-scores for anthrompometric indicators
+#'
+#' `zscores()` computes z-scores indicating nutritional status, adding new
+#'  columns to the end of a dataframe.
+#'
+#'  `zscores()` is a more streamlined implementation of the WHO scripts
+#'  `igrowup_standard.R`, `igrowup_restricted.R`, and `who2007.R`.
+#'
+#' @param data A dataframe with ID, AGE, SEX, WT, and HT columns.
+#' @param missing_flag Value to replace NAs. Default is -99.
+#' @param extreme_flag Value used to replace extreme/implausible z-scores.
+#' Default is -98.
+#'
 #' @author Alexander Floren, Dhruv Vaish
-#'
-#' @description Function wrapper for a script provided by the WHO to produce z-scores
-#'
-#' @param data A tibble of data
-#' @param missing_flag OPTIONAL: value used to replace missing values
-#' @param unlikely_flag OPTIONAL: value used to replace flagged z-scores
-#'
 #' @export
 
-zscores <- function(data, missing_flag=-99, unlikely_flag=-98) {
+zscores <- function(data, missing_flag=-99, extreme_flag=-98) {
   data <- read_csv("~/Documents/Berkeley/Savic/WHO_FILES/dtg-kids-vomit.csv")
   data$rownum <- 1:nrow(data)
   below_five <- data %>% dplyr::filter(AGE <= 60) %>% dplyr::select(ID, rownum, AGE, SEX, WT, HT)
@@ -103,7 +108,7 @@ zscores <- function(data, missing_flag=-99, unlikely_flag=-98) {
             rename(ID = ID.x) %>% select(-ID.y, -rownum)
 
 
-  # deal with missing and unlikely values
+  # deal with missing and  values
 
   na_parsed <- result %>% replace_na(list(
                                       WAZ = missing_flag,
@@ -114,10 +119,10 @@ zscores <- function(data, missing_flag=-99, unlikely_flag=-98) {
                                     )
 
   fully_parsed <- na_parsed %>%  mutate(
-                                WAZ = ifelse(WAZ_F == 1, -98, WAZ),
-                                HAZ = ifelse(HAZ_F == 1, -98, HAZ),
-                                BAZ = ifelse(BAZ_F == 1, -98, BAZ),
-                                WHZ = ifelse(WHZ_F == 1, -98, WHZ)
+                                WAZ = ifelse(WAZ_F == 1, extreme_flag, WAZ),
+                                HAZ = ifelse(HAZ_F == 1, extreme_flag, HAZ),
+                                BAZ = ifelse(BAZ_F == 1, extreme_flag, BAZ),
+                                WHZ = ifelse(WHZ_F == 1, extreme_flag, WHZ)
                             ) %>%
                             select(-WAZ_F, -HAZ_F, -BAZ_F, -WHZ_F)
 
