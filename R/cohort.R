@@ -299,16 +299,16 @@ cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
   # compute TAD
   df <- dplyr::group_by(df, ID)
   df <- dplyr::group_modify(df, ~{
-          evid <- pull(.x, EVID)
+          evid <- dplyr::pull(.x, EVID)
           copy <- .x
           copy$TAD <- 0
-          last_dose <- as.double(pull(.x, TIME)[2])
+          last_dose <- as.double(dplyr::pull(.x, TIME)[2])
           for(j in seq(nrow(.x))) {
             if(evid[j] == 1) {
-              last_dose <- as.double(pull(.x, TIME)[j])
+              last_dose <- as.double(dplyr::pull(.x, TIME)[j])
             }
             if(evid[j] == 0) {
-              copy[j, "TAD"] <- as.double(pull(.x, TIME)[j]) - last_dose
+              copy[j, "TAD"] <- as.double(dplyr::pull(.x, TIME)[j]) - last_dose
             }
           }
           copy
