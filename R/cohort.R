@@ -221,12 +221,15 @@ cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
     n <- nrow(df)
   }
 
+  # compute pop_size
   if (is.integer(pop_size)) {
     pop_size  <- pop_size * n
   } else {
     pop_size <- 10 * n
   }
 
+  # convert df to numeric
+  df <- dplyr::mutate(df, dplyr::across(.fns = as.numeric))
 
   # deal with original ids
   if (original_id != FALSE) {
