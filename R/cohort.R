@@ -134,6 +134,10 @@
 #' @author Alexander Floren
 #' @export
 
+
+# TODO: Fix docs to reflect `n` being optional
+# TODO: Make dose_times optional
+# TODO: Remove type checking (?)
 cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
                    dose_times=NULL, amt=NULL, param=NULL, original_id=FALSE,
                    group=NULL, read_fun=NULL, pop_size=NULL,
