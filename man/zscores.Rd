@@ -17,5 +17,5 @@ zscores(data, missing_flag = -99, unlikely_flag = -98)
 Function wrapper for a script provided by the WHO to produce z-scores
 }
 \author{
-Alexander Floren, Dhruv Vaish
+Kendra Radtke, Alexander Floren, Dhruv Vaish
 }
