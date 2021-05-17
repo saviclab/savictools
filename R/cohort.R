@@ -1,5 +1,7 @@
+#' @title
 #' Create NONMEM ready datasets for simulated clinical PK trials
 #'
+#' @description
 #' The `cohort()` function is used to generate NONMEM-ready datasets for
 #' clinical PK trials, either by sampling from real datasets or
 #' generating synthetic data.

@@ -1,5 +1,9 @@
+#' @title
 #' Calculate z-scores for anthrompometric indicators
 #'
+#' @author Kendra Radtke, Alexander Floren, Dhruv Vaish
+#'
+#' @description
 #' `zscores()` computes z-scores indicating nutritional status, adding new
 #'  columns to the end of a dataframe.
 #'
@@ -19,7 +23,6 @@
 # TODO: Make lines wrap at 80 characters
 
 zscores <- function(data, missing_flag=-99, extreme_flag=-98) {
-  start <- Sys.time()
   data$rownum <- 1:nrow(data)
 
   below_five <- data %>% dplyr::filter(AGE <= 60) %>% dplyr::select(ID, rownum, AGE, SEX, WT, HT)
@@ -29,9 +32,6 @@ zscores <- function(data, missing_flag=-99, extreme_flag=-98) {
   above_five_frame <- as.data.frame(above_five)
 
   # Load WHO datasets
-
-  # SCRIPT: Under 5 years
-  # source("R/igrowup_standard.r", local = TRUE)
   load("R/sysdata.rda")
 
   #calculate Z-scores
@@ -101,12 +101,14 @@ zscores <- function(data, missing_flag=-99, extreme_flag=-98) {
                             dplyr::select(-WAZ_F, -HAZ_F, -BAZ_F, -WHZ_F)
 
   # return
-  end <- Sys.time()
-  print(end-start)
   return(fully_parsed)
 }
 
 
+#' @title
+#' Implement standard rounding rules
+#'
+#' @description
 #' `rounde()` is a rounding function that rounds up when rounding off a 5,
 #' instead of to the nearest even number, which is what `round()` does.
 #' @param x A numeric vector

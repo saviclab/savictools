@@ -2,19 +2,24 @@
 % Please edit documentation in R/zscores.R
 \name{zscores}
 \alias{zscores}
-\title{zscores}
+\title{Calculate z-scores for anthrompometric indicators}
 \usage{
-zscores(data, missing_flag = -99, unlikely_flag = -98)
+zscores(data, missing_flag = -99, extreme_flag = -98)
 }
 \arguments{
-\item{data}{A tibble of data}
+\item{data}{A dataframe with ID, AGE, SEX, WT, and HT columns.}
 
-\item{missing_flag}{OPTIONAL: value used to replace missing values}
+\item{missing_flag}{Value to replace NAs. Default is -99.}
 
-\item{unlikely_flag}{OPTIONAL: value used to replace flagged z-scores}
+\item{extreme_flag}{Value used to replace extreme/implausible z-scores.
+Default is -98.}
 }
 \description{
-Function wrapper for a script provided by the WHO to produce z-scores
+\code{zscores()} computes z-scores indicating nutritional status, adding new
+columns to the end of a dataframe.
+
+\code{zscores()} is a more streamlined implementation of the WHO scripts
+\code{igrowup_standard.R}, \code{igrowup_restricted.R}, and \code{who2007.R}.
 }
 \author{
 Kendra Radtke, Alexander Floren, Dhruv Vaish
