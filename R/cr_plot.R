@@ -11,7 +11,7 @@
 # Example:
 # #cr_plot(27, VWT = 1 + THETA(12), WAZF1 = 1 + THETA(11), KAFORMULATION = 1 + THETA(9))
 
-# TODO: Read in sdtab to take distribution of covariates into  account (i.e. HT)
+# TODO: Read in sdtab to take distribution of covariates into  account (i.e. HT )
 
 cr_plot <- function(runno, effect_size=0.2, lo=0.025, hi=0.975, ...) {
 

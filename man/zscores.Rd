@@ -17,10 +17,8 @@ Default is -98.}
 \description{
 \code{zscores()} computes z-scores indicating nutritional status, adding new
 columns to the end of a dataframe.
-
+}
+\details{
 \code{zscores()} is a more streamlined implementation of the WHO scripts
 \code{igrowup_standard.R}, \code{igrowup_restricted.R}, and \code{who2007.R}.
-}
-\author{
-Kendra Radtke, Alexander Floren, Dhruv Vaish
 }
