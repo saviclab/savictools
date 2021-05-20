@@ -22,11 +22,11 @@ cr_plot <- function(runno, effect_size=0.2, lo=0.025, hi=0.975, ...) {
   theta <- get_thetas_used(new_exprs)
 
   # get THETA estimates from .lst file
-  mu <- get_final_params(paste0("run", runno, ".lst"))
+  mu <- get_final_params(model_paste0(runno, ".lst"))
   n_theta <- length(mu)
 
   # get variance-covariance matrix from .cov file
-  variance_covariance_matrix <- get_cov(paste0("run", runno, ".cov"))
+  variance_covariance_matrix <- get_cov(model_paste0(runno, ".cov"))
   theta_cov <- variance_covariance_matrix[1:n_theta, 1:n_theta]
 
   # sample from multivariate normal distribution
@@ -56,7 +56,7 @@ cr_plot <- function(runno, effect_size=0.2, lo=0.025, hi=0.975, ...) {
     panel = panel.covplot,
     rlim = c(1 - effect_size, 1 + effect_size),
     xlim = c(0, 2),
-    main = paste("Clinical Relevance of Covariates: Run", runno),
+    main = paste("Clinical Relevance of Covariates:", model_paste0(runno)),
     cuts = c(1 - effect_size, 1, 1 + effect_size),
     xlab = 'Value',
     shade = 'skyblue'
@@ -68,6 +68,16 @@ cr_plot <- function(runno, effect_size=0.2, lo=0.025, hi=0.975, ...) {
 
 # Helpers --------------------------------------------------------------------
 
+model_paste0 <- function(runno, ext = "") {
+  # If runno is a number, return "run[runno].ext"
+  if (suppressWarnings(!is.na(as.numeric(as.character(runno))))) {
+   paste0("run", runno, ext)
+  }
+  # If runno is a file name, strip any file extension off and return "runno.ext"
+  else {
+     paste0(gsub("\\.\\w*", "", runno), ext)
+   }
+}
 
 get_cov <- function(file) {
   read.table(file, skip = 1, header = TRUE)[ , -1]
