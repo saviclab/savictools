@@ -86,7 +86,8 @@ get_final_params <- function(file) {
 
 theta_to_Xs <- function(theta_quos) {
   exprs <- sapply(theta_quos, rlang::quo_get_expr)
-  result <- (gsub("[\\(\\)]", "", gsub("THETA\\(", "X", exprs)))
+  result <- gsub("THETA", "X", exprs)
+  result <- gsub("X\\((\\d+)\\)", "X\\1", result)
   names(result) <- names(theta_quos)
   result
 }
