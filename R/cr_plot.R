@@ -67,7 +67,7 @@ cr_plot <- function(runno, effect_size=0.2, lo=0.025, hi=0.975, ...) {
 
 
 # Helpers --------------------------------------------------------------------
-
+#' @export
 model_paste0 <- function(runno, ext = "") {
   # If runno is a number, return "run[runno].ext"
   if (suppressWarnings(!is.na(as.numeric(as.character(runno))))) {
