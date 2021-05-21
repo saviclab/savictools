@@ -1,4 +1,17 @@
-# VPC
+#' @title Visual predictive checks
+#'
+#' @description
+#'
+#'
+#'
+#'
+#'
+#'
+#'
+#'
+#'
+#'
+#' @export
 
 VPC <- function(runno = NULL,
                 samples = 500,

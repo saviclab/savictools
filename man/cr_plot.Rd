@@ -7,7 +7,7 @@
 cr_plot(runno, effect_size = 0.2, lo = 0.025, hi = 0.975, ...)
 }
 \description{
-The \code{cr_plot()} function visualizes the clinical relevance of covariate effects.
+\code{cr_plot()} visualizes the clinical relevance of covariate effects.
 }
 \details{
 Using the variance-covariance matrix together with parameter estimates,
