@@ -1,6 +1,6 @@
 #' Clinical relevance plots
 #'
-#' The `cr_plot()` function visualizes the clinical relevance of covariate effects.
+#' `cr_plot()` visualizes the clinical relevance of covariate effects.
 #'
 #' Using the variance-covariance matrix together with parameter estimates,
 #' `cr_plot()` displays the posterior distributions of covariate effects
