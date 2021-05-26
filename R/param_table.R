@@ -1,5 +1,5 @@
 #!/Library/Frameworks/R.Framework/Versions/Current/Resources/bin/Rscript --vanilla
-#' @title nmsum
+#' @title Create parameter tables
 #' @author Alexander Floren
 #'
 #' @description
@@ -59,7 +59,7 @@ param_table <- function(..., write = FALSE, max_omega = 30, max_sigma = 5) {
   result <- dplyr::slice(result, match(x, result$Parameter))
 
   if (write) {
-    write.csv(result, paste("runs", ..., "params.csv"), sep = "_")
+    write.csv(result, paste("runs", ..., "params.csv", sep = "_"))
   }
   else {
     result
