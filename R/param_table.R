@@ -1,11 +1,12 @@
-#!/Library/Frameworks/R.Framework/Versions/Current/Resources/bin/Rscript --vanilla
 #' @title Create parameter tables
 #' @author Alexander Floren
 #'
 #' @description
 #'
-#' @param n TODO
-#' @param write TODO
+#' @param ...
+#' @param write
+#' @param max_omega
+#' @param max_sigma
 #'
 #' @usage
 #'
@@ -45,15 +46,12 @@ param_table <- function(..., write = FALSE, max_omega = 30, max_sigma = 5) {
   omega <- c()
   sigma <- c()
   for (i in 1:max_omega) {
-    for (j in 1:max_omega) {
-      omega[i*100 + j] <- paste0("OMEGA(", i, ",", j, ")")
-    }
+    omega <- c(omega, paste0("OMEGA(", i, ",", 1:max_omega, ")"))
   }
   for (i in 1:max_sigma) {
-    for (j in 1:max_sigma) {
-      sigma[i*100 + j] <- paste0("SIGMA(", i, ",", j, ")")
-    }
+    sigma <- c(sigma, paste0("SIGMA(", i, ",", 1:max_sigma, ")"))
   }
+  print(omega)
   x <- c("Model:", "Based on:", "Description:", paste0("THETA", 1:100), omega, sigma, "OFV", "dOFV")
 
   result <- dplyr::slice(result, match(x, result$Parameter))
