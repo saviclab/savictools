@@ -1,6 +1,6 @@
 #' @title Visual predictive checks
 #'
-#' @description
+#' @description `VPC()` calls the PsN command `vpc`
 #'
 #'
 #'
@@ -14,49 +14,40 @@
 #' @export
 
 VPC <- function(runno = NULL,
-                samples = 500,
-                idv = "TAD",
+                psn_args = NULL,
                 force = FALSE,
-                psn_args = list(),
-                xpose_args = list()) {
+                ...) {
 
-
-  if (is.character(psn_args)) {
-    psn_args <- as.list(unlist(strsplit(psn_args, " ")))
+  if (is.null(psn_args)) {
+    psn_args <- runno
   }
+  psn_args <- unlist(strsplit(psn_args, " "))
+  xpose_args <- list(...)
 
-  if (!any(grepl("\\.mod", psn_args))) {
+  # make sure model argument is included
+  if (!grepl("\\.mod", psn_args[1])) {
     if (is.null(runno)) {
       stop("must specify runno or include your model name in psn_args.",
            call. = FALSE)
     }
-    model <- model_paste0(runno, ".mod")
-    psn_args$model_arg <- model
+    psn_args <- c(model_paste0(runno, ".mod"), psn_args)
     dir <- paste0("vpc_", model_paste0(runno))
   } else {
-    #dir <- sub("(\\w*)\\.mod", "vpc_\\1", unlist(psn_args)[grepl("\\.mod", psn_args)])
-    model <- unlist(psn_args)[grepl("\\.mod", psn_args)]
-    dir <- paste0("vpc_", model_paste0(model))
+    dir <- paste0("vpc_", model_paste0(psn_args[1]))
   }
 
-
-  if (!any(grepl("directory", psn_args))) {
-    psn_args$directory_arg <- paste0("-directory=", dir)
+  # make sure directory argument is included
+  if (!any(grepl("-directory=", psn_args))) {
+    psn_args <- c(psn_args, paste0("-directory=", dir))
+  } else {
+    dir <- strsplit(grep("-directory=", psn_args, value = TRUE), "=")[[1]][2]
   }
-  if (!any(grepl("samples", psn_args))) {
-    psn_args$samples_arg <- paste0("-samples=", samples)
-  }
-
-  if (!any(grepl("\\idv", psn_args))) {
-    psn_args$idv_arg <- paste0("-idv=", idv)
-  }
-
-  psn_args <- unlist(psn_args)
 
   if (file.exists(dir) & !force) {
     message(paste0(dir), " already exists in working directory.")
     message("To run a new VPC anyway, use option force = TRUE")
   } else {
+    print(psn_args)
     system2("vpc", args = psn_args)
   }
 
