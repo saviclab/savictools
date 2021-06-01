@@ -1,11 +1,19 @@
 #' @title Visual predictive checks
 #'
-#' @description `VPC()` calls the PsN command `vpc`
+#' @author Alexander Floren
+#'
+#' @description `VPC()` allows you to run PsN's `vpc` command and generate a
+#' visual predictive check with `xpose::xpose.VPC()` in one line of code in the
+#' R console.
+#'
+#' @examples
+#'   VPC(19, "-samples=500 -idv=TAD -bin_array=-0.5,0.5,1.3,2.3,3.3,5,7,10,17,28
+#'   -bin_by_count=0", subset = "TAD < 40")
 #'
 #'
 #'
-#'
-#'
+#' If a vpc_runXX directory already exists and force = FALSE, psn_args can be
+#' left blank, and you only need to give the run number.
 #'
 #'
 #'
@@ -19,7 +27,7 @@ VPC <- function(runno = NULL,
                 ...) {
 
   if (is.null(psn_args)) {
-    psn_args <- runno
+    psn_args <- trimws(runno)
   }
   psn_args <- unlist(strsplit(psn_args, " "))
   xpose_args <- list(...)
@@ -47,8 +55,7 @@ VPC <- function(runno = NULL,
     message(paste0(dir), " already exists in working directory.")
     message("To run a new VPC anyway, use option force = TRUE")
   } else {
-    print(psn_args)
-    system2("vpc", args = psn_args)
+    system2("vpc", args = psn_args, wait = FALSE)
   }
 
   if (is.null(xpose_args$vpctab)) {
