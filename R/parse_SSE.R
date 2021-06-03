@@ -13,8 +13,9 @@
 #' paths to exclude from the results.
 #'
 #' @inheritParams parse_sse
-#' @returns A named list of dataframes. "params" is a dataframe of parameter
-#' statistics. "error" is a summary of ofv statistics (either type I or II).
+#' @returns A named list of dataframes.
+#' "params" is a dataframe of parameter statistics.
+#' "type_I_error" and "type_II_error" are summaries of ofv statistics.
 #'
 #' @examples
 #' setwd(~/Path/To/SSE/Results)
