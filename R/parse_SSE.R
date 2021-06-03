@@ -19,6 +19,7 @@
 #'
 #' @examples
 #' setwd(~/Path/To/SSE/Results)
+#'
 #' # Parse all "sse_results.csv" files in a directory
 #' parse_all_sse()
 #'
