@@ -51,7 +51,6 @@ param_table <- function(..., write = FALSE, max_omega = 30, max_sigma = 5) {
   for (i in 1:max_sigma) {
     sigma <- c(sigma, paste0("SIGMA(", i, ",", 1:max_sigma, ")"))
   }
-  print(omega)
   x <- c("Model:", "Based on:", "Description:", paste0("THETA", 1:100), omega, sigma, "OFV", "dOFV")
 
   result <- dplyr::slice(result, match(x, result$Parameter))
