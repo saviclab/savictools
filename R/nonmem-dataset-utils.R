@@ -1,26 +1,53 @@
+sparse <- function(data,
+                   max_neighbors = 1,
+                   max_distance = 24,
+                   col_name = "SPARSE") {
+  data %>%
+    dplyr::group_by(ID) %>%
+    dplyr::group_modify(~{
 
+      .x[, col_name] <- 1
+      len <- nrow(.x)
+      distances <- array(, c(len, len))
+      for (i in 1:len) {
 
-add_occasion <- function(data, days_between) {
+        if (.x[i, "EVID"] == 1) {
+          next()
+        }
+        for (j in 1:len) {
 
-  data$OCC <- 0
-  result <- dplyr::group_by(data, ID)
-  result <- dplyr::group_modify(result, ~{
-    occ <- 1
-    time <- 0
-    first <- TRUE
-    for (row in 1:nrow(.x)) {
-      if (.x[row, "TIME"] - time >= days_between * 24) {
-        if (.x[row, "EVID"] == 0) {
-          if (!first) {
-            occ <- occ + 1
+          if (.x[j, "EVID"] == 1 | i == j) {
+            next()
           }
-          first <- FALSE
-          time <- .x[row, "TIME"]
+          if (abs(.x[j, "TIME"] - .x[i, "TIME"]) > max_distance) {
+            if (.x[j, "TIME"] - .x[i, "TIME"] > max_distance) {
+              break()
+            }
+            next()
+          }
+          distances[i, j] <- as.numeric(.x[j, "TIME"] - .x[i, "TIME"])
+
         }
       }
-      .x[row, "OCC"] <- occ
-    }
-    .x
-  })
-  result
+      clusters <- NULL
+      for (row in 1:len) {
+        x <- which(!is.na(distances[row, ]))
+        if (length(x) <= max_neighbors) {
+          next()
+        }
+        if (is.null(clusters)) {
+          clusters <- x
+        } else {
+          clusters <- union(clusters, x)
+        }
+      }
+
+
+      .x[clusters, col_name] <- 0
+      .x
+
+
+
+    }) %>%
+    dplyr::ungroup()
 }
