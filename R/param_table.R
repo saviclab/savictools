@@ -16,7 +16,8 @@
 #'
 #' @export
 
-param_table <- function(..., write = FALSE, max_omega = 30, max_sigma = 5) {
+param_table <- function(..., write = FALSE, max_omega = 30, max_sigma = 5,
+                        filename = NULL) {
   runnos <- list(...)
   if (length(runnos) == 1) {
     return(nmsum(..., write))
@@ -56,7 +57,11 @@ param_table <- function(..., write = FALSE, max_omega = 30, max_sigma = 5) {
   result <- dplyr::slice(result, match(x, result$Parameter))
 
   if (write) {
-    write.csv(result, paste("runs", ..., "params.csv", sep = "_"))
+    if (is.null(filename)) {
+      readr::write_csv(result, paste("runs", ..., "params.csv", sep = "_"))
+    } else {
+      readr::write_csv(result, filename)
+    }
   }
   else {
     result
