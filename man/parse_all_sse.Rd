@@ -44,8 +44,9 @@ the current directory and writes two .csv files to it summarizing the
 results.}
 }
 \value{
-A named list of dataframes. "params" is a dataframe of parameter
-statistics. "error" is a summary of ofv statistics (either type I or II).
+A named list of dataframes.
+"params" is a dataframe of parameter statistics.
+"type_I_error" and "type_II_error" are summaries of ofv statistics.
 }
 \description{
 \code{parse_all_sse()} recursively searches for SSE results csv files, parses them, and
@@ -54,6 +55,7 @@ rates.
 }
 \examples{
 setwd(~/Path/To/SSE/Results)
+
 # Parse all "sse_results.csv" files in a directory
 parse_all_sse()
 
