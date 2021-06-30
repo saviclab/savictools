@@ -58,9 +58,9 @@ param_table <- function(..., write = FALSE, max_omega = 30, max_sigma = 5,
 
   if (write) {
     if (is.null(filename)) {
-      readr::write_csv(result, paste("runs", ..., "params.csv", sep = "_"))
+      readr::write_csv(result, paste("runs", ..., "params.csv", sep = "_"), na = "")
     } else {
-      readr::write_csv(result, filename)
+      readr::write_csv(result, filename, na = "")
     }
   }
   else {
