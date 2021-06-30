@@ -76,6 +76,8 @@
 #' population of size pop_size * n, and then randomly sample
 #' from it. The default value is 10.
 #' @param replace Optional. Whether to sample with replacement. Default: FALSE.
+#' @param keep Optional. Character vector of column names that you do not want
+#' converted to numeric.
 #'
 #' @examples
 #' # 1. Reading from a .csv and sampling 20 individuals,above 10kg and below
@@ -143,7 +145,7 @@
 cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
                    dose_times=NULL, amt=NULL, param=NULL, original_id=FALSE,
                    group=NULL, read_fun=NULL, pop_size=NULL,
-                   replace=FALSE) {
+                   replace=FALSE, keep=NULL) {
 
   # check inputs
   if (is.null(data) & is.null(param)) {
@@ -235,7 +237,7 @@ cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
   }
 
   # convert df to numeric
-  df <- dplyr::mutate(df, dplyr::across(.fns = as.numeric))
+  df <- dplyr::mutate(df, dplyr::across(.fns = as.numeric, .cols = !any_of({{keep}})))
 
   # deal with original ids
   if (original_id != FALSE) {
@@ -258,7 +260,7 @@ cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
             FALSE, e.g.`AGE >= 6`.")
     }
     # apply include filter
-    df <- filter(df, eval(include, envir = df))
+    df <- dplyr::filter(df, eval(include, envir = df))
   }
 
   # ensure one row per ID
