@@ -32,7 +32,7 @@ zscores <- function(data, missing_flag=NA, extreme_flag=NA) {
 
   # SCRIPT: Under 5 years
   # source("R/igrowup_standard.r", local = TRUE)
-  load("R/sysdata.rda")
+  # load("R/sysdata.rda")
 
   #calculate Z-scores
   matz <- igrowup.standard(mydf=below_five_frame,
