@@ -106,7 +106,6 @@ zscores <- function(data, missing_flag=NA, extreme_flag=NA) {
   result <- dplyr::left_join(data, zvars_full, by="rownum") %>%
             dplyr::rename(ID = ID.x) %>% dplyr::select(-ID.y, -rownum)
 
-  print(result)
   # deal with missing and  values
 
   na_parsed <- result %>% tidyr::replace_na(list(
