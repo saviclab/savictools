@@ -13,7 +13,7 @@
 
 # TODO: Read in sdtab to take distribution of covariates into  account (i.e. HT )
 
-cr_plot <- function(runno, effect_size=0.2, lo=0.025, hi=0.975, ...) {
+cr_plot <- function(runno, effect_size=0.2, lo=0.025, hi=0.975, ggplot = TRUE, ...) {
 
   # delay evaluation of `...`, but get variable names
   theta_quos <- dplyr::enquos(...)
@@ -50,6 +50,10 @@ cr_plot <- function(runno, effect_size=0.2, lo=0.025, hi=0.975, ...) {
         value >= reapply(value, name, quantile, lo) &
         value <= reapply(value, name, quantile, hi)), ]
   # plot
+
+  if (ggplot) {
+
+  } else {
   pl1 <- lattice::stripplot(
     name ~ value,
     boot,
@@ -63,6 +67,7 @@ cr_plot <- function(runno, effect_size=0.2, lo=0.025, hi=0.975, ...) {
   )
 
   print(pl1)
+  }
 }
 
 

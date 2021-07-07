@@ -34,14 +34,15 @@
 #' @return
 #' A dplyr dataframe in NONMEM format.
 #'
-#' @param data A dataframe, or the name of a file in the current directory.
+#' @param data A dataframe containing only one row per individual.
 #' @param include A character string in the form of a logical R statement, to
 #' specify the inclusion criteria for this cohort. For example,
 #' if "WT" and "HT" are variables corresponding to weight in kg
 #' and height in cm, respectively, you can sample only
 #' individuals below 50kg and below 150cm by writing:
 #' include = "WT < 50 & HT < 150"
-#' @param n An integer. The number of patients to enroll.
+#' @param n Optionally, the number of patients enroll. When using existing data,
+#' `cohort()` will randomly sample `n` patients from your data.
 #' @param obs_times A numeric vector of observation times.
 #' @param dose_times  A numeric vector of dosing times.
 #' @param amt Either a numeric fixed dose, or a function that computes a
@@ -64,21 +65,18 @@
 #' binomially distributed random variable called "HIV" with p = 0.34, write:
 #' param = list("WT" = list("rnorm", 16.3, 2.5), "HIV" = list("rbinom", 1,
 #'  0.34))
-#' @param original_id Optional. Use the same ids as the input data? (TRUE or
-#' FALSE).
-#' @param group Optional. An integer indicating a group number. If specified,
-#' output will include an additional column "GR" containing the
-#' group number.
-#' @param read_fun Optional. If using data in a format other than
-#' comma-separated valued (csv), supply a function which reads the given format.
-#' For example, if using tab-delimited data, write: read_fun = read.delim
-#' @param pop_size Optional. If using synthetic data, cohort will generate a
-#' population of size pop_size * n, and then randomly sample
-#' from it. The default value is 10.
+#' @param original_id When `TRUE`, the default, `cohort()` will keep the same
+#' IDs as the input data. To create new IDs starting with 1, use
+#'  `original_id = TRUE`.
+#' @param pop_size Optional. When generating synthetic data, `cohort()` will
+#' generate a population of size pop_size * n, and then randomly sample n
+#' individuals from it. The default value is 10.
 #' @param replace Optional. Whether to sample with replacement. Default: FALSE.
+#' @param keep Optional. Character vector of column names that you do not want
+#' converted to numeric.
 #'
 #' @examples
-#' # 1. Reading from a .csv and sampling 20 individuals,above 10kg and below
+#' # 1. Sampling 20 individuals, above 10kg and below
 #' 120cm,
 #' # with a fixed dose of 200mg, observing every 4 hours for one day and dosing
 #' # at times 0, 5, and 12. Note that the data has columns called "WT" and "HT".
@@ -87,63 +85,47 @@
 #' ot <- seq(0, 24, by = 4)
 #' dt <- c(0, 5, 12)
 #'
-#' df1 <- cohort("my_data.csv", include = inc, n = 20, obs_times = ot,
+#' my_data <- read.csv("my_data.csv")
+#'
+#' df1 <- cohort(my_data, include = inc, n = 20, obs_times = ot,
 #'               dose_times = dt, amt = 200)
 #'
 #'
-#' # 2. As in (1), except using tab-delimited data.
+#' # 3. As in (1), except we generate new IDs.
 #'
-#' df2 <- cohort("my_data.txt", include = inc, n = 20, obs_times = ot,
-#'               dose_times = dt, amt = 200, read_fun = read.table)
-#'
-#'
-#' # 3, As in (1), except setting a seed and specifying a group number.
-#'
-#' df3 <- cohort("my_data.csv", include = inc, n = 20, obs_times = ot,
-#'                dose_times = dt, amt = 200, seed = 123, group = 4)
-#'
-#'
-#' # 4. As in (1), except we keep the ids from our original dataset.
-#'
-#' df4 <- cohort("my_data.csv", include = inc, n = 20, obs_times = ot,
+#' df3 <- cohort(my_data, include = inc, n = 20, obs_times = ot,
 #'               dose_times = dt, amt = 200, original_id = TRUE)
 #'
 #'
-#' # 5. Simulating data. We assume WT and HT are normally distributed random
+#' # 4. Simulating data. We assume WT and HT are normally distributed random
 #' # variables, with means and standard deviations of 16 and 3.4 for WT and 132
 #' # and 13.6 for HT.
 #'
 #' p1 <- list("WT" = list("rnorm", 16, 3.4), "HT" = list("rnorm", 132, 13.6))
 #'
-#' df5 <- cohort(param = p1, include = inc, n = 20,
+#' df4 <- cohort(param = p1, include = inc, n = 20,
 #'               obs_times = ot, dose_times = dt, amt = 200)
 #'
 #'
-#' # 6. As in (5), except we now define a dosing function.
+#' # 5. As in (4), except we now define a dosing function.
 #'
-#' dose_fun <- Vectorize(function(WT) {
-#'   if(WT < 16) {
-#'     return(150)
-#'   }  else if(WT < 20) {
-#'     return(200)
-#'   } else {
-#'     return(250)
-#'   }})
+#' dose_fun <- function(WT) {
+#'   ifelse(WT < 16, 150,
+#'   ifelse(WT < 20, 200, 250))
+#'   }
 #'
-#' df6 <- cohort(param = p1, include = inc, n = 20,
+#' df5 <- cohort(param = p1, include = inc, n = 20,
 #'               obs_times = ot, dose_times = dt, amt = dose_fun)
 #'
 #' @author Alexander Floren
 #' @export
 
 
-# TODO: Fix docs to reflect `n` being optional
 # TODO: Make dose_times optional
 # TODO: Remove type checking (?)
 cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
-                   dose_times=NULL, amt=NULL, param=NULL, original_id=FALSE,
-                   group=NULL, read_fun=NULL, pop_size=NULL,
-                   replace=FALSE) {
+                   dose_times=NULL, amt=NULL, param=NULL, original_id=TRUE,
+                   pop_size=NULL, replace=FALSE, keep=NULL) {
 
   # check inputs
   if (is.null(data) & is.null(param)) {
@@ -155,7 +137,6 @@ cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
   if (!is.null(param) & (!is.list(param) | is.null(names(param)))) {
     stop("`param` requires a list with named fields.")
   }
-
   if (is.null(amt) | (!is.function(amt) & !is.numeric(amt))) {
     stop("`amt` must be of type numeric or function.")
   }
@@ -164,12 +145,6 @@ cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
   }
   if (!is.numeric(dose_times)) {
     stop("`dose_times` must be of type numeric.")
-  }
-  if (is.null(read_fun)) {
-    read_fun <- read.csv
-  }
-  if (!is.function(read_fun)) {
-    stop("`read_fun` must be of type function.")
   }
 
   # initialize df
@@ -183,13 +158,7 @@ cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
   # determine whether to use real or synthetic data
   if (!is.null(data)) {
     # use real data
-
-    # use dataframe if supplied, or read from file
-    if (is.data.frame(data)) {
-      df <- data
-    } else {
-      df <- read_fun(data)
-    }
+    df <- data
 
   } else {
     # use synthetic data
@@ -235,7 +204,7 @@ cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
   }
 
   # convert df to numeric
-  df <- dplyr::mutate(df, dplyr::across(.fns = as.numeric))
+  df <- dplyr::mutate(df, dplyr::across(.fns = as.numeric, .cols = !any_of({{keep}})))
 
   # deal with original ids
   if (original_id != FALSE) {
@@ -258,7 +227,7 @@ cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
             FALSE, e.g.`AGE >= 6`.")
     }
     # apply include filter
-    df <- filter(df, eval(include, envir = df))
+    df <- dplyr::filter(df, eval(include, envir = df))
   }
 
   # ensure one row per ID
@@ -295,11 +264,6 @@ cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
     df <- dplyr::mutate(df,
                         AMT = dplyr::if_else(EVID == 1,
                                              do.call(amt, eval(dose_args)), 0))
-  }
-
-  # create group column, if specified
-  if (is.numeric(group)) {
-    df$GR <- group
   }
 
   # sort by ID and TIME

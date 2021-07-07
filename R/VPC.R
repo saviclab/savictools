@@ -21,6 +21,8 @@
 #'
 #' @export
 
+# TODO: need to wait until psn vpc is done before calling xpose.VPC()
+
 VPC <- function(runno = NULL,
                 psn_args = NULL,
                 force = FALSE,

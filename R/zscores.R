@@ -7,9 +7,9 @@
 #' `igrowup_standard.R`, `igrowup_restricted.R`, and `who2007.R`.
 #'
 #' @param data A dataframe with ID, AGE, SEX, WT, and HT columns.
-#' @param missing_flag Value to replace NAs. Default is -99.
+#' @param missing_flag Value used to replace missing z-scores Default is NA.
 #' @param extreme_flag Value used to replace extreme/implausible z-scores.
-#' Default is -98.
+#' Default is NA.
 #'
 #' @importFrom magrittr %>%
 #' @export
@@ -18,7 +18,7 @@
 # TODO: Clean up WHO function docs
 # TODO: Make lines wrap at 80 characters
 
-zscores <- function(data, missing_flag=-99, extreme_flag=-98) {
+zscores <- function(data, missing_flag=NA, extreme_flag=NA) {
   start <- Sys.time()
   data$rownum <- 1:nrow(data)
 
@@ -32,7 +32,7 @@ zscores <- function(data, missing_flag=-99, extreme_flag=-98) {
 
   # SCRIPT: Under 5 years
   # source("R/igrowup_standard.r", local = TRUE)
-  load("R/sysdata.rda")
+  # load("R/sysdata.rda")
 
   #calculate Z-scores
   matz <- igrowup.standard(mydf=below_five_frame,
