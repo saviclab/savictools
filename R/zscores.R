@@ -31,13 +31,13 @@ zscores <- function(data, missing_flag=NA, extreme_flag=NA) {
   data$BAZ_F <- NULL
   data$HAZ_F <- NULL
 
-  below_five <- data |> # Change pipe operator back
-    dplyr::filter(AGE <= 60) |>
+  below_five <- data %>% # Change pipe operator back
+    dplyr::filter(AGE <= 60) %>%
     dplyr::select(ID, rownum, AGE, SEX, WT, HT)
   below_five_frame <- as.data.frame(below_five)
 
-  above_five <- data |>
-    dplyr::filter(AGE > 60) |>
+  above_five <- data %>%
+    dplyr::filter(AGE > 60) %>%
     dplyr::select(ID, rownum, AGE, SEX, WT, HT)
   above_five_frame <- as.data.frame(above_five)
 
@@ -103,13 +103,13 @@ zscores <- function(data, missing_flag=NA, extreme_flag=NA) {
   }
 
   # zvars_full <- zvars_below_5
-  result <- dplyr::left_join(data, zvars_full, by="rownum") |>
-            dplyr::rename(ID = ID.x) |> dplyr::select(-ID.y, -rownum)
+  result <- dplyr::left_join(data, zvars_full, by="rownum") %>%
+            dplyr::rename(ID = ID.x) %>% dplyr::select(-ID.y, -rownum)
 
   print(result)
   # deal with missing and  values
 
-  na_parsed <- result |> tidyr::replace_na(list(
+  na_parsed <- result %>% tidyr::replace_na(list(
                                       WAZ = missing_flag,
                                       HAZ = missing_flag,
                                       BAZ = missing_flag,
@@ -117,12 +117,12 @@ zscores <- function(data, missing_flag=NA, extreme_flag=NA) {
                                       WAZ_F=0, HAZ_F=0, BAZ_F=0, WHZ_F=0)
                                     )
 
-  fully_parsed <- na_parsed |>  dplyr::mutate(
+  fully_parsed <- na_parsed %>%  dplyr::mutate(
                                 WAZ = ifelse(WAZ_F == 1, extreme_flag, WAZ),
                                 HAZ = ifelse(HAZ_F == 1, extreme_flag, HAZ),
                                 BAZ = ifelse(BAZ_F == 1, extreme_flag, BAZ),
                                 WHZ = ifelse(WHZ_F == 1, extreme_flag, WHZ)
-                            ) |>
+                            ) %>%
                             dplyr::select(-WAZ_F, -HAZ_F, -BAZ_F, -WHZ_F)
 
   return(fully_parsed)
