@@ -4,15 +4,15 @@
 \alias{zscores}
 \title{Calculate z-scores for anthrompometric indicators}
 \usage{
-zscores(data, missing_flag = -99, extreme_flag = -98)
+zscores(data, missing_flag = NA, extreme_flag = NA)
 }
 \arguments{
 \item{data}{A dataframe with ID, AGE, SEX, WT, and HT columns.}
 
-\item{missing_flag}{Value to replace NAs. Default is -99.}
+\item{missing_flag}{Value used to replace missing z-scores Default is NA.}
 
 \item{extreme_flag}{Value used to replace extreme/implausible z-scores.
-Default is -98.}
+Default is NA.}
 }
 \description{
 \code{zscores()} computes z-scores indicating nutritional status, adding new

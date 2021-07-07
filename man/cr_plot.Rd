@@ -4,7 +4,7 @@
 \alias{cr_plot}
 \title{Clinical relevance plots}
 \usage{
-cr_plot(runno, effect_size = 0.2, lo = 0.025, hi = 0.975, ...)
+cr_plot(runno, effect_size = 0.2, lo = 0.025, hi = 0.975, ggplot = TRUE, ...)
 }
 \description{
 \code{cr_plot()} visualizes the clinical relevance of covariate effects.
