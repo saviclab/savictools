@@ -56,9 +56,12 @@ param_table <- function(..., write = FALSE, max_omega = 30, max_sigma = 5,
 
   result <- dplyr::slice(result, match(x, result$Parameter))
 
+  # Add blank rows for formatting
+  result <- dplyr::add_row(result, .after = result)
+
   if (write) {
     if (is.null(filename)) {
-      readr::write_csv(result, paste("runs", ..., "params.csv", sep = "_"), na = "")
+      readr::write_csv(result, paste("runs", ..., "params.csv", sep = "_"), na = "", )
     } else {
       readr::write_csv(result, filename, na = "")
     }

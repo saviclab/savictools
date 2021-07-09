@@ -5,7 +5,7 @@
 #'
 #'
 sparse_pk <- function(data,
-                      max_neighbors = 1,
+                      max_cluster = 2,
                       max_distance = 24,
                       col_name = "SPARSE",
                       plot = TRUE,
@@ -42,6 +42,7 @@ sparse_pk <- function(data,
           }
         }
         clusters <- NULL
+        max_neighbors <- max_cluster - 1
         for (row in 1:len) {
           x <- which(!is.na(distances[row, ]))
           if (length(x) <= max_neighbors) {

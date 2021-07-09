@@ -1,76 +1,87 @@
-
-#' @title Plotting eta correlation for continuous and categorical variables
+#' @title Plot ETA-covariate correlations
 #' @author Kendra Radtke, Dhruv Vaish, Alexander Floren
 #'
-#' @description Function that can be using to check the ditributions of eta against certain variables.
-#' Properly coded models will have normal distributions with mean zero.
+#' @description For categorical covariates, use `etacorr_cat()`. For continuous
+#'  covariates, use `etacorr_cont()`.
 #'
-#' @param data Either a xpose compliant run number, nonmem data in the form of a dataframe,
+#' @param runno Either a xpose compliant run number, nonmem data in the form of a dataframe,
 #' or string representing the path to a nonmem tablefile
-#' @param eta numeric vector of the desires etas
-#' @param ... unpacked, arbitrry number of symbols which represent desired covariates to plot
-#' @param cat Default = FALSE. Set to TRUE if plotting a categorical variable. Default set to plot
-#' continuous variables
-#'
-#' @return Outputs plot and returns ggplot object
+#' @param eta Which ETAs to plot, e.g. `eta = c(1, 2)`
+#' @param ... Covariates to plot against ETAs.
 #'
 #' @examples
-#' etacorr(data, c(1, 2), WT, HT, AGE)
-#' # Shows a scatterplot of WT and HT against ETA1 and ETA2 continuously.
+#' # Continuous Covariates:
 #'
-#' etacorr("~/Documents/run5/simtab", c(1, 2), HIV, cat = TRUE)
-#' # Shows a boxplot of the associated ETA1 and ETA2 with those with HIV (1) and those without (0)
+#' # Plot WT, HT, and AGE against ETA1 and ETA2 from run3
+#' etacorr_cont(3, c(1, 2), WT, HT, AGE)
+#'
+#' # Plot WT, HT, and AGE against ETA1 and ETA2 from an xpose_data object
+#' xpdb <- xpose::xpose_data(3)
+#' etacorr_cont(xpdb, c(1, 2), WT, HT, AGE)
+#'
+#' # Categorical Covariates
+#'
+#' # Plot HIV against ETA1 and ETA2 from run3
+#' etacorr_cat("run3", c(1, 2), WT, HT, AGE)
 #'
 #' @export
-etacorr.cont <- function(data, eta, ...) {
+etacorr_cont <- function(runno, eta, ...) {
 
-  if (is.numeric(data)) {
-    xpdb <-suppressMessages(xpose::get_data(data))
-    data <- xpdb$data$data[[1]]
-  } else {
-    if (!is.data.frame(data)) {
-      data <- suppressMessages(xpose::read_nm_tables(data))
-    }
+  data <- get_data_from_runno(runno)
+  etas <- as.list(paste0("ETA", eta))
+  ss <- data[!duplicated(data$ID), ] # 1 obs per ind
+  vars <- as.list(sapply(substitute(list(...)), deparse)[-1])
+
+  plot_cont <- function(eta, var, data) {
+    ggplot2::ggplot(data, ggplot2::aes_string(x = var, y = eta)) +
+      ggplot2::geom_point(shape = 21) +
+      ggplot2::geom_smooth(method = 'lm', se = FALSE, linetype = 'dashed',
+                           color = 'red')
   }
 
-  etas <- rlang::syms(paste0("ETA", eta)) # dplyr compatible format
-  ss <- data[!duplicated(data$ID),] # 1 obs per ind
-  vars <- sapply(rlang::enquos(...), rlang::quo_text)
+  plot_vars <- function(eta) {lapply(vars, plot_cont, data = ss, eta = eta)}
 
-  for (eta in etas) {
-    plots <- list() # create blank
-    for(i in 1:length(vars)) {
-      var.select <- vars[i]
-      plots[[i]] <- ggplot(ss, aes(x=!!var.select, y=!!eta))+geom_point(shape=21)+geom_smooth(se=F)+
-        geom_smooth(method='lm',se=F,linetype='dashed',color='red')
-    }
-    suppressMessages(do.call(gridExtra::grid.arrange,plots))
-  }
+  plots <- lapply(etas, plot_vars)
+  plots <- as.list(purrr::flatten(plots))
+  suppressMessages(ggpubr::ggarrange(plotlist = plots))
 }
 
 #' @export
-etacorr.cat <- function(data, eta, ...) {
+etacorr_cat <- function(runno, eta, ...) {
 
-  if (is.numeric(data)) {
-    xpdb <-suppressMessages(xpose::get_data(data))
+  data <- get_data_from_runno(runno)
+  etas <- as.list(paste0("ETA", eta))
+  ss <- data[!duplicated(data$ID), ] # 1 obs per ind
+  vars <- as.list(sapply(substitute(list(...)), deparse)[-1])
+
+  plot_cat <- function(eta, var, data) {
+    ggplot2::ggplot(data, ggplot2::aes_string(x = var, y = eta)) +
+      ggplot2::geom_boxplot(outlier.colour = NA)
+  }
+
+  plot_vars <- function(eta) {lapply(vars, plot_cat, data = ss, eta = eta)}
+
+  plots <- lapply(etas, plot_vars)
+  plots <- as.list(purrr::flatten(plots))
+  suppressMessages(ggpubr::ggarrange(plotlist = plots))
+}
+
+# Helpers --------------------------------------------------------------------
+#' @export
+#' Provide either an xpdb object, run number, or model name and return the
+#' dataframe of results from that run.
+get_data_from_runno <- function(runno) {
+  if (class(runno)[1] == "xpose_data") {
+    # runno is an xpdb object
+    data <- runno$data$data[[1]]
+  } else if (is.numeric(runno)) {
+    # runno is a run number
+    xpdb <- xpose::xpose_data(runno)
     data <- xpdb$data$data[[1]]
   } else {
-    if (!is.data.frame(data)) {
-      data <- suppressMessages(xpose::read_nm_tables(data))
-    }
+    # runno is model name
+    xpdb <- xpose::xpose_data(file = model_paste0(runno, ext = ".lst"))
+    data <- xpdb$data$data[[1]]
   }
-
-  etas <- rlang::syms(paste0("ETA", eta)) # dplyr compatible format
-  ss <- data[!duplicated(data$ID),] # 1 obs per ind
-  vars <- sapply(rlang::enquos(...), rlang::quo_text)
-
-  for (eta in etas) {
-    plots <- list() # create blank
-    for(i in 1:length(vars)) {
-      var.select <- vars[i]
-      plots[[i]] <- ggplot(ss, aes(x=as.factor(!!var.select), y=!!eta))+
-        geom_boxplot(outlier.colour = NA)
-    }
-    suppressMessages(do.call(gridExtra::grid.arrange,plots))
-  }
+  data
 }
