@@ -204,7 +204,8 @@ cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
   }
 
   # convert df to numeric
-  df <- dplyr::mutate(df, dplyr::across(.fns = as.numeric, .cols = !any_of({{keep}})))
+  df <- dplyr::mutate(df, dplyr::across(.fns = as.numeric, .cols =
+                                          !dplyr::any_of({{keep}})))
 
   # deal with original ids
   if (original_id != FALSE) {
@@ -242,6 +243,9 @@ cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
   # sample randomly
   if (n < nrow(df)) {
     df <- dplyr::slice_sample(df, n = n, replace = replace)
+    if (replace & !original_id) {
+      df$ID <- 1:nrow(df)
+    }
   }
 
   # update n, in case fewer than n patients fit the requirements for include
