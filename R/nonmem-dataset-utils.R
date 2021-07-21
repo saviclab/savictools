@@ -1,6 +1,5 @@
 
 # TODO: print QC plot by default
-# TODO: get Emma's input
 #' @importFrom rlang .data
 #'
 #'
@@ -67,7 +66,7 @@ sparse_pk <- function(data,
   if (plot) {
     p <- data %>%
           dplyr::filter(.data$EVID == 0) %>%
-          ggplot2::ggplot(ggplot2::aes(x = .data$TIME, y = .data$DV, group =
+          ggplot2::ggplot(ggplot2::aes(x = TIME, y = DV, group =
                                          .data[[col_name]], color =
                                          factor(.data[[col_name]]))) +
           ggplot2::geom_line() +

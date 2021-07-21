@@ -4,7 +4,24 @@
 \alias{cr_plot}
 \title{Clinical relevance plots}
 \usage{
-cr_plot(runno, effect_size = 0.2, lo = 0.025, hi = 0.975, ggplot = TRUE, ...)
+cr_plot(
+  runno,
+  effect_size = 0.2,
+  width = 0.95,
+  type = "lattice",
+  adjust = 1,
+  n = 10000,
+  ...
+)
+}
+\arguments{
+\item{runno}{A run number or model name.}
+
+\item{effect_size}{The size of a clinically relevant effect. Defaults is 0.2,
+or 20\%.}
+
+\item{width}{Size of the interval of the posterior
+distribution of covariate effects. Defaults to 0.95, or 95\%.}
 }
 \description{
 \code{cr_plot()} visualizes the clinical relevance of covariate effects.
@@ -13,4 +30,9 @@ cr_plot(runno, effect_size = 0.2, lo = 0.025, hi = 0.975, ggplot = TRUE, ...)
 Using the variance-covariance matrix together with parameter estimates,
 \code{cr_plot()} displays the posterior distributions of covariate effects
 relative to the range of clinical importance.
+}
+\examples{
+# WT on V, WAZ on F1, FORMULATION on KA
+cr_plot(27, VWT = 1 + THETA(12), WAZF1 = 1 + THETA(11),
+        KAFORMULATION = 1 + THETA(9))
 }

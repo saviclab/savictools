@@ -1,19 +1,29 @@
+#' @title
 #' Clinical relevance plots
 #'
+#' @description
 #' `cr_plot()` visualizes the clinical relevance of covariate effects.
 #'
+#' @details
 #' Using the variance-covariance matrix together with parameter estimates,
 #' `cr_plot()` displays the posterior distributions of covariate effects
 #' relative to the range of clinical importance.
+#'
+#' @param runno A run number or model name.
+#' @param effect_size The size of a clinically relevant effect. Defaults is 0.2,
+#' or 20%.
+#' @param width Size of the interval of the posterior
+#' distribution of covariate effects. Defaults to 0.95, or 95%.
+#' @examples
+#' # WT on V, WAZ on F1, FORMULATION on KA
+#' cr_plot(27, VWT = 1 + THETA(12), WAZF1 = 1 + THETA(11),
+#'         KAFORMULATION = 1 + THETA(9))
 #' @export
-
-
-# Example:
-# #cr_plot(27, VWT = 1 + THETA(12), WAZF1 = 1 + THETA(11), KAFORMULATION = 1 + THETA(9))
 
 # TODO: Read in sdtab to take distribution of covariates into  account (i.e. HT )
 
-cr_plot <- function(runno, effect_size=0.2, lo=0.025, hi=0.975, ggplot = TRUE, ...) {
+cr_plot <- function(runno, effect_size=0.2, width=0.95, type = "lattice",
+                    adjust = 1, n = 10000, ...) {
 
   # delay evaluation of `...`, but get variable names
   theta_quos <- dplyr::enquos(...)
@@ -30,7 +40,7 @@ cr_plot <- function(runno, effect_size=0.2, lo=0.025, hi=0.975, ggplot = TRUE, .
   theta_cov <- variance_covariance_matrix[1:n_theta, 1:n_theta]
 
   # sample from multivariate normal distribution
-  boot <- data.frame(MASS::mvrnorm(n = 1000, mu = mu, Sigma = theta_cov))
+  boot <- data.frame(MASS::mvrnorm(n = n, mu = mu, Sigma = theta_cov))
   boot <- boot[, theta, drop = FALSE]
 
 
@@ -45,15 +55,32 @@ cr_plot <- function(runno, effect_size=0.2, lo=0.025, hi=0.975, ggplot = TRUE, .
   # change to long format
   boot <- tidyr::pivot_longer(boot, cols = names(boot))
 
-  # restrict to interval between lo and hi
+
+
+  # restrict posterior distribution to corredt interval width
   boot <- boot[with(boot,
-        value >= reapply(value, name, quantile, lo) &
-        value <= reapply(value, name, quantile, hi)), ]
+        value >= reapply(value, name, quantile, (1 - width) / 2) &
+        value <= reapply(value, name, quantile, 1 - ((1 - width) / 2))), ]
   # plot
 
-  if (ggplot) {
+  if (type  == "ggplot") {
+    ggplot2::ggplot(boot, ggplot2::aes(x = value)) +#, fill = name, color = name)) +
+      ggplot2::geom_density(adjust = adjust, fill = "grey") +
+      ggplot2::annotate("rect", xmin = 1 - effect_size, xmax = 1 + effect_size,
+                        ymin = -Inf, ymax = Inf, alpha = 0.6, fill = "skyblue") +
+      ggplot2::facet_grid(as.factor(name) ~ ., scales = "free_y", switch = "y", as.table = FALSE) +
+      #ggplot2::geom_vline(data=mu, ggplot2::aes(xintercept=grp.mean, colour = name), linetype ="dashed", alpha = 1) + #Draw median line
+      ggplot2::geom_hline(yintercept = 0, colour = "white", size = 1) +                                                #Remove baseline of density plot
+            #Shade the range 0.8~1.2
+      #ggplot2::geom_jitter(data = boot, ggplot2::aes(x=value, y=0), alpha = 0.02, height = 1) +                           #Make dots of value
+      ggplot2::xlim(0, 2) +
+      ggplot2::xlab("Effect size") +
+      ggplot2::theme(strip.background = ggplot2::element_blank(),
+                     panel.background = ggplot2::element_blank(),
+                     axis.title.y = ggplot2::element_blank(),
+                     axis.ticks.y = ggplot2::element_blank(), axis.text.y = ggplot2::element_blank())
 
-  } else {
+  } else if (type == "lattice") {
   pl1 <- lattice::stripplot(
     name ~ value,
     boot,
@@ -62,11 +89,13 @@ cr_plot <- function(runno, effect_size=0.2, lo=0.025, hi=0.975, ggplot = TRUE, .
     xlim = c(0, 2),
     main = paste("Clinical Relevance of Covariates:", model_paste0(runno)),
     cuts = c(1 - effect_size, 1, 1 + effect_size),
-    xlab = 'Value',
+    xlab = 'Effect size',
     shade = 'skyblue'
   )
 
   print(pl1)
+  } else {
+    stop("`type` must be either \"ggplot\" or \"lattice\"", call. = FALSE)
   }
 }
 
