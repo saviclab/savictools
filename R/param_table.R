@@ -57,7 +57,7 @@ param_table <- function(..., write = FALSE, max_omega = 30, max_sigma = 5,
   result <- dplyr::slice(result, match(x, result$Parameter))
 
   # Add blank rows for formatting
-  result <- dplyr::add_row(result, .after = result)
+  # result <- dplyr::add_row(result)
 
   if (write) {
     if (is.null(filename)) {
