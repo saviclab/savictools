@@ -123,7 +123,7 @@ get_final_params <- function(file) {
   pos <- grep("FINAL PARAMETER ESTIMATE", lst)
 
   # find THETA estimates
-  pos <- (grep("\\d", lst[pos:length(lst)]) + pos - 1)[2]
+  pos <- (grep("\\s\\d", lst[pos:length(lst)]) + pos - 1)[2]
   mu <- strsplit(lst[pos], "\\s+")[[1]]
   mu <- as.numeric(mu[2:length(mu)])
   mu
