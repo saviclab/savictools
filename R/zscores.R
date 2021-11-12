@@ -18,7 +18,17 @@
 # TODO: Clean up WHO function docs
 # TODO: Make lines wrap at 80 characters
 
-zscores <- function(data, missing_flag=NA, extreme_flag=NA) {
+zscores <- function(data, units = c("months", "years", "weeks"), missing_flag=NA, extreme_flag=NA) {
+
+  units <- match.arg(units)
+
+  # convert units to months, if necessary
+  if (units == "years") {
+    data$AGE <- data$AGE * 12
+  }
+  else if (units == "weeks") {
+    data$AGE <- data$AGE / 4.345
+  }
   data$rownum <- 1:nrow(data)
 
   # Null out existing z-score columns
