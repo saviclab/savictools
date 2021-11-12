@@ -23,8 +23,6 @@
 #' @return a vector, *consec* of 0s and 1s with the same length as *time*
 #'
 #' @examples
-#'> source("ttcc.R")
-#'> library("dplyr")
 #'> data %>%
 #'      group_by(ID) %>%
 #'      summarize(
