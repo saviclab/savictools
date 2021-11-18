@@ -17,7 +17,7 @@
 
 tad <- function(data) {
   data %>%
-    dplyr::group_by(dtg, ID) %>%
+    dplyr::group_by(ID) %>%
     dplyr::arrange(TIME) %>%
     dplyr::group_modify( ~ {
       addl_present <- FALSE
