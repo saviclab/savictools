@@ -32,8 +32,6 @@ to (default), or less than or equal to \emph{threshold}, and is the ith consecut
 such observation spaced at least \emph{interval} apart.
 }
 \examples{
-> source("ttcc.R")
-> library("dplyr")
 > data \%>\%
      group_by(ID) \%>\%
      summarize(

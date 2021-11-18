@@ -4,10 +4,17 @@
 \alias{zscores}
 \title{Calculate z-scores for anthrompometric indicators}
 \usage{
-zscores(data, missing_flag = NA, extreme_flag = NA)
+zscores(
+  data,
+  units = c("months", "years", "weeks"),
+  missing_flag = NA,
+  extreme_flag = NA
+)
 }
 \arguments{
 \item{data}{A dataframe with ID, AGE, SEX, WT, and HT columns.}
+
+\item{units}{Units for AGE.}
 
 \item{missing_flag}{Value used to replace missing z-scores Default is NA.}
 
