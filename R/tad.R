@@ -48,7 +48,7 @@ data %>%
     dplyr::arrange(TIME) %>%
     dplyr::group_modify( ~ {
 
-      indices <- which(mutate(.x, TEMP = !!quo(...))$FLAG)
+      indices <- which(mutate(.x, TEMP = !!quo(...))$TEMP)
       evid <- pull(.x, EVID)
       copy <- .x
       copy$TAD <- 0

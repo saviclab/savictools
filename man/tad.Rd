@@ -4,10 +4,12 @@
 \alias{tad}
 \title{Calculate time after dose (TAD)}
 \usage{
-tad(data)
+tad(data, ...)
 }
 \arguments{
 \item{data}{A NONMEM-formatted dataframe}
+
+\item{...}{A condition that specifies for which rows to calculate TAD.}
 }
 \value{
 A NONMEM-formatted dataframe with a TAD column
@@ -19,6 +21,24 @@ A NONMEM-formatted dataframe with a TAD column
 \code{tad()} assumes that the identifier column is called ID, the event id column
 is called EVID, and the time column is called TIME. Data is grouped by ID
 internally before TAD is calculated.
+
+Expressions in \code{...} are used to determine under what conditions a
+row of \code{data} should count as a "dose" for  calculating time after dose. This
+is especially useful if there is more than one type of dose event, and TAD
+should only apply to one of them. For example, suppose the DV column of
+\code{data} contains concentrations of a drug \emph{X}. If a flag colum "Y_FLAG"
+exists to indicate that a drug \emph{Y} is given, as opposed to \emph{X}, passing
+\code{Y_FLAG = 0} to \code{...} will ensure that TAD is only calculated with respect to
+drug \emph{X} dosing events.
+}
+\examples{
+# 1. Basic TAD calculation
+tad(data)
+
+# 2. Calculating TAD only when RIF_FLAG is 0
+tad(data, RIF_FLAG == 0)
+
+
 }
 \author{
 Alexander Floren
