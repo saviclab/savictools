@@ -34,6 +34,7 @@
 
 
 tad <- function(data, ...) {
+  cond <- quo(...)
   addl_present <- FALSE
   if ("ADDL" %in% colnames(data)) {
     if ("II" %in% colnames(data)) {
@@ -47,8 +48,11 @@ data %>%
     dplyr::group_by(ID) %>%
     dplyr::arrange(TIME) %>%
     dplyr::group_modify( ~ {
-
-      indices <- which(mutate(.x, TEMP = !!quo(...))$TEMP)
+      copy <- .x %>%
+        dplyr::mutate(rownum = 1:dplyr::n()) %>%
+        dplyr::filter(!!cond)
+      indices <- dplyr::pull(copy, rownum)
+      print(indices)
       evid <- pull(.x, EVID)
       copy <- .x
       copy$TAD <- 0
