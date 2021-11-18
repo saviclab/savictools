@@ -16,18 +16,19 @@
 
 
 tad <- function(data) {
+  addl_present <- FALSE
+  if ("ADDL" %in% colnames(data)) {
+    if ("II" %in% colnames(data)) {
+      addl_present <- TRUE
+    }
+    else
+      (stop("To use the ADDL data record, you must also specify II."))
+  }
+
   data %>%
     dplyr::group_by(ID) %>%
     dplyr::arrange(TIME) %>%
     dplyr::group_modify( ~ {
-      addl_present <- FALSE
-      if ("ADDL" %in% colnames(.x)) {
-        if ("II" %in% colnames(.x)) {
-          addl_present <- TRUE
-        }
-        else
-          (stop("To use the ADDL data record, you must also specify II."))
-      }
       evid <- pull(.x, EVID)
       copy <- .x
       copy$TAD <- 0
