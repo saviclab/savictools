@@ -2,22 +2,34 @@
   #'
   #' @author Alexander Floren
   #'
-  #' @description `VPC()` allows you to run PsN's `vpc` command and generate a
-  #' visual predictive check with `xpose::xpose.VPC()` in one line of code in the
-  #' R console.
+  #' @description
+  #' `VPC()` allows you to run PsN's `vpc` command and generate a visual
+  #' predictive check with `xpose4::xpose.VPC()` in one line of code in the R
+  #' console.
+  #'
+  #' @details
+  #' Let the name of your model for VPC be called "runXX.mod". runXX.mod must
+  #' exist in your current working directory. If a vpc_runXX directory already
+  #' exists from a previous VPC, *and* force = FALSE, psn_args can be left
+  #' blank, and you need only supply the run number/model name. Otherwise
+  #'
+  #'
+  #'
+  #' @param runno A run number or model name.
+  #' @param psn_args Optional. A character string containing arguments to PsN's
+  #' `vpc`.
+  #' @param force Optional. Logical. Should `VPC()` run a new VPC, deleting old
+  #' VPC directories?
+  #' @param ... Optional. Additional arguments to `xpose4::xpose.VPC()`.
   #'
   #' @examples
-  #'   VPC(19, "-samples=500 -idv=TAD -bin_array=-0.5,0.5,1.3,2.3,3.3,5,7,10,17,28
-  #'   -bin_by_count=0", subset = "TAD < 40")
+  #' # run VPC for run46.mod using runno = 46
+  #' VPC(46, "-samples=500 -bin_array=-0.5,0.5,1.5,2.5,3.5,5,7,11,13,24.5
+  #' -idv=TAD -bin_by_count=0", subset = "TAD <= 24")
   #'
-  #'
-  #'
-  #' If a vpc_runXX directory already exists and force = FALSE, psn_args can be
-  #' left blank, and you only need to give the run number.
-  #'
-  #'
-  #'
-  #'
+  #' # run VPC for run46.mod using runno = "run46"
+  #' VPC("run46", "-samples=500 -bin_array=-0.5,0.5,1.5,2.5,3.5,5,7,11,13,24.5
+  #' -idv=TAD -bin_by_count=0", subset = "TAD <= 24")
   #'
   #' @export
 
@@ -25,30 +37,22 @@
   # TODO: handle case of model names other than "runXX.mod"
 
 
-  VPC <- function(runno = NULL,
+  VPC <- function(runno,
                   psn_args = NULL,
                   force = FALSE,
                   ...) {
+    # ensure runno is a number
+    runno <- as.numeric(stringr::str_extract(runno, "[[:digit:]]"))
+
     if (is.null(psn_args)) {
-      psn_args <- trimws(runno)
+      psn_args <- ""
     }
+
     psn_args <- unlist(strsplit(psn_args, " "))
+    psn_args <- c(model_paste0(runno, ".mod"), psn_args)
     xpose_args <- list(...)
 
-    # ensure model argument is included
-    # runno is guaranteed to be defined and of type numeric after these branches
-    if (!grepl("\\.mod", psn_args[1])) {
-      if (is.null(runno)) {
-        stop("must specify runno or include your model name in psn_args.",
-             call. = FALSE)
-      }
-      psn_args <- c(model_paste0(runno, ".mod"), psn_args)
-      dir <- paste0("vpc_", model_paste0(runno))
-    } else {
-      dir <- paste0("vpc_", model_paste0(psn_args[1]))
-      runno <- as.numeric(stringr::str_extract(
-        model_paste0(psn_args[1]), "[[:digit:]]"))
-    }
+    dir <- paste0("vpc_", model_paste0(runno))
 
     # ensure directory argument is included
     if (!any(grepl("-directory=", psn_args))) {
