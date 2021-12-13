@@ -34,7 +34,7 @@
 
 
 tad <- function(data, ...) {
-  cond <- quo(...)
+  cond <- dplyr::quo(...)
   addl_present <- FALSE
   if ("ADDL" %in% colnames(data)) {
     if ("II" %in% colnames(data)) {
@@ -46,32 +46,41 @@ tad <- function(data, ...) {
 
 data %>%
     dplyr::group_by(ID) %>%
-    dplyr::arrange(TIME) %>%
+    dplyr::arrange(TIME, .by_group = TRUE) %>%
     dplyr::group_modify( ~ {
       copy <- .x %>%
         dplyr::mutate(rownum = 1:dplyr::n()) %>%
         dplyr::filter(!!cond)
       indices <- dplyr::pull(copy, rownum)
-      print(indices)
       evid <- pull(.x, EVID)
       copy <- .x
       copy$TAD <- 0
       last_dose <- as.double(dplyr::pull(.x, TIME)[2])
-      for (j in seq(nrow(.x))) {
-        this_evid <- evid[j]
+      ii_prev <- 0
+      for (i in seq(nrow(.x))) {
+        this_evid <- evid[i]
+        this_time <- as.double(dplyr::pull(.x, TIME)[i])
         # only count rows where dots are TRUE for last_dose calculation
-        if (j %in% indices & (this_evid == 1 | this_evid == 4)) {
+        if (i %in% indices & (this_evid == 1 | this_evid == 4)) {
           # deal with case of ADDL
           if (addl_present) {
-            last_dose <- as.double(dplyr::pull(.x, TIME)[j]) +
-              (as.double(dplyr::pull(.x, ADDL)[j]) *
-                 as.double(dplyr::pull(.x, II)[j]))
+            ii_prev <- as.integer(dplyr::pull(.x, II)[i])
+            # note that this is the only case where last_dose > this_time,
+            # hence the modulo operation below is always appropriate.
+            last_dose <- this_time +
+              (as.integer(dplyr::pull(.x, ADDL)[i]) *
+                 ii_prev)
           } else {
-            last_dose <- as.double(dplyr::pull(.x, TIME)[j])
+            last_dose <- this_time
           }
         }
         else {
-          copy[j, "TAD"] <- as.double(dplyr::pull(.x, TIME)[j]) - last_dose
+          if (last_dose > this_time) {
+            # calculate TAD as time difference from latest dose modulo II
+            copy[i, "TAD"] <- (this_time - last_dose) %% ii_prev
+          } else {
+            copy[i, "TAD"] <- this_time - last_dose
+          }
         }
       }
       copy
