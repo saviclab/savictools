@@ -14,10 +14,12 @@
 #' or 20%.
 #' @param width Size of the interval of the posterior
 #' distribution of covariate effects. Defaults to 0.95, or 95%.
+#'
 #' @examples
 #' # WT on V, WAZ on F1, FORMULATION on KA
 #' cr_plot(27, VWT = 1 + THETA(12), WAZF1 = 1 + THETA(11),
 #'         KAFORMULATION = 1 + THETA(9))
+#'
 #' @export
 
 # TODO: Read in sdtab to take distribution of covariates into  account (i.e. HT )
