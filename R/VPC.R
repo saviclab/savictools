@@ -21,7 +21,9 @@
   #'
   #' @export
 
+
   # TODO: handle case of model names other than "runXX.mod"
+
 
   VPC <- function(runno = NULL,
                   psn_args = NULL,
@@ -64,17 +66,20 @@
         unlink(dir, recursive = TRUE)
         system2("vpc", args = psn_args, wait = TRUE)
       } else {
-        # prompt user for input
-        ans <- readline("Run a new VPC anyway? y/n ")
-        if (regexpr("y", ans, ignore.case = TRUE) == 1) {
-          # run VPC
-          ans <- readline("Delete old VPC? y/n ")
-          if (regexpr("y", ans, ignore.case = TRUE) == 1) {
-            # delete old vpc directory
-            unlink(dir, recursive = TRUE)
-          }
-          system2("vpc", args = psn_args, wait = TRUE)
-        }
+        message("To run a new VPC, use force = TRUE.")
+
+
+        ## prompt user for input
+        #ans <- readline("Run a new VPC anyway? y/n ")
+        #if (regexpr("y", ans, ignore.case = TRUE) == 1) {
+        #  # run VPC
+        #  ans <- readline("Delete old VPC? y/n ")
+        #  if (regexpr("y", ans, ignore.case = TRUE) == 1) {
+        #    # delete old vpc directory
+        #    unlink(dir, recursive = TRUE)
+        #  }
+        #  system2("vpc", args = psn_args, wait = TRUE)
+        #}
       }
     } else {
       # run new vpc
