@@ -58,7 +58,6 @@
                                "=")[[1]][2], " ")[[1]][1]
     }
 
-
     if (file.exists(dir)) {
       message(paste0(dir), " already exists in working directory.")
       if (force) {
@@ -67,19 +66,6 @@
         system2("vpc", args = psn_args, wait = TRUE)
       } else {
         message("To run a new VPC, use force = TRUE.")
-
-
-        ## prompt user for input
-        #ans <- readline("Run a new VPC anyway? y/n ")
-        #if (regexpr("y", ans, ignore.case = TRUE) == 1) {
-        #  # run VPC
-        #  ans <- readline("Delete old VPC? y/n ")
-        #  if (regexpr("y", ans, ignore.case = TRUE) == 1) {
-        #    # delete old vpc directory
-        #    unlink(dir, recursive = TRUE)
-        #  }
-        #  system2("vpc", args = psn_args, wait = TRUE)
-        #}
       }
     } else {
       # run new vpc
