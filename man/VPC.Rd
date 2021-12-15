@@ -4,25 +4,38 @@
 \alias{VPC}
 \title{Visual predictive checks}
 \usage{
-VPC(runno = NULL, psn_args = NULL, force = FALSE, ...)
+VPC(runno, psn_args = NULL, force = FALSE, ...)
+}
+\arguments{
+\item{runno}{A run number or model name.}
+
+\item{psn_args}{Optional. A character string containing arguments to PsN's
+\code{vpc}.}
+
+\item{force}{Optional. Logical. Should \code{VPC()} run a new VPC, deleting old
+VPC directories?}
+
+\item{...}{Optional. Additional arguments to \code{xpose4::xpose.VPC()}.}
 }
 \description{
-\code{VPC()} allows you to run PsN's \code{vpc} command and generate a
-visual predictive check with \code{xpose::xpose.VPC()} in one line of code in the
-R console.
+\code{VPC()} allows you to run PsN's \code{vpc} command and generate a visual
+predictive check with \code{xpose4::xpose.VPC()} in one line of code in the R
+console.
+}
+\details{
+Let the name of your model for VPC be called "runXX.mod". runXX.mod must
+exist in your current working directory. If a vpc_runXX directory already
+exists from a previous VPC, \emph{and} force = FALSE, psn_args can be left
+blank, and you need only supply the run number/model name.
 }
 \examples{
-  VPC(19, "-samples=500 -idv=TAD -bin_array=-0.5,0.5,1.3,2.3,3.3,5,7,10,17,28
-  -bin_by_count=0", subset = "TAD < 40")
+# run VPC for run46.mod using runno = 46
+VPC(46, "-samples=500 -bin_array=-0.5,0.5,1.5,2.5,3.5,5,7,11,13,24.5
+-idv=TAD -bin_by_count=0", subset = "TAD <= 24")
 
-
-
-If a vpc_runXX directory already exists and force = FALSE, psn_args can be
-left blank, and you only need to give the run number.
-
-
-
-
+# run VPC for run46.mod using runno = "run46"
+VPC("run46", "-samples=500 -bin_array=-0.5,0.5,1.5,2.5,3.5,5,7,11,13,24.5
+-idv=TAD -bin_by_count=0", subset = "TAD <= 24")
 
 }
 \author{

@@ -52,7 +52,7 @@ data %>%
         dplyr::mutate(rownum = 1:dplyr::n()) %>%
         dplyr::filter(!!cond)
       indices <- dplyr::pull(copy, rownum)
-      evid <- pull(.x, EVID)
+      evid <- dplyr::pull(.x, EVID)
       copy <- .x
       copy$TAD <- 0
       last_dose <- as.double(dplyr::pull(.x, TIME)[2])
