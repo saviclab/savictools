@@ -40,7 +40,7 @@
                   force = FALSE,
                   ...) {
     # ensure runno is a number
-    runno <- as.numeric(stringr::str_extract(runno, "[[:digit:]]"))
+    runno <- as.numeric(stringr::str_extract(runno, "\\d+"))
 
     if (is.null(psn_args)) {
       psn_args <- ""
