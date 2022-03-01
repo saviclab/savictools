@@ -1,5 +1,6 @@
 
 # TODO: print QC plot by default
+#' @title sparse_pk
 #' @importFrom rlang .data
 #'
 #' @export
