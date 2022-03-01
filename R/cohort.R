@@ -1,3 +1,4 @@
+# TODO: fix docs. n is no longer an argument.
 #' @title
 #' Create NONMEM ready datasets for simulated clinical PK trials
 #'
