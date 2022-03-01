@@ -79,5 +79,5 @@ sparse_pk <- function(data,
     print(p)
 
   }
-  invisible(data)
+  data
 }
