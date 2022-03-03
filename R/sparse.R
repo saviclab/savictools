@@ -1,11 +1,11 @@
 
 # TODO: print QC plot by default
-#' @title sparse_pk
+#' @title sparse
 #' @importFrom rlang .data
 #'
 #' @export
 
-sparse_pk <- function(data,
+sparse <- function(data,
                       max_cluster = 2,
                       max_distance = 24,
                       col_name = "SPARSE",
@@ -81,3 +81,70 @@ sparse_pk <- function(data,
   }
   data
 }
+
+
+#' @title curve
+#' @export
+
+curve <- function(data, col_name = "CURVE") {
+  l <- nrow(data)
+  evid <- data$EVID
+  curves <- rep(0, l)
+  in_curve <- FALSE
+  curve_num <- 0
+  for (i in 1:l) {
+    if (evid[i] != 0) {
+      in_curve <- FALSE
+      next()
+    }
+    if (!in_curve) {
+      in_curve <- TRUE
+      curve_num <- curve_num + 1
+    }
+    curves[i] <- curve_num
+
+  }
+  data$CURVE <- curves
+  data
+}
+
+#' @title plot_pk
+#' @export
+
+plot_pk <- function(data,
+                      ind = FALSE,
+                      nrow = 4,
+                      ncol = 4,
+                      id = NULL,
+                      max_tad = 26) {
+  if (!exists("TAD", data)) {
+    data <- tad(data)
+  }
+  data <- dplyr::filter(curve(data), EVID == 0, TAD <= max_tad)
+  if (is.null(id)) {
+    p <- ggplot2::ggplot(data, ggplot2::aes(x = TAD, y = DV, group = CURVE))
+  } else {
+    p <- ggplot2::ggplot(filter(data, ID %in% id),
+                         ggplot2::aes(x = TAD, y = DV, group = CURVE))
+  }
+  if (ind) {
+    p <- p +
+      ggplot2::geom_point(color = "purple", cex = 0.5) +
+      ggplot2::geom_line(color = "grey")
+    for (i in seq(1, ceiling((length(unique(data$ID)) - 1) / (nrow * ncol)))) {
+      plot <- p +
+        ggforce::facet_wrap_paginate("ID",
+                                     nrow = nrow,
+                                     ncol = ncol,
+                                     page = i)
+      print(plot)
+    }
+  } else {
+    p +
+      ggplot2::geom_point(color = "purple", cex = 0.5) +
+      ggplot2::geom_line(color = "grey", alpha = 0.3)
+  }
+}
+
+
+
