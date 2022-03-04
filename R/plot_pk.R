@@ -13,15 +13,19 @@ plot_pk <- function(data,
   data <- dplyr::filter(curve(data), EVID == 0, TAD <= max_tad)
   if (is.null(id)) {
     p <- ggplot2::ggplot(data, ggplot2::aes(x = TAD, y = DV, group = CURVE))
+    n_ids <- length(unique(data$ID))
   } else {
     p <- ggplot2::ggplot(filter(data, ID %in% id),
                          ggplot2::aes(x = TAD, y = DV, group = CURVE))
+    n_ids <- length(which(ID %in% id))
+
   }
   if (ind) {
     p <- p +
       ggplot2::geom_point(color = "purple", cex = 0.5) +
       ggplot2::geom_line(color = "grey")
-    for (i in seq(1, ceiling((length(unique(data$ID)) - 1) / (nrow * ncol)))) {
+
+    for (i in seq(1, ceiling(n_ids / (nrow * ncol)))) {
       plot <- p +
         ggforce::facet_wrap_paginate("ID",
                                      nrow = nrow,
