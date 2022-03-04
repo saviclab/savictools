@@ -18,7 +18,6 @@ plot_pk <- function(data,
     p <- ggplot2::ggplot(filter(data, ID %in% id),
                          ggplot2::aes(x = TAD, y = DV, group = CURVE))
     n_ids <- length(which(data$ID %in% id))
-
   }
   if (ind) {
     p <- p +
