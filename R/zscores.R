@@ -46,8 +46,7 @@ zscores <-
     data$HAZ_F <- NULL
 
     # Check for missing
-
-    below_five <- data %>% # Change pipe operator back
+    below_five <- data %>%
       dplyr::filter(AGE <= 60) %>%
       dplyr::select(ID, rownum, AGE, SEX, WT, HT)
     below_five_frame <- as.data.frame(below_five)
