@@ -7,7 +7,7 @@
 #' `igrowup_standard.R`, `igrowup_restricted.R`, and `who2007.R`.
 #'
 #' @param data A dataframe with ID, AGE, SEX, WT, and HT columns.
-#' @param units Units for AGE. Defailt is "months".
+#' @param units Units for AGE. Default is "months".
 #' @param missing_flag Value used to replace missing z-scores Default is NA.
 #' @param extreme_flag Value used to replace extreme/implausible z-scores.
 #' Default is NA.

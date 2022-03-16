@@ -14,7 +14,7 @@ zscores(
 \arguments{
 \item{data}{A dataframe with ID, AGE, SEX, WT, and HT columns.}
 
-\item{units}{Units for AGE.}
+\item{units}{Units for AGE. Defailt is "months".}
 
 \item{missing_flag}{Value used to replace missing z-scores Default is NA.}
 
