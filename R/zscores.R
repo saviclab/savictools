@@ -70,7 +70,7 @@ zscores <- function(data, units = c("months", "years", "weeks"), missing_flag=NA
     zvars_below_5 <- matz_below_5[,c(
       'ID', 'rownum', 'cbmi','zwei','zlen', 'zbmi', 'zwfl', 'fwei', 'flen', 'fwfl', 'fbmi'
     )]
-    zvars_below_5 <- dplyr::rename( zvars_below_5, BMI = cbmi,
+    zvars_below_5 <- dplyr::rename(zvars_below_5, BMI = cbmi,
                                     WAZ = zwei,
                                     HAZ = zlen,
                                     WHZ = zwfl,
@@ -105,7 +105,7 @@ zscores <- function(data, units = c("months", "years", "weeks"), missing_flag=NA
   }
 
   # To merge data sets, first merge z-scores together
-  if (nrow(below_five_frame) > 0 && nrow(above_five_frame)) {
+  if (nrow(below_five_frame) > 0 && nrow(above_five_frame) > 0) {
     zvars_full <- dplyr::bind_rows(zvars_below_5, zvars_above_5)
   } else if (nrow(below_five_frame) > 0) {
     zvars_full <- zvars_below_5
