@@ -19,124 +19,161 @@
 # TODO: Clean up WHO function docs
 # TODO: Make lines wrap at 80 characters
 
-zscores <- function(data, units = c("months", "years", "weeks"), missing_flag=NA, extreme_flag=NA) {
+zscores <-
+  function(data,
+           units = c("months", "years", "weeks"),
+           missing_flag = NA,
+           extreme_flag = NA) {
+    units <- match.arg(units)
 
-  units <- match.arg(units)
+    # convert units to months, if necessary
+    if (units == "years") {
+      data$AGE <- data$AGE * 12
+    }
+    else if (units == "weeks") {
+      data$AGE <- data$AGE / 4.345
+    }
+    data$rownum <- 1:nrow(data)
 
-  # convert units to months, if necessary
-  if (units == "years") {
-    data$AGE <- data$AGE * 12
+    # Null out existing z-score columns
+    data$WHZ <- NULL
+    data$WAZ <- NULL
+    data$BAZ <- NULL
+    data$HAZ <- NULL
+    data$WHZ_F <- NULL
+    data$WAZ_F <- NULL
+    data$BAZ_F <- NULL
+    data$HAZ_F <- NULL
+
+    # Check for missing
+
+    below_five <- data %>% # Change pipe operator back
+      dplyr::filter(AGE <= 60) %>%
+      dplyr::select(ID, rownum, AGE, SEX, WT, HT)
+    below_five_frame <- as.data.frame(below_five)
+
+    above_five <- data %>%
+      dplyr::filter(AGE > 60) %>%
+      dplyr::select(ID, rownum, AGE, SEX, WT, HT)
+    above_five_frame <- as.data.frame(above_five)
+
+    # Load WHO datasets
+
+    # SCRIPT: Under 5 years
+    # source("R/igrowup_standard.r", local = TRUE)
+    # load("R/sysdata.rda")
+
+    if (nrow(below_five_frame) > 0) {
+      #calculate Z-scores
+      matz_below_5 <- igrowup.standard(
+        mydf = below_five_frame,
+        sex = SEX,
+        age = AGE,
+        age.month = T,
+        weight = WT,
+        lenhei = HT
+      )
+
+      #select and rename columns
+      zvars_below_5 <- matz_below_5[, c(
+        'ID',
+        'rownum',
+        'cbmi',
+        'zwei',
+        'zlen',
+        'zbmi',
+        'zwfl',
+        'fwei',
+        'flen',
+        'fwfl',
+        'fbmi'
+      )]
+      zvars_below_5 <- dplyr::rename(
+        zvars_below_5,
+        BMI = cbmi,
+        WAZ = zwei,
+        HAZ = zlen,
+        WHZ = zwfl,
+        BAZ = zbmi,
+        WAZ_F = fwei, # WAZ out of range flag
+        HAZ_F = flen, # HAZ out of range flag
+        WHZ_F = fwfl, # WHZ out of range flag
+        BAZ_F = fbmi  # BAZ out of range flag
+      )
+    }
+
+    # Calculate Z-scores
+    # age must be months for this function
+
+    if (nrow(above_five_frame) > 0) {
+      matz_above_5 <- who2007(
+        mydf = above_five_frame,
+        sex = SEX,
+        age = AGE,
+        weight = WT,
+        height = HT
+      )
+
+
+      zvars_above_5 <- matz_above_5[, c('ID',
+                                        'rownum',
+                                        'cbmi',
+                                        'zwfa',
+                                        'zhfa',
+                                        'zbfa',
+                                        'fwfa',
+                                        'fhfa',
+                                        'fbfa')]
+      zvars_above_5 <- dplyr::rename(
+        zvars_above_5,
+        BMI = cbmi,
+        WAZ = zwfa,
+        HAZ = zhfa,
+        BAZ = zbfa,
+        WAZ_F = fwfa, # WAZ out of range flag
+        HAZ_F = fhfa, # HAZ out of range flag
+        BAZ_F = fbfa  # BAZ out of range flag
+      )
+    }
+
+    # To merge data sets, first merge z-scores together
+    if (nrow(below_five_frame) > 0 && nrow(above_five_frame) > 0) {
+      zvars_full <- dplyr::bind_rows(zvars_below_5, zvars_above_5)
+    } else if (nrow(below_five_frame) > 0) {
+      zvars_full <- zvars_below_5
+    } else if (nrow(above_five_frame) > 0) {
+      zvars_full <- zvars_above_5
+    }
+
+    # zvars_full <- zvars_below_5
+    result <- dplyr::left_join(data, zvars_full, by = "rownum") %>%
+      dplyr::rename(ID = ID.x) %>% dplyr::select(-ID.y,-rownum)
+
+    # deal with missing and  values
+
+    na_parsed <- result %>% tidyr::replace_na(
+      list(
+        WAZ = missing_flag,
+        HAZ = missing_flag,
+        BAZ = missing_flag,
+        WHZ = missing_flag,
+        WAZ_F = 0,
+        HAZ_F = 0,
+        BAZ_F = 0,
+        WHZ_F = 0
+      )
+    )
+
+    fully_parsed <- na_parsed %>%  dplyr::mutate(
+      WAZ = ifelse(WAZ_F == 1, extreme_flag, WAZ),
+      HAZ = ifelse(HAZ_F == 1, extreme_flag, HAZ),
+      BAZ = ifelse(BAZ_F == 1, extreme_flag, BAZ),
+      WHZ = ifelse(WHZ_F == 1, extreme_flag, WHZ)
+    ) %>%
+      dplyr::select(-WAZ_F,-HAZ_F,-BAZ_F,-WHZ_F)
+
+    return(fully_parsed)
   }
-  else if (units == "weeks") {
-    data$AGE <- data$AGE / 4.345
-  }
-  data$rownum <- 1:nrow(data)
-
-  # Null out existing z-score columns
-  data$WHZ <- NULL
-  data$WAZ <- NULL
-  data$BAZ <- NULL
-  data$HAZ <- NULL
-  data$WHZ_F <- NULL
-  data$WAZ_F <- NULL
-  data$BAZ_F <- NULL
-  data$HAZ_F <- NULL
-
-  below_five <- data %>% # Change pipe operator back
-    dplyr::filter(AGE <= 60) %>%
-    dplyr::select(ID, rownum, AGE, SEX, WT, HT)
-  below_five_frame <- as.data.frame(below_five)
-
-  above_five <- data %>%
-    dplyr::filter(AGE > 60) %>%
-    dplyr::select(ID, rownum, AGE, SEX, WT, HT)
-  above_five_frame <- as.data.frame(above_five)
-
-  # Load WHO datasets
-
-  # SCRIPT: Under 5 years
-  # source("R/igrowup_standard.r", local = TRUE)
-  # load("R/sysdata.rda")
-
-  if (nrow(below_five_frame) > 0) {  #calculate Z-scores
-    matz_below_5 <- igrowup.standard(mydf=below_five_frame,
-                     sex=SEX,
-                     age=AGE,
-                     age.month=T,
-                     weight=WT,
-                     lenhei=HT)
-
-    #select and rename columns
-    zvars_below_5 <- matz_below_5[,c(
-      'ID', 'rownum', 'cbmi','zwei','zlen', 'zbmi', 'zwfl', 'fwei', 'flen', 'fwfl', 'fbmi'
-    )]
-    zvars_below_5 <- dplyr::rename(zvars_below_5, BMI = cbmi,
-                                    WAZ = zwei,
-                                    HAZ = zlen,
-                                    WHZ = zwfl,
-                                    BAZ = zbmi,
-                                    WAZ_F = fwei,  # WAZ out of range flag
-                                    HAZ_F = flen,  # HAZ out of range flag
-                                    WHZ_F = fwfl,  # WHZ out of range flag
-                                    BAZ_F = fbmi ) # BAZ out of range flag
-  }
-
-  # Calculate Z-scores
-  # age must be months for this function
-
-  if (nrow(above_five_frame) > 0) {
-    matz_above_5 <- who2007( mydf = above_five_frame,
-                           sex = SEX,
-                           age = AGE,
-                           weight = WT,
-                           height = HT )
-
-
-    zvars_above_5 <- matz_above_5[,c(
-      'ID', 'rownum', 'cbmi','zwfa', 'zhfa', 'zbfa', 'fwfa', 'fhfa', 'fbfa'
-    )]
-    zvars_above_5 <- dplyr::rename( zvars_above_5, BMI = cbmi,
-                                    WAZ = zwfa,
-                                    HAZ = zhfa,
-                                    BAZ = zbfa,
-                                    WAZ_F = fwfa,  # WAZ out of range flag
-                                    HAZ_F = fhfa,  # HAZ out of range flag
-                                    BAZ_F = fbfa ) # BAZ out of range flag
-  }
-
-  # To merge data sets, first merge z-scores together
-  if (nrow(below_five_frame) > 0 && nrow(above_five_frame) > 0) {
-    zvars_full <- dplyr::bind_rows(zvars_below_5, zvars_above_5)
-  } else if (nrow(below_five_frame) > 0) {
-    zvars_full <- zvars_below_5
-  } else if (nrow(above_five_frame) > 0) {
-    zvars_full <- zvars_above_5
-  }
-
-  # zvars_full <- zvars_below_5
-  result <- dplyr::left_join(data, zvars_full, by="rownum") %>%
-            dplyr::rename(ID = ID.x) %>% dplyr::select(-ID.y, -rownum)
-
-  # deal with missing and  values
-
-  na_parsed <- result %>% tidyr::replace_na(list(
-                                      WAZ = missing_flag,
-                                      HAZ = missing_flag,
-                                      BAZ = missing_flag,
-                                      WHZ = missing_flag,
-                                      WAZ_F=0, HAZ_F=0, BAZ_F=0, WHZ_F=0)
-                                    )
-
-  fully_parsed <- na_parsed %>%  dplyr::mutate(
-                                WAZ = ifelse(WAZ_F == 1, extreme_flag, WAZ),
-                                HAZ = ifelse(HAZ_F == 1, extreme_flag, HAZ),
-                                BAZ = ifelse(BAZ_F == 1, extreme_flag, BAZ),
-                                WHZ = ifelse(WHZ_F == 1, extreme_flag, WHZ)
-                            ) %>%
-                            dplyr::select(-WAZ_F, -HAZ_F, -BAZ_F, -WHZ_F)
-
-  return(fully_parsed)
-}
 
 
 #' `rounde()` is a rounding function that rounds up when rounding off a 5,
