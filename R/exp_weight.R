@@ -19,5 +19,5 @@ exp_weight <- function(age, sex, units = c("months", "years", "weeks")) {
   }
 
   mapply(function(age, sex) {if (sex == 1) {expected_weight_table[age + 1, "EXP_WEIGHT_MALE"]}
-    else{expected_weight_table[age + 1, "EXP_WEIGHT_FEMALE"]}}, AGE, SEX)
+    else{expected_weight_table[age + 1, "EXP_WEIGHT_FEMALE"]}}, age, sex)
 }
