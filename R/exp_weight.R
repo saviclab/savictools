@@ -18,6 +18,8 @@ exp_weight <- function(age, sex, units = c("months", "years", "weeks")) {
     data$AGE <- data$AGE / 4.345
   }
 
-  mapply(function(age, sex) {if (sex == 1) {expected_weight_table[age + 1, "EXP_WEIGHT_MALE"]}
-    else{expected_weight_table[age + 1, "EXP_WEIGHT_FEMALE"]}}, age, sex)
+  mapply(function (age, sex) {
+    if (sex == 1) {expected_weight_table[age + 1, "EXP_WEIGHT_MALE"]}
+    else if (sex == 2) {expected_weight_table[age + 1, "EXP_WEIGHT_FEMALE"]}
+    else {rlang::warn("SEX must be 1 or 2."); NA}}, age, sex)
 }
