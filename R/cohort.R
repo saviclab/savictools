@@ -124,10 +124,17 @@
 
 # TODO: Make dose_times optional
 # TODO: Remove type checking (?)
-cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
-                   dose_times=NULL, amt=NULL, param=NULL, original_id=TRUE,
-                   pop_size=NULL, replace=FALSE, keep=NULL) {
-
+cohort <- function(data = NULL,
+                   include = NULL,
+                   n = NULL,
+                   obs_times = NULL,
+                   dose_times = NULL,
+                   amt = NULL,
+                   param = NULL,
+                   original_id = TRUE,
+                   pop_size = NULL,
+                   replace = FALSE,
+                   keep = NULL) {
   # check inputs
   if (is.null(data) & is.null(param)) {
     stop("`data` and `param` cannot both be NULL.")
@@ -175,7 +182,7 @@ cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
 
     # check param names
     if (length(dplyr::intersect(names(param),
-                         c("ID", "TIME", "EVID", "AMT", "DV"))) > 0) {
+                                c("ID", "TIME", "EVID", "AMT", "DV"))) > 0) {
       stop('Error: `param` cannot contain any of "ID", "TIME", "EVID", "AMT", or
            "DV".')
     }
@@ -186,7 +193,7 @@ cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
       fun <- param[[var]][[1]]
 
       # extract function arguments
-      fun_args <- c(pop_size, tail(param[[var]], -1))
+      fun_args <- c(pop_size, tail(param[[var]],-1))
 
       # sample pop_size times from the distribution
       df[var] <- do.call(fun, fun_args)
@@ -206,7 +213,11 @@ cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
 
   # convert df to numeric
   df <- dplyr::mutate(df, dplyr::across(.fns = as.numeric, .cols =
-                                          !dplyr::any_of({{keep}})))
+                                          !dplyr::any_of({
+                                            {
+                                              keep
+                                            }
+                                          })))
 
   # deal with original ids
   if (original_id != FALSE) {
@@ -225,8 +236,10 @@ cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
     # convert include criteria to R expression
     include <- str2expression(include)
     if (!is.logical(eval(include, envir = df))) {
-      stop("Error: `include` requires an expression that evaluates to TRUE or
-            FALSE, e.g.`AGE >= 6`.")
+      stop(
+        "Error: `include` requires an expression that evaluates to TRUE or
+            FALSE, e.g.`AGE >= 6`."
+      )
     }
     # apply include filter
     df <- dplyr::filter(df, eval(include, envir = df))
@@ -258,6 +271,29 @@ cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
   df$EVID <- rep(evid, n)
   df$DV   <- 0
 
+  # sort by ID and TIME
+  df <- dplyr::arrange(df, ID, TIME)
+
+  # compute TAD
+  df <- dplyr::group_by(df, ID)
+  df <- dplyr::group_modify(df, ~ {
+    evid <- dplyr::pull(.x, EVID)
+    copy <- .x
+    copy$TAD <- 0
+    last_dose <- as.double(dplyr::pull(.x, TIME)[2])
+    for (j in seq(nrow(.x))) {
+      if (evid[j] == 1) {
+        last_dose <- as.double(dplyr::pull(.x, TIME)[j])
+      }
+      if (evid[j] == 0) {
+        copy[j, "TAD"] <- as.double(dplyr::pull(.x, TIME)[j]) - last_dose
+      }
+    }
+    copy
+  })
+  df <- dplyr::ungroup(df)
+  df <- dplyr::arrange(df, ID)
+
   # assign dose amounts
   if (is.numeric(amt)) {
     df <- dplyr::mutate(df, AMT = dplyr::if_else(EVID == 1, amt, 0))
@@ -268,30 +304,7 @@ cohort <- function(data=NULL, include=NULL, n=NULL, obs_times=NULL,
                         AMT = dplyr::if_else(EVID == 1,
                                              do.call(amt, eval(dose_args)), 0))
   }
+  df <- dplyr::relocate(df, ID, TIME, EVID, AMT, DV, TAD)
 
-  # sort by ID and TIME
-  df <- dplyr::arrange(df, ID, TIME)
-
-  # compute TAD
-  df <- dplyr::group_by(df, ID)
-  df <- dplyr::group_modify(df, ~{
-          evid <- dplyr::pull(.x, EVID)
-          copy <- .x
-          copy$TAD <- 0
-          last_dose <- as.double(dplyr::pull(.x, TIME)[2])
-          for(j in seq(nrow(.x))) {
-            if(evid[j] == 1) {
-              last_dose <- as.double(dplyr::pull(.x, TIME)[j])
-            }
-            if(evid[j] == 0) {
-              copy[j, "TAD"] <- as.double(dplyr::pull(.x, TIME)[j]) - last_dose
-            }
-          }
-          copy
-        })
-    df <- dplyr::ungroup(df)
-    df <- dplyr::arrange(df, ID)
-    df <- dplyr::relocate(df, ID, TIME, EVID, AMT, DV, TAD)
-
-  return(df)
+  df
 }
