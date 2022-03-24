@@ -40,10 +40,12 @@ zscores <-
     data$WAZ <- NULL
     data$BAZ <- NULL
     data$HAZ <- NULL
+    data$BMI <- NULL
     data$WHZ_F <- NULL
     data$WAZ_F <- NULL
     data$BAZ_F <- NULL
     data$HAZ_F <- NULL
+
 
     # Check for missing
     below_five <- data %>%
@@ -132,6 +134,7 @@ zscores <-
         WAZ_F = fwfa, # WAZ out of range flag
         HAZ_F = fhfa, # HAZ out of range flag
         BAZ_F = fbfa  # BAZ out of range flag
+        WHZ_F = 1
       )
     }
 
