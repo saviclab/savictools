@@ -134,8 +134,8 @@ zscores <-
         WAZ_F = fwfa, # WAZ out of range flag
         HAZ_F = fhfa, # HAZ out of range flag
         BAZ_F = fbfa  # BAZ out of range flag
-        WHZ_F = 1
-      )
+      ) %>%
+        mutate(WHZ_F = 1)
     }
 
     # To merge data sets, first merge z-scores together
