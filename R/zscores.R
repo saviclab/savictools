@@ -134,8 +134,8 @@ zscores <-
         WAZ_F = fwfa, # WAZ out of range flag
         HAZ_F = fhfa, # HAZ out of range flag
         BAZ_F = fbfa  # BAZ out of range flag
-        WHZ_F = 1
-      )
+      ) %>%
+        mutate(WHZ_F = 1)
     }
 
     # To merge data sets, first merge z-scores together
@@ -149,7 +149,7 @@ zscores <-
 
     # zvars_full <- zvars_below_5
     result <- dplyr::left_join(data, zvars_full, by = "rownum") %>%
-      dplyr::rename(ID = ID.x) %>% dplyr::select(-ID.y,-rownum)
+      dplyr::rename(ID = ID.x, BMI = BMI.x) %>% dplyr::select(-ID.y,-rownum, -BMI.y)
 
     # deal with missing and  values
 
