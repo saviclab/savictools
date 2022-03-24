@@ -149,7 +149,7 @@ zscores <-
 
     # zvars_full <- zvars_below_5
     result <- dplyr::left_join(data, zvars_full, by = "rownum") %>%
-      dplyr::rename(ID = ID.x, BMI = BMI.x) %>% dplyr::select(-ID.y,-rownum, -BMI.y)
+      dplyr::rename(ID = ID.x) %>% dplyr::select(-ID.y,-rownum)
 
     # deal with missing and  values
 
