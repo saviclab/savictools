@@ -16,11 +16,11 @@
 #'
 #' @export
 
-param_table <- function(..., write = FALSE, max_omega = 30, max_sigma = 5,
+param_table <- function(..., write = FALSE, transform = TRUE, max_omega = 30, max_sigma = 5,
                         filename = NULL) {
   runnos <- list(...)
   if (length(runnos) == 1) {
-    return(nmsum(..., write))
+    return(nmsum(..., write = write, transform = transform))
   }
 
   result <- NULL
@@ -71,7 +71,7 @@ param_table <- function(..., write = FALSE, max_omega = 30, max_sigma = 5,
   }
 }
 
-nmsum <- function(runno, write = FALSE) {
+nmsum <- function(runno, write = FALSE, transform = TRUE) {
 
   xpdb <- xpose::xpose_data(runno, quiet = TRUE)
   summary <- xpose::get_summary(xpdb)
@@ -79,7 +79,7 @@ nmsum <- function(runno, write = FALSE) {
   ref <- paste0("run", dplyr::filter(summary, label == "ref")$value)
   descr <- dplyr::filter(summary, label == "descr")$value
 
-  param_tab <- xpose::get_prm(xpdb, transform = FALSE) %>%
+  param_tab <- xpose::get_prm(xpdb, transform = transform) %>%
     dplyr::select(name, label, value, rse, fixed) %>%
     dplyr::mutate(rse = ifelse(fixed == TRUE, "FIX", rse),
                   value = as.character(value)) %>%
