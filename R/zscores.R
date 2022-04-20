@@ -155,6 +155,7 @@ zscores <-
     result <- dplyr::left_join(data, zvars_full, by = "rownum") %>%
       dplyr::rename(ID = ID.x) %>% dplyr::select(-ID.y,-rownum)
 
+
     # deal with missing and  values
 
     extreme_parsed <- result %>%  dplyr::mutate(
@@ -175,15 +176,7 @@ zscores <-
       )
     )
 
-    fully_parsed <- na_parsed %>%  dplyr::mutate(
-      WAZ = ifelse(WAZ_F == 1, extreme_flag, WAZ),
-      HAZ = ifelse(HAZ_F == 1, extreme_flag, HAZ),
-      BAZ = ifelse(BAZ_F == 1, extreme_flag, BAZ),
-      WHZ = ifelse(WHZ_F == 1, extreme_flag, WHZ)
-    ) %>%
-      dplyr::select(-WAZ_F,-HAZ_F,-BAZ_F,-WHZ_F)
-
-    return(fully_parsed)
+    return(na_parsed)
   }
 
 
