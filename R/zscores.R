@@ -18,6 +18,7 @@
 # TODO: Include some authorship info for WHO functions
 # TODO: Clean up WHO function docs
 # TODO: Make lines wrap at 80 characters
+# TODO: Preserve column order
 
 zscores <-
   function(data,
@@ -135,7 +136,10 @@ zscores <-
         HAZ_F = fhfa, # HAZ out of range flag
         BAZ_F = fbfa  # BAZ out of range flag
       ) %>%
-        mutate(WHZ_F = 1)
+        dplyr::mutate(
+          WHZ_F = 0,
+          WHZ = NA
+          )
     }
 
     # To merge data sets, first merge z-scores together
@@ -153,16 +157,21 @@ zscores <-
 
     # deal with missing and  values
 
-    na_parsed <- result %>% tidyr::replace_na(
+    extreme_parsed <- result %>%  dplyr::mutate(
+      WAZ = ifelse(WAZ_F == 1, extreme_flag, WAZ),
+      HAZ = ifelse(HAZ_F == 1, extreme_flag, HAZ),
+      BAZ = ifelse(BAZ_F == 1, extreme_flag, BAZ),
+      WHZ = ifelse(WHZ_F == 1, extreme_flag, WHZ)
+    ) %>%
+      dplyr::select(-WAZ_F,-HAZ_F,-BAZ_F,-WHZ_F)
+
+
+    na_parsed <- extreme_parsed %>% tidyr::replace_na(
       list(
         WAZ = missing_flag,
         HAZ = missing_flag,
         BAZ = missing_flag,
-        WHZ = missing_flag,
-        WAZ_F = 0,
-        HAZ_F = 0,
-        BAZ_F = 0,
-        WHZ_F = 0
+        WHZ = missing_flag
       )
     )
 
