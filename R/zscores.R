@@ -19,6 +19,10 @@
 # TODO: Clean up WHO function docs
 # TODO: Make lines wrap at 80 characters
 # TODO: Preserve column order
+<<<<<<< HEAD
+=======
+# TODO: Preserve row order
+>>>>>>> f90b9fbeed27750b6b21f88690a13096e50c7007
 
 zscores <-
   function(data,
