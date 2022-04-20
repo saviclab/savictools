@@ -18,6 +18,8 @@
 # TODO: Include some authorship info for WHO functions
 # TODO: Clean up WHO function docs
 # TODO: Make lines wrap at 80 characters
+# TODO: Preserve column order
+# TODO: Preserve row order
 
 zscores <-
   function(data,
@@ -135,7 +137,10 @@ zscores <-
         HAZ_F = fhfa, # HAZ out of range flag
         BAZ_F = fbfa  # BAZ out of range flag
       ) %>%
-        mutate(WHZ_F = 1)
+        dplyr::mutate(
+          WHZ_F = 0,
+          WHZ = NA
+          )
     }
 
     # To merge data sets, first merge z-scores together
