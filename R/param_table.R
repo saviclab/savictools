@@ -104,9 +104,11 @@ nmsum <- function(runno,
                   nice = TRUE,
                   transform = TRUE,
                   write = FALSE,
+
                   filename = NULL,
                   value_digits = 2,
                   rse_digits = 1) {
+
   xpdb <- xpose::xpose_data(runno, quiet = TRUE)
   summary <- xpose::get_summary(xpdb)
   ofv <- dplyr::filter(summary, label == "ofv")$value
