@@ -17,7 +17,7 @@
 #' @export
 
 param_table <- function(..., write = FALSE, transform = TRUE, max_omega = 30, max_sigma = 5,
-                        filename = NULL) {
+                        filename = NULL, nice = TRUE, value_digits = 2, rse_digits = 1) {
   runnos <- list(...)
   if (length(runnos) == 1) {
     return(nmsum(..., write = write, transform = transform))
@@ -56,8 +56,15 @@ param_table <- function(..., write = FALSE, transform = TRUE, max_omega = 30, ma
 
   result <- dplyr::slice(result, match(x, result$Parameter))
 
-  # Add blank rows for formatting
-  # result <- dplyr::add_row(result)
+
+  if (nice) {
+    result <- result %>%
+      mutate(value_pct_rse = paste0(round_format(Value, value_digits),
+                                    " [",
+                                    round_format(as.numeric(RSE) * 100, rse_digits),
+                                    "]")) %>% select(-Value, -RSE)
+  }
+
 
   if (write) {
     if (is.null(filename)) {
@@ -102,3 +109,18 @@ nmsum <- function(runno, write = FALSE, transform = TRUE) {
   }
 }
 
+#' @export
+round_format <- function(x, digits) {
+  round_lt_0 <- FALSE
+  if (digits < 0) {
+    fmt <- "%.0f"
+    round_lt_0 <- TRUE
+  } else {
+    fmt <- paste0("%.", digits, "f")
+  }
+  if (round_lt_0) {
+    suppressWarnings(sprintf(fmt, as.numeric(round(x, digits))))
+  } else {
+    suppressWarnings(sprintf(fmt, as.numeric(x)))
+  }
+}
