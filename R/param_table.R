@@ -59,6 +59,7 @@ param_table <- function(..., write = FALSE, transform = TRUE, max_omega = 30, ma
 
   if (nice) {
     result <- result %>%
+
       mutate(Value_pct_RSE = paste0(round_format(Value, value_digits),
                                     " [",
                                     round_format(as.numeric(RSE) * 100, rse_digits),
