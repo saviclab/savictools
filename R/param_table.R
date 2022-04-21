@@ -3,10 +3,15 @@
 #'
 #' @description
 #'
-#' @param ...
-#' @param write
-#' @param max_omega
-#' @param max_sigma
+#' @param ... Run number(s) or model names(s).
+#' @param nice Whether to use Value [%RSE] formatting.
+#' @param transform Whether to transform diagonal elements of OMEGA and SIGMA to standard deviations, and off-diagonal elements to correlations.
+#' @param write Whether to write to a csv file.
+#' @param filename Filename.
+#' @param value_digits How many decimal places to display for parameter estimates when using "nice" formatting.
+#' @param rse_digits How many decimal places to display for %RSE estimates when using "nice" formatting.
+#' @param max_omega Maximum number of OMEGAs in model.
+#' @param max_sigma Maximum number of SIGMAs in model.
 #'
 #' @usage
 #'
@@ -18,17 +23,17 @@
 
 param_table <-
   function(...,
-           write = FALSE,
-           transform = TRUE,
-           max_omega = 30,
-           max_sigma = 5,
-           filename = NULL,
            nice = TRUE,
+           transform = TRUE,
+           write = FALSE,
+           filename = NULL,
            value_digits = 2,
-           rse_digits = 1) {
+           rse_digits = 1,
+           max_omega = 30,
+           max_sigma = 5) {
     runnos <- list(...)
     if (length(runnos) == 1) {
-      return(nmsum(..., write = write, transform = transform))
+      return(nmsum(..., nice = nice, transform = transform, write = write, filename = filename))
     }
 
     result <- NULL
@@ -81,18 +86,6 @@ param_table <-
     result <- dplyr::slice(result, match(x, result$Parameter))
 
 
-    if (nice) {
-      result <- result %>%
-
-        mutate(Value_pct_RSE = paste0(
-          round_format(Value, value_digits),
-          " [",
-          round_format(as.numeric(RSE) * 100, rse_digits),
-          "]"
-        )) %>% select(-Value,-RSE)
-      result[1:3, "Value_pct_RSE"] <- ""
-    }
-
 
 
     if (write) {
@@ -108,8 +101,10 @@ param_table <-
   }
 
 nmsum <- function(runno,
+                  nice = TRUE,
+                  transform = TRUE,
                   write = FALSE,
-                  transform = TRUE) {
+                  filename = NULL) {
   xpdb <- xpose::xpose_data(runno, quiet = TRUE)
   summary <- xpose::get_summary(xpdb)
   ofv <- dplyr::filter(summary, label == "ofv")$value
@@ -170,6 +165,20 @@ nmsum <- function(runno,
       Value = value,
       RSE = rse
     )
+
+
+  if (nice) {
+    xpsum <- xpsum %>%
+
+      mutate(Value_pct_RSE = paste0(
+        round_format(Value, value_digits),
+        " [",
+        round_format(as.numeric(RSE) * 100, rse_digits),
+        "]"
+      )) %>% select(-Value,-RSE)
+    xpsum[1:3, "Value_pct_RSE"] <- ""
+  }
+
 
   if (write) {
     write.csv(xpsum, paste0("run", n, "_params.csv"))
