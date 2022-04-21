@@ -16,72 +16,100 @@
 #'
 #' @export
 
-param_table <- function(..., write = FALSE, transform = TRUE, max_omega = 30, max_sigma = 5,
-                        filename = NULL, nice = TRUE, value_digits = 2, rse_digits = 1) {
-  runnos <- list(...)
-  if (length(runnos) == 1) {
-    return(nmsum(..., write = write, transform = transform))
-  }
+param_table <-
+  function(...,
+           write = FALSE,
+           transform = TRUE,
+           max_omega = 30,
+           max_sigma = 5,
+           filename = NULL,
+           nice = TRUE,
+           value_digits = 2,
+           rse_digits = 1) {
+    runnos <- list(...)
+    if (length(runnos) == 1) {
+      return(nmsum(..., write = write, transform = transform))
+    }
 
-  result <- NULL
-  ofvs <- c()
-  i <- 1
-  for (runno in runnos) {
-    params <- nmsum(runno)
-    colnames(params)[3:4] <- c(paste0("Value (run", runno, ")"), paste0("RSE (run", runno, ")"))
-    ofvs <- c(ofvs, as.numeric(params[params$Parameter == "OFV", 3]))
-    if (is.null(result)) {
-      result <- params
+    result <- NULL
+    ofvs <- c()
+    i <- 1
+    for (runno in runnos) {
+      params <- nmsum(runno)
+      colnames(params)[3:4] <-
+        c(paste0("Value (run", runno, ")"),
+          paste0("RSE (run", runno, ")"))
+      ofvs <-
+        c(ofvs, as.numeric(params[params$Parameter == "OFV", 3]))
+      if (is.null(result)) {
+        result <- params
+        i <- i + 1
+        next()
+      }
+      based_on_index <-
+        which(dplyr::pull(params, 3)[2] == paste0("run", runnos))
+
+      if (length(based_on_index) == 1) {
+        params[params$Parameter == "dOFV", 3] <-
+          as.character(round(ofvs[i] - ofvs[based_on_index], digits = 4))
+      }
+      result <-
+        dplyr::full_join(result, params, by = c("Parameter", "Description"))
       i <- i + 1
-      next()
     }
-    based_on_index <- which(dplyr::pull(params, 3)[2] == paste0("run", runnos))
 
-    if (length(based_on_index) == 1) {
-      params[params$Parameter == "dOFV", 3] <- as.character(round(ofvs[i] - ofvs[based_on_index], digits = 4))
+    omega <- c()
+    sigma <- c()
+    for (i in 1:max_omega) {
+      omega <- c(omega, paste0("OMEGA(", i, ",", 1:max_omega, ")"))
     }
-    result <- dplyr::full_join(result, params, by = c("Parameter", "Description"))
-    i <- i + 1
-  }
+    for (i in 1:max_sigma) {
+      sigma <- c(sigma, paste0("SIGMA(", i, ",", 1:max_sigma, ")"))
+    }
+    x <-
+      c(
+        "Model:",
+        "Based on:",
+        "Description:",
+        paste0("THETA", 1:100),
+        omega,
+        sigma,
+        "OFV",
+        "dOFV"
+      )
 
-  omega <- c()
-  sigma <- c()
-  for (i in 1:max_omega) {
-    omega <- c(omega, paste0("OMEGA(", i, ",", 1:max_omega, ")"))
-  }
-  for (i in 1:max_sigma) {
-    sigma <- c(sigma, paste0("SIGMA(", i, ",", 1:max_sigma, ")"))
-  }
-  x <- c("Model:", "Based on:", "Description:", paste0("THETA", 1:100), omega, sigma, "OFV", "dOFV")
-
-  result <- dplyr::slice(result, match(x, result$Parameter))
-
-
-  if (nice) {
-    result <- result %>%
-
-      mutate(Value_pct_RSE = paste0(round_format(Value, value_digits),
-                                    " [",
-                                    round_format(as.numeric(RSE) * 100, rse_digits),
-                                    "]")) %>% select(-Value, -RSE)
-    result[1:3, "Value_pct_RSE"] <- ""
-  }
+    result <- dplyr::slice(result, match(x, result$Parameter))
 
 
-  if (write) {
-    if (is.null(filename)) {
-      readr::write_csv(result, paste("runs", ..., "params.csv", sep = "_"), na = "", )
-    } else {
-      readr::write_csv(result, filename, na = "")
+    if (nice) {
+      result <- result %>%
+
+        mutate(Value_pct_RSE = paste0(
+          round_format(Value, value_digits),
+          " [",
+          round_format(as.numeric(RSE) * 100, rse_digits),
+          "]"
+        )) %>% select(-Value,-RSE)
+      result[1:3, "Value_pct_RSE"] <- ""
+    }
+
+
+
+    if (write) {
+      if (is.null(filename)) {
+        readr::write_csv(result, paste("runs", ..., "params.csv", sep = "_"), na = "",)
+      } else {
+        readr::write_csv(result, filename, na = "")
+      }
+    }
+    else {
+      result
     }
   }
-  else {
-    result
-  }
-}
 
-nmsum <- function(runno, write = FALSE, transform = TRUE) {
-
+nmsum <- function(runno,
+                  write = FALSE,
+                  transform = TRUE) {
   xpdb <- xpose::xpose_data(runno, quiet = TRUE)
   summary <- xpose::get_summary(xpdb)
   ofv <- dplyr::filter(summary, label == "ofv")$value
@@ -94,15 +122,54 @@ nmsum <- function(runno, write = FALSE, transform = TRUE) {
                   value = as.character(value)) %>%
     dplyr::select(-fixed)
 
-  xpsum <- dplyr::bind_rows(list(name = "Model: ", label = "", value = paste0("run", runno), rse = ""),
-                            list(name = "Based on:", label = "", value = ref, rse = ""),
-                            list(name = "Description:", label = "", value=descr, rse = ""),
-                            param_tab,
-                            list(name = "", label = "", value = "", rse = ""),
-                            list(name = "OFV", label = "Objective function value",
-                                 value = ofv, rse = ""),
-                            list(name = "dOFV", label = "Change in OFV", value = "", rse = ""))
-  xpsum <-  dplyr::rename(xpsum, Parameter = name, Description = label, Value = value, RSE = rse)
+  xpsum <-
+    dplyr::bind_rows(
+      list(
+        name = "Model: ",
+        label = "",
+        value = paste0("run", runno),
+        rse = ""
+      ),
+      list(
+        name = "Based on:",
+        label = "",
+        value = ref,
+        rse = ""
+      ),
+      list(
+        name = "Description:",
+        label = "",
+        value = descr,
+        rse = ""
+      ),
+      param_tab,
+      list(
+        name = "",
+        label = "",
+        value = "",
+        rse = ""
+      ),
+      list(
+        name = "OFV",
+        label = "Objective function value",
+        value = ofv,
+        rse = ""
+      ),
+      list(
+        name = "dOFV",
+        label = "Change in OFV",
+        value = "",
+        rse = ""
+      )
+    )
+  xpsum <-
+    dplyr::rename(
+      xpsum,
+      Parameter = name,
+      Description = label,
+      Value = value,
+      RSE = rse
+    )
 
   if (write) {
     write.csv(xpsum, paste0("run", n, "_params.csv"))
