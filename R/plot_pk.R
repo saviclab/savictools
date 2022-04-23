@@ -14,7 +14,8 @@ plot_pk <- function (data, ind = FALSE, nrow = 4, ncol = 4, id = NULL,
   }
   else {
     data <- dplyr::filter(data, ID %in% id)
-    p <- ggplot2::ggplot(data, ggplot2::aes(x = TAD,
+    p <- ggplot2::ggplot(data, ggplot2::aes(x = TAD, y = IPRED,
+                                            group = CURVE))
   }
   if (ind) {
     n_ids <- length(unique(data$ID))
