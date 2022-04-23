@@ -9,12 +9,12 @@ plot_pk <- function (data, ind = FALSE, nrow = 4, ncol = 4, id = NULL,
   }
   data <- dplyr::filter(curve(data), EVID == 0, TAD <= max_tad)
   if (is.null(id)) {
-    p <- ggplot2::ggplot(data, ggplot2::aes(x = TAD, y = IPRED,
+    p <- ggplot2::ggplot(data, ggplot2::aes(x = TAD, y = DV,
                                             group = CURVE))
   }
   else {
     data <- dplyr::filter(data, ID %in% id)
-    p <- ggplot2::ggplot(data, ggplot2::aes(x = TAD, y = IPRED,
+    p <- ggplot2::ggplot(data, ggplot2::aes(x = TAD, y = DV,
                                             group = CURVE))
   }
   if (ind) {
