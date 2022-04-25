@@ -33,7 +33,8 @@ param_table <-
            max_sigma = 5) {
     runnos <- list(...)
     if (length(runnos) == 1) {
-      return(nmsum(..., nice = nice, transform = transform, write = write, filename = filename))
+      return(nmsum(..., nice = nice, transform = transform, write = write, filename = filename,
+                   value_digits = value_digits, rse_digits = rse_digits))
     }
 
     result <- NULL
@@ -115,7 +116,7 @@ nmsum <- function(runno,
   ref <- paste0("run", dplyr::filter(summary, label == "ref")$value)
   descr <- dplyr::filter(summary, label == "descr")$value
 
-  param_tab <- xpose::get_prm(xpdb, transform = transform, digits = 8) %>%
+  param_tab <- xpose::get_prm(xpdb, transform = transform) %>%
     dplyr::select(name, label, value, rse, fixed) %>%
     dplyr::mutate(rse = ifelse(fixed == TRUE, "FIX", rse),
                   value = as.character(value)) %>%
