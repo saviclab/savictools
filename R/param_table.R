@@ -115,7 +115,7 @@ nmsum <- function(runno,
   ref <- paste0("run", dplyr::filter(summary, label == "ref")$value)
   descr <- dplyr::filter(summary, label == "descr")$value
 
-  param_tab <- xpose::get_prm(xpdb, transform = transform) %>%
+  param_tab <- xpose::get_prm(xpdb, transform = transform, digits = 8) %>%
     dplyr::select(name, label, value, rse, fixed) %>%
     dplyr::mutate(rse = ifelse(fixed == TRUE, "FIX", rse),
                   value = as.character(value)) %>%
