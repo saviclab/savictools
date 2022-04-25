@@ -109,7 +109,7 @@ nmsum <- function(runno,
                   rse_digits = 1) {
 
   runno <- model_paste0(runno)
-  xpdb <- xpose::xpose_data(runno, prefix = "", ext = ".lst" quiet = TRUE)
+  xpdb <- xpose::xpose_data(runno, prefix = "", ext = ".lst", quiet = TRUE)
   summary <- xpose::get_summary(xpdb)
   ofv <- dplyr::filter(summary, label == "ofv")$value
   ref <- paste0("run", dplyr::filter(summary, label == "ref")$value)
