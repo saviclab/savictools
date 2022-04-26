@@ -152,7 +152,6 @@ zscores <-
     }
 
     zvars_full <- dplyr::arrange(zvars_full, rownum)
-    print(nrow(zvars_full) == nrow(data))
 
     data$WHZ <- zvars_full$WHZ
     data$WAZ <- zvars_full$WAZ
@@ -163,7 +162,6 @@ zscores <-
     data$WAZ_F <- zvars_full$WAZ_F
     data$BAZ_F <- zvars_full$BAZ_F
     data$HAZ_F <- zvars_full$HAZ_F
-    data$rownum_2 <- zvars_full$rownum
     # zvars_full <- zvars_below_5
    # result <- dplyr::left_join(data, zvars_full, by = "rownum") %>%
     #  dplyr::rename(ID = ID.x) %>% dplyr::select(-ID.y,-rownum)
@@ -177,7 +175,7 @@ zscores <-
       BAZ = ifelse(BAZ_F == 1, extreme_flag, BAZ),
       WHZ = ifelse(WHZ_F == 1, extreme_flag, WHZ)
     ) %>%
-      dplyr::select(-WAZ_F,-HAZ_F,-BAZ_F,-WHZ_F)
+      dplyr::select(-WAZ_F,-HAZ_F,-BAZ_F,-WHZ_F -rownum)
 
 
     na_parsed <- extreme_parsed %>% tidyr::replace_na(
