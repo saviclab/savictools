@@ -37,15 +37,15 @@ zscores <-
     data$rownum <- 1:nrow(data)
 
     # Null out existing z-score columns
-    data$WHZ <- NULL
-    data$WAZ <- NULL
-    data$BAZ <- NULL
-    data$HAZ <- NULL
-    data$BMI <- NULL
-    data$WHZ_F <- NULL
-    data$WAZ_F <- NULL
-    data$BAZ_F <- NULL
-    data$HAZ_F <- NULL
+    data$WHZ <- NA
+    data$WAZ <- NA
+    data$BAZ <- NA
+    data$HAZ <- NA
+    data$BMI <- NA
+    data$WHZ_F <- NA
+    data$WAZ_F <- NA
+    data$BAZ_F <- NA
+    data$HAZ_F <- NA
 
 
     # Check for missing
@@ -151,14 +151,27 @@ zscores <-
       zvars_full <- zvars_above_5
     }
 
+    zvars_full <- dplyr::arrange(zvars_full, rownum)
+    print(nrow(zvars_full) == nrow(data))
+
+    data$WHZ <- zvars_full$WHZ
+    data$WAZ <- zvars_full$WAZ
+    data$BAZ <- zvars_full$BAZ
+    data$HAZ <- zvars_full$HAZ
+    data$BMI <- zvars_full$BMI
+    data$WHZ_F <- zvars_full$WHZ_F
+    data$WAZ_F <- zvars_full$WAZ_F
+    data$BAZ_F <- zvars_full$BAZ_F
+    data$HAZ_F <- zvars_full$HAZ_F
+    data$rownum_2 <- zvars_full$rownum
     # zvars_full <- zvars_below_5
-    result <- dplyr::left_join(data, zvars_full, by = "rownum") %>%
-      dplyr::rename(ID = ID.x) %>% dplyr::select(-ID.y,-rownum)
+   # result <- dplyr::left_join(data, zvars_full, by = "rownum") %>%
+    #  dplyr::rename(ID = ID.x) %>% dplyr::select(-ID.y,-rownum)
 
 
     # deal with missing and  values
 
-    extreme_parsed <- result %>%  dplyr::mutate(
+    extreme_parsed <- data %>%  dplyr::mutate(
       WAZ = ifelse(WAZ_F == 1, extreme_flag, WAZ),
       HAZ = ifelse(HAZ_F == 1, extreme_flag, HAZ),
       BAZ = ifelse(BAZ_F == 1, extreme_flag, BAZ),
