@@ -15,6 +15,8 @@ expwt <- function(data, units = c("months", "years", "weeks")) {
   }
   else if (units == "weeks") {
     age_vec <- data$AGE / 4.345
+  } else {
+    age_vec <- data$AGE
   }
 
   calc_expwt <- function(age, sex) {
