@@ -3,23 +3,26 @@
 #'
 #' @description Calculate expected weight based on age and sex for under-5 children.
 #'
-#' @param age Age.
-#' @param sex Sex. 1 = male, 2 = female.
+#' @param data A dataframe with AGE and SEX columns.
 #' @param units Units for age. Default is "months".
 #'
 #' @export
-exp_weight <- function(age, sex, units = c("months", "years", "weeks")) {
+expwt <- function(data, units = c("months", "years", "weeks")) {
   units <- match.arg(units)
   # convert units to months, if necessary
   if (units == "years") {
-    data$AGE <- data$AGE * 12
+    age_vec <- data$AGE * 12
   }
   else if (units == "weeks") {
-    data$AGE <- data$AGE / 4.345
+    age_vec <- data$AGE / 4.345
   }
 
-  mapply(function (age, sex) {
+  calc_expwt <- function(age, sex) {
     if (sex == 1) {expected_weight_table[age + 1, "EXP_WEIGHT_MALE"]}
     else if (sex == 2) {expected_weight_table[age + 1, "EXP_WEIGHT_FEMALE"]}
-    else {rlang::warn("SEX must be 1 or 2."); NA}}, age, sex)
+    else {rlang::warn("SEX must be 1 or 2."); NA}}
+
+  data %>%
+    dplyr::mutate(EXPWT = mapply(calc_expwt, age_vec, SEX))
+
 }
