@@ -174,9 +174,13 @@ zscores <-
       HAZ = ifelse(HAZ_F == 1, extreme_flag, HAZ),
       BAZ = ifelse(BAZ_F == 1, extreme_flag, BAZ),
       WHZ = ifelse(WHZ_F == 1, extreme_flag, WHZ)
-    ) %>%
-      dplyr::select(-WAZ_F,-HAZ_F,-BAZ_F,-WHZ_F -rownum)
+    )
 
+    extreme_parsed$WAZ_F <- NULL
+    extreme_parsed$HAZ_F <- NULL
+    extreme_parsed$BAZ_F <- NULL
+    extreme_parsed$WHZ_F <- NULL
+    extreme_parsed$rownum <- NULL
 
     na_parsed <- extreme_parsed %>% tidyr::replace_na(
       list(
