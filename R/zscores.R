@@ -20,7 +20,7 @@
 # TODO: Make lines wrap at 80 characters
 # TODO: Preserve column order
 
-zscores <-
+zscores_old <-
   function(data,
            units = c("months", "years", "weeks"),
            missing_flag = NA,
@@ -194,18 +194,6 @@ zscores <-
     return(na_parsed)
   }
 
-
-#' `rounde()` is a rounding function that rounds up when rounding off a 5,
-#' instead of to the nearest even number, which is what `round()` does.
-#' @param x A numeric vector
-#' @param digits Number of significant significant digits to round to
-#' @export
-rounde <- function(x, digits = 0) {
-  expo <- 10 ^ digits
-  return(ifelse(abs(x * expo) - floor(abs(x * expo)) < 0.5,
-                sign(x * expo) * floor(abs(x * expo)),
-                sign(x * expo) * (floor(abs(x * expo)) + 1)) / expo)
-}
 
 calc.zlen<-function(mat, lenanthro) {
 

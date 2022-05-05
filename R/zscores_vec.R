@@ -1,6 +1,25 @@
-
+\#' Calculate z-scores for anthrompometric indicators
+#'
+#' `zscores()` computes z-scores indicating nutritional status, adding new
+#'  columns to the end of a dataframe.
+#'
+#' `zscores()` is a more streamlined implementation of the WHO scripts
+#' `igrowup_standard.R`, `igrowup_restricted.R`, and `who2007.R`.
+#'
+#' @param data A dataframe with ID, AGE, SEX, WT, and HT columns.
+#' @param units Units for AGE. Default is "months".
+#' @param missing_flag Value used to replace missing z-scores Default is NA.
+#' @param extreme_flag Value used to replace extreme/implausible z-scores.
+#' Default is NA.
+#'
+#' @importFrom magrittr %>%
 #' @export
-zscores_vec <-
+
+# TODO: Include some authorship info for WHO functions
+# TODO: Clean up WHO function docs
+# TODO: Make lines wrap at 80 characters
+# TODO: Preserve column order
+zscores <-
   function(data,
            units = c("months", "years", "weeks"),
            missing_flag = NA,
@@ -173,6 +192,20 @@ zscores_vec <-
 
     return(na_parsed)
   }
+
+
+
+#' `rounde()` is a rounding function that rounds up when rounding off a 5,
+#' instead of to the nearest even number, which is what `round()` does.
+#' @param x A numeric vector
+#' @param digits Number of significant significant digits to round to
+#' @export
+rounde <- function(x, digits = 0) {
+  expo <- 10 ^ digits
+  return(ifelse(abs(x * expo) - floor(abs(x * expo)) < 0.5,
+                sign(x * expo) * floor(abs(x * expo)),
+                sign(x * expo) * (floor(abs(x * expo)) + 1)) / expo)
+}
 
 
 
