@@ -405,7 +405,7 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
       ),
       # height
       ifelse(
-        mat$clenhei >= 65 & mat$clenhei < 120,
+        mat$clenhei >= 65 & mat$clenhei <= 120,
         ifelse(
           diff.len > 0,
           x_height_low$l + diff.len * (x_height_upp$l - x_height_low$l),
@@ -431,7 +431,7 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
       ),
       # height
       ifelse(
-        mat$clenhei >= 65 & mat$clenhei < 120,
+        mat$clenhei >= 65 & mat$clenhei <= 120,
         ifelse(
           diff.len > 0,
           x_height_low$m + diff.len * (x_height_upp$m - x_height_low$m),
@@ -458,7 +458,7 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
       ),
       # height
       ifelse(
-        mat$clenhei >= 65 & mat$clenhei < 120,
+        mat$clenhei >= 65 & mat$clenhei <= 120,
         ifelse(
           diff.len > 0,
           x_height_low$s + diff.len * (x_height_upp$s - x_height_low$s),
