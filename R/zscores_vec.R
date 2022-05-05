@@ -1,4 +1,4 @@
-\#' Calculate z-scores for anthrompometric indicators
+#' Calculate z-scores for anthrompometric indicators
 #'
 #' `zscores()` computes z-scores indicating nutritional status, adding new
 #'  columns to the end of a dataframe.
