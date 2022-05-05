@@ -67,9 +67,9 @@ etacorr_cat <- function(runno, eta, ...) {
 }
 
 # Helpers --------------------------------------------------------------------
-#' @export
 #' Provide either an xpdb object, run number, or model name and return the
 #' dataframe of results from that run.
+#' @export
 get_data_from_runno <- function(runno) {
   if (class(runno)[1] == "xpose_data") {
     # runno is an xpdb object
