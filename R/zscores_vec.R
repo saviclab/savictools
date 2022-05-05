@@ -178,34 +178,6 @@ zscores_vec <-
 
 #-------------------------- Vectorized versions start here
 
-speedtest <- function(call) {
-  t1 <- Sys.time()
-  eval(call)
-  t2 <- Sys.time()
-  t2 - t1
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 calc.zlen_vec <- function(mat, lenanthro) {
   age_sex <- lenanthro$age * 10 + lenanthro$sex
