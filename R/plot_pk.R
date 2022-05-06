@@ -1,4 +1,26 @@
-#' @title plot_pk
+#' @title
+#' Plot PK curves
+#'
+#' @description
+#' `plot_pk()` creates spaghetti PK plots with connected data points for each
+#' PK curve.
+#'
+#' @details
+#' Using the variance-covariance matrix together with parameter estimates,
+#' `cr_plot()` displays the posterior distributions of covariate effects
+#' relative to the range of clinical importance.
+#'
+#' @param runno A run number or model name.
+#' @param effect_size The size of a clinically relevant effect. Defaults is 0.2,
+#' or 20%.
+#' @param width Size of the interval of the posterior
+#' distribution of covariate effects. Defaults to 0.95, or 95%.
+#'
+#' @examples
+#' # WT on V, WAZ on F1, FORMULATION on KA
+#' cr_plot(27, VWT = 1 + THETA(12), WAZF1 = 1 + THETA(11),
+#'         KAFORMULATION = 1 + THETA(9))
+#'
 #' @export
 
 plot_pk <- function (data, ind = FALSE, nrow = 4, ncol = 4, id = NULL,
