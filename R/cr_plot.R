@@ -135,13 +135,11 @@ cr_plot <-
 #' @export
 model_paste0 <- function(runno, ext = "") {
   # If runno is a number, return "run[runno].ext"
-  if (suppressWarnings(!is.na(as.numeric(as.character(runno))))) {
-    paste0("run", runno, ext)
-  }
-  # If runno is a file name, strip any file extension off and return "runno.ext"
-  else {
-    paste0(gsub("\\.\\w*", "", runno), ext)
-  }
+  ifelse(suppressWarnings(!is.na(as.numeric(as.character(runno)))),
+         paste0("run", runno, ext),
+         # If runno is a file name, strip any file extension off and return "runno.ext"
+         paste0(gsub("\\.\\w*", "", runno), ext))
+
 }
 
 get_cov <- function(file) {
