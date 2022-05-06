@@ -8,7 +8,7 @@
 #' A PK curve is defined as any sequence of consecutive 0s in the EVID column of
 #' length greater than or equal to 1, corresponding to the same ID.
 #'
-#' `curve()` is primarily used by `pk_plot()` in order to draw separate lines
+#' `curve()` is primarily used by `plot_pk()` in order to draw separate lines
 #' for distinct PK curves belonging to the same individual.
 #'
 #' @param data A dataframe with ID, and EVID columns.
