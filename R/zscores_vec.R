@@ -3,7 +3,7 @@
 #' `zscores()` computes z-scores indicating nutritional status, adding new
 #'  columns to the end of a dataframe.
 #'
-#' `zscores()` is a more streamlined implementation of the WHO scripts
+#' `zscores()` is a vectorized, more streamlined implementation of the WHO scripts
 #' `igrowup_standard.R`, `igrowup_restricted.R`, and `who2007.R`.
 #'
 #' @param data A dataframe with ID, AGE, SEX, WT, and HT columns.
