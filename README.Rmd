@@ -47,25 +47,104 @@ devtools::install_github("saviclab/savictools")
 ## Usage
 ```{r, message = FALSE}
 library(savictools)
+```
 
-pop_example
 
-# 1. Sampling 20 individuals, above 10kg and below 120cm, with a fixed dose of 
-# 200mg, observing every 4 hours for one day and dosing at times 0, 5, and 12. 
+#### Data preparation
+
+##### `cohort()` is used to generate NONMEM-ready datasets for clinical PK trials, either by sampling from real datasets or generating synthetic data.
+```{r cohort}
+
+head(pop_example, n = 10)
+
+# 1. Sampling 20 individuals, above 10 kg and below 120 cm, with a fixed dose of
+# 200 mg, observing every 4 hours for one day and dosing at times 0, 5, and 12.
 # Note that the data has columns called "WT" and "HT".
-
 
 inc <- "WT > 10 & HT < 120"
 ot <- seq(0, 24, by = 4)
 dt <- c(0, 5, 12)
 
-df1 <- cohort(pop_example, include = inc, n = 20, obs_times = ot,
-              dose_times = dt, amt = 200)
-df1
+cohort(
+  pop_example,
+  include = inc,
+  n = 20,
+  obs_times = ot,
+  dose_times = dt,
+  amt = 200
+)
+
+
+# 2. Simulating data. We assume WT and HT are normally distributed random
+# variables, with means and standard deviations of 16 and 3.4 for WT and 132
+# and 13.6 for HT.
+
+p1 <-
+  list("WT" = list("rnorm", 16, 3.4),
+       "HT" = list("rnorm", 132, 13.6))
+
+cohort(
+  param = p1,
+  include = inc,
+  n = 20,
+  pop_size = 1000,
+  obs_times = ot,
+  dose_times = dt,
+  amt = 200,
+  original_id = FALSE
+)
+
+# 3. As in (2), except we now define a dosing function.
+
+dose_fun <- function(WT) {
+  ifelse(WT < 16, 150,
+         ifelse(WT < 20, 200, 250))
+}
+
+cohort(
+  param = p1,
+  include = inc,
+  n = 20,
+  pop_size = 500,
+  obs_times = ot,
+  dose_times = dt,
+  original_id = FALSE,
+  amt = dose_fun
+)
 ```
 
-### Data preparation
+##### `expwt()` calculates expected weight based on age and sex in under-5 children, adding a column called EXPWT.
 
-#### `cohort()` is used to generate NONMEM-ready datasets for clinical PK trials, either by sampling from real datasets or generating synthetic data.
+```{r expwt}
+expwt(pop_example)
+```
 
 
+##### `sparse()` automatically detects sparse vs. intensive PK sampling in a dataset.
+
+```{r sparse}
+library(ggplot2)
+
+pk_example
+
+sparse(pk_example, plot = TRUE)
+
+sparse(pk_example, plot = TRUE) + 
+  facet_wrap("ID", scales = "free_x", )
+```
+
+##### `tad()` computes time after dose.
+
+```{r tad}
+# Deleting and re-calculating TAD
+tad(pk_example)
+```
+
+##### `zscores()` computes z-scores indicating nutritional status.
+
+```{r zscores}
+zscores(pop_example, units = "months")
+```
+
+
+#### Visualization
