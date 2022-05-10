@@ -1,0 +1,70 @@
+---
+output: github_document
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+options(tibble.print_min = 5, tibble.print_max = 5)
+```
+
+# savictools
+
+## Overview
+savictools is a collection of functions designed to make the pharmacometrics 
+workflow faster, simpler, and more intuitive.
+
+##### Data preparation
+- `cohort()` generates simulation datasets for NONMEM.
+- `expwt()` computes expected weight for children under 5.
+- `sparse()` detects sparse vs. intensive PK sampling occasions.
+- `tad()` computes time after dose.
+- `zscores()` computes z-scores for WHO's anthropometric indicators.
+
+##### Visualization
+- `cr_plot()` visualizes the clinical relevance of covariates.
+- `etacorr_cat()` and `etacorr_cont()` plot ETA-covariate correlations.
+- `plot_pk()` creates PK concentration curves ("spaghetti plots").
+- `VPC()` runs the Perl-speaks-Nonmem (PsN) `vpc` command from R, and is also a wrapper for xpose::VPC.
+
+##### Workflow optimization
+- `param_table()` creates nicely formatted tables of parameter estimates for single or multiple models.
+- `parse_all_sse()` parses PsN `sse`-generated SSE_results.csv files and combines them into dataframes summarizing parameter statistics and error rates.
+
+
+## Installation
+To install the development version from GitHub:
+```{r, eval = FALSE}
+# install.packages("devtools")  
+devtools::install_github("saviclab/savictools")
+``` 
+
+## Usage
+```{r, message = FALSE}
+library(savictools)
+
+pop_example
+
+# 1. Sampling 20 individuals, above 10kg and below 120cm, with a fixed dose of 
+# 200mg, observing every 4 hours for one day and dosing at times 0, 5, and 12. 
+# Note that the data has columns called "WT" and "HT".
+
+
+inc <- "WT > 10 & HT < 120"
+ot <- seq(0, 24, by = 4)
+dt <- c(0, 5, 12)
+
+df1 <- cohort(pop_example, include = inc, n = 20, obs_times = ot,
+              dose_times = dt, amt = 200)
+df1
+```
+
+### Data preparation
+
+#### `cohort()` is used to generate NONMEM-ready datasets for clinical PK trials, either by sampling from real datasets or generating synthetic data.
+
+

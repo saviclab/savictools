@@ -2,10 +2,24 @@
 % Please edit documentation in R/plot_pk.R
 \name{plot_pk}
 \alias{plot_pk}
-\title{plot_pk}
+\title{Plot PK curves}
 \usage{
 plot_pk(data, ind = FALSE, nrow = 4, ncol = 4, id = NULL, max_tad = 26)
 }
+\arguments{
+\item{data}{A dataframe with ID, EVID, DV, and TIME or TAD columns.}
+
+\item{ind}{Whether to create separate plots for each ID.}
+
+\item{nrow}{Number of rows per page of plots when ind = TRUE.}
+
+\item{ncol}{Number of columns per page of plots when ind = TRUE.}
+
+\item{id}{Optional. A vector of IDs to plot, instead of plotting every ID.}
+
+\item{max_tad}{The largest allowed value of TAD to be plotted. Defaults to 26.}
+}
 \description{
-plot_pk
+\code{plot_pk()} creates spaghetti PK plots with connected data points for each
+PK curve.
 }

@@ -2,10 +2,20 @@
 % Please edit documentation in R/curve.R
 \name{curve}
 \alias{curve}
-\title{curve}
+\title{Detect individual PK curves}
 \usage{
-curve(data, col_name = "CURVE")
+curve(data)
+}
+\arguments{
+\item{data}{A dataframe with ID, and EVID columns.}
 }
 \description{
-curve
+\code{curve()} assigns a unique number to each PK curve in a dataset.
+}
+\details{
+A PK curve is defined as any sequence of consecutive 0s in the EVID column of
+length greater than or equal to 1, corresponding to the same ID.
+
+\code{curve()} is primarily used by \code{plot_pk()} in order to draw separate lines
+for distinct PK curves belonging to the same individual.
 }
