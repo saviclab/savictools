@@ -5,25 +5,17 @@
 #' `plot_pk()` creates spaghetti PK plots with connected data points for each
 #' PK curve.
 #'
-#' @details
-#' Using the variance-covariance matrix together with parameter estimates,
-#' `cr_plot()` displays the posterior distributions of covariate effects
-#' relative to the range of clinical importance.
 #'
-#' @param runno A run number or model name.
-#' @param effect_size The size of a clinically relevant effect. Defaults is 0.2,
-#' or 20%.
-#' @param width Size of the interval of the posterior
-#' distribution of covariate effects. Defaults to 0.95, or 95%.
-#'
-#' @examples
-#' # WT on V, WAZ on F1, FORMULATION on KA
-#' cr_plot(27, VWT = 1 + THETA(12), WAZF1 = 1 + THETA(11),
-#'         KAFORMULATION = 1 + THETA(9))
+#' @param data A dataframe with ID, EVID, DV, and TIME or TAD columns.
+#' @param ind Whether to create separate plots for each ID.
+#' @param nrow Number of rows per page of plots when ind = TRUE.
+#' @param ncol Number of columns per page of plots when ind = TRUE.
+#' @param id Optional. A vector of IDs to plot, instead of plotting every ID.
+#' @param max_tad The largest allowed value of TAD to be plotted. Defaults to 26.
 #'
 #' @export
 
-plot_pk <- function (data, ind = FALSE, nrow = 4, ncol = 4, id = NULL,
+plot_pk <- function(data, ind = FALSE, nrow = 4, ncol = 4, id = NULL,
                      max_tad = 26)
 {
   if (!exists("TAD", data)) {
