@@ -11,7 +11,6 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
-options(tibble.print_min = 5, tibble.print_max = 5)
 ```
 
 # savictools
@@ -40,10 +39,10 @@ workflow faster, simpler, and more intuitive.
 
 ## Installation
 To install the development version from GitHub:
-```{r, eval = FALSE}
-# install.packages("devtools")  
+``` r
+# install.packages("devtools")
 devtools::install_github("saviclab/savictools")
-``` 
+```
 
 ## Usage
 ```{r, message = FALSE}
