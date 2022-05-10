@@ -41,10 +41,12 @@ param_table <-
     ofvs <- c()
     i <- 1
     for (runno in runnos) {
-      params <- nmsum(runno)
-      colnames(params)[3:4] <-
-        c(paste0("Value (run", runno, ")"),
-          paste0("RSE (run", runno, ")"))
+      params <- nmsum(runno, nice = nice, transform = transform, write = write, filename = filename,
+                      value_digits = value_digits, rse_digits = rse_digits)
+      max_col <- length(colnames(params))
+      for (col in 3:max_col) {
+        colnames(params)[col] <- paste0(colnames(params)[col], " (", model_paste0(runno), ")")
+      }
       ofvs <-
         c(ofvs, as.numeric(params[params$Parameter == "OFV", 3]))
       if (is.null(result)) {
@@ -53,7 +55,7 @@ param_table <-
         next()
       }
       based_on_index <-
-        which(dplyr::pull(params, 3)[2] == paste0("run", runnos))
+        which(dplyr::pull(params, 3)[2] == model_paste0(runnos))
 
       if (length(based_on_index) == 1) {
         params[params$Parameter == "dOFV", 3] <-
