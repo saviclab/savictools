@@ -1,3 +1,3 @@
-under5 <- readr::read_csv("data-raw/under5.csv")
-usethis::use_data(under5, overwrite = TRUE)
+pop_example <- readr::read_csv("data-raw/pop_example.csv")
+usethis::use_data(pop_example, overwrite = TRUE)
 
