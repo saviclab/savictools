@@ -11,6 +11,8 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
+
+library(tidyverse)
 ```
 
 # savictools
@@ -55,7 +57,7 @@ library(savictools)
 ##### `cohort()` is used to generate NONMEM-ready datasets for clinical PK trials, either by sampling from real datasets or generating synthetic data.
 ```{r cohort}
 
-head(pop_example, n = 10)
+pop_example
 
 # 1. Sampling 20 individuals, above 10 kg and below 120 cm, with a fixed dose of
 # 200 mg, observing every 4 hours for one day and dosing at times 0, 5, and 12.

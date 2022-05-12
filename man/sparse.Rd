@@ -6,10 +6,9 @@
 \usage{
 sparse(
   data,
-  max_cluster = 2,
+  min_cluster = 3,
   max_distance = 24,
-  col_name = "SPARSE",
-  plot = TRUE,
+  plot = FALSE,
   plot_only = FALSE,
   nrow = 4,
   ncol = 4,
