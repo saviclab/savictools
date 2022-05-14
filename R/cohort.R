@@ -75,6 +75,7 @@
 #' @param replace Optional. Whether to sample with replacement. Default: FALSE.
 #' @param keep Optional. Character vector of column names that you do not want
 #' converted to numeric.
+#' @param tad Optional. Whether to calculate time after dose (TAD).
 #'
 #' @examples
 #' # 1. Sampling 20 individuals, above 10kg and below
@@ -134,7 +135,8 @@ cohort <- function(data = NULL,
                    original_id = TRUE,
                    pop_size = NULL,
                    replace = FALSE,
-                   keep = NULL) {
+                   keep = NULL,
+                   tad = FALSE) {
   # check inputs
   if (is.null(data) & is.null(param)) {
     stop("`data` and `param` cannot both be NULL.")
@@ -274,26 +276,6 @@ cohort <- function(data = NULL,
   # sort by ID and TIME
   df <- dplyr::arrange(df, ID, TIME)
 
-  # compute TAD
-  df <- dplyr::group_by(df, ID)
-  df <- dplyr::group_modify(df, ~ {
-    evid <- dplyr::pull(.x, EVID)
-    copy <- .x
-    copy$TAD <- 0
-    last_dose <- as.double(dplyr::pull(.x, TIME)[2])
-    for (j in seq(nrow(.x))) {
-      if (evid[j] == 1) {
-        last_dose <- as.double(dplyr::pull(.x, TIME)[j])
-      }
-      if (evid[j] == 0) {
-        copy[j, "TAD"] <- as.double(dplyr::pull(.x, TIME)[j]) - last_dose
-      }
-    }
-    copy
-  })
-  df <- dplyr::ungroup(df)
-  df <- dplyr::arrange(df, ID)
-
   # assign dose amounts
   if (is.numeric(amt)) {
     df <- dplyr::mutate(df, AMT = dplyr::if_else(EVID == 1, amt, 0))
@@ -304,7 +286,13 @@ cohort <- function(data = NULL,
                         AMT = dplyr::if_else(EVID == 1,
                                              do.call(amt, eval(dose_args)), 0))
   }
-  df <- dplyr::relocate(df, ID, TIME, EVID, AMT, DV, TAD)
+
+  df <- dplyr::relocate(df, ID, TIME, EVID, AMT, DV)
+
+  # calculate TAD
+  if (tad) {
+    df <- tad(df)
+  }
 
   df
 }
