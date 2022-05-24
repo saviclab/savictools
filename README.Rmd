@@ -17,6 +17,10 @@ library(tidyverse)
 
 # savictools
 
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/saviclab/savictools/workflows/R-CMD-check/badge.svg)](https://github.com/saviclab/savictools/actions)
+<!-- badges: end -->
+
 ## Overview
 savictools is a collection of functions designed to make the pharmacometrics 
 workflow faster, simpler, and more intuitive.

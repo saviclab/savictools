@@ -15,7 +15,8 @@ cohort(
   original_id = TRUE,
   pop_size = NULL,
   replace = FALSE,
-  keep = NULL
+  keep = NULL,
+  tad = FALSE
 )
 }
 \arguments{
@@ -69,6 +70,8 @@ individuals from it. The default value is 10.}
 
 \item{keep}{Optional. Character vector of column names that you do not want
 converted to numeric.}
+
+\item{tad}{Optional. Whether to calculate time after dose (TAD).}
 }
 \value{
 A dplyr dataframe in NONMEM format.
