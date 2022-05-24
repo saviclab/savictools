@@ -32,14 +32,10 @@ exists to indicate that a drug \emph{Y} is given, as opposed to \emph{X}, passin
 drug \emph{X} dosing events.
 }
 \examples{
-# 1. Basic TAD calculation
-tad(data)
-
-# 2. Calculating TAD only when RIF_FLAG is 0
-tad(data, RIF_FLAG == 0)
-
+# Basic TAD calculation
+tad(pk_example)
 
 }
 \author{
-Alexander Floren
+Sandy Floren
 }

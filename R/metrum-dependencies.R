@@ -1,6 +1,6 @@
 
 # The following functios are copied from MIFuns and metrumrg, which were removed
-# from CRAN..
+# from CRAN.
 # Author: Tim Bergsma, Metrum Institute
 
 reapply <- function(x, INDEX, FUN, ...)
@@ -47,7 +47,7 @@ safe.call <- function(what,...){
 }
 
 unitDensity <- function(x,...){
-  res <- safe.call(density.default,x=x,...)
+  res <- safe.call(stats::density.default,x=x,...)
   res$y <- with(res, y/max(y,na.rm=TRUE))
   res
 }
@@ -73,7 +73,7 @@ bin <-
   function(
     x,
     population=x,
-    breaks=quantile(
+    breaks=stats::quantile(
       population,
       probs=probs,
       ...
@@ -176,7 +176,7 @@ panel.stratify <-
         col.symbol <- col
     }
     if (!is.null(groups))
-      panel.superpose(x, y, type = type, groups = groups, pch = pch,
+      lattice::panel.superpose(x, y, type = type, groups = groups, pch = pch,
                       col.line = col.line, col.symbol = col.symbol, font = font,
                       fontfamily = fontfamily, fontface = fontface, lty = lty,
                       cex = cex, fill = fill, lwd = lwd,horizontal = horizontal,

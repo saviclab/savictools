@@ -19,6 +19,7 @@ For categorical covariates, use \code{etacorr_cat()}. For continuous
 covariates, use \code{etacorr_cont()}.
 }
 \examples{
+\dontrun{
 # Continuous Covariates:
 
 # Plot WT, HT, and AGE against ETA1 and ETA2 from run3
@@ -32,8 +33,9 @@ etacorr_cont(xpdb, c(1, 2), WT, HT, AGE)
 
 # Plot HIV against ETA1 and ETA2 from run3
 etacorr_cat("run3", c(1, 2), WT, HT, AGE)
+}
 
 }
 \author{
-Kendra Radtke, Dhruv Vaish, Alexander Floren
+Kendra Radtke, Dhruv Vaish, Sandy Floren
 }

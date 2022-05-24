@@ -13,6 +13,10 @@
 #' Default is NA.
 #'
 #' @importFrom magrittr %>%
+#'
+#' @examples
+#' zscores(pop_example, units = "months")
+#'
 #' @export
 
 # TODO: Include some authorship info for WHO functions

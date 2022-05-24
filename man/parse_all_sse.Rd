@@ -54,6 +54,7 @@ combines them into dataframes summarizing parameter statistics and error
 rates.
 }
 \examples{
+\dontrun{
 setwd(~/Path/To/SSE/Results)
 
 # Parse all "sse_results.csv" files in a directory
@@ -66,6 +67,7 @@ parse_all_sse(exclude = "induc")
 # Generate summary .csv files
 parse_all_sse(summary = TRUE)
 }
+}
 \author{
-Alexander Floren
+Sandy Floren
 }

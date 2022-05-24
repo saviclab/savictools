@@ -19,3 +19,6 @@ length greater than or equal to 1, corresponding to the same ID.
 \code{curve()} is primarily used by \code{plot_pk()} in order to draw separate lines
 for distinct PK curves belonging to the same individual.
 }
+\author{
+Sandy Floren
+}

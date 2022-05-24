@@ -1,5 +1,5 @@
 #' @title Calculate expected weight based on age and sex for under-5 children.
-#' @author Alexander Floren
+#' @author Sandy Floren
 #'
 #' @description Calculate expected weight based on age and sex for under-5 children.
 #'

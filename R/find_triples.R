@@ -1,5 +1,5 @@
 #' @title find_triples
-#' @author Alexander Floren
+#' @author Sandy Floren
 #'
 #' @description A general-purpose function to count how many triples of numerics occur
 #' in a vector within a fixed interval of one another.
@@ -16,15 +16,15 @@
 #' @returns int representing the number of triples
 #'
 #' @examples
-#' > source("find_triples.R")
-#' > find_triples(c(0, 4, 12, 16))
-#'    1
 #'
-#' > find_triples(c(0, 12, 25))
-#'    0
+#' # 1 triple
+#'  find_triples(c(0, 4, 12, 16))
 #'
-#' > find_triples(c(0, 12, 24, 36, 48))
-#'    2
+#' # No triples
+#' find_triples(c(0, 12, 25))
+#'
+#' # 2 triples
+#' find_triples(c(0, 12, 24, 36, 48))
 #'
 #' @export
 

@@ -113,48 +113,65 @@ details.
 }
 
 \examples{
-# 1. Sampling 20 individuals, above 10kg and below
-120cm,
-# with a fixed dose of 200mg, observing every 4 hours for one day and dosing
-# at times 0, 5, and 12. Note that the data has columns called "WT" and "HT".
+pop_example
+
+# 1. Sampling 20 individuals, above 10 kg and below 120 cm, with a fixed dose of
+# 200 mg, observing every 4 hours for one day and dosing at times 0, 5, and 12.
+# Note that the data has columns called "WT" and "HT".
 
 inc <- "WT > 10 & HT < 120"
 ot <- seq(0, 24, by = 4)
 dt <- c(0, 5, 12)
 
-my_data <- read.csv("my_data.csv")
-
-df1 <- cohort(my_data, include = inc, n = 20, obs_times = ot,
-              dose_times = dt, amt = 200)
-
-
-# 3. As in (1), except we generate new IDs.
-
-df3 <- cohort(my_data, include = inc, n = 20, obs_times = ot,
-              dose_times = dt, amt = 200, original_id = TRUE)
+cohort(
+  pop_example,
+  include = inc,
+  n = 20,
+  obs_times = ot,
+  dose_times = dt,
+  amt = 200
+)
 
 
-# 4. Simulating data. We assume WT and HT are normally distributed random
+# 2. Simulating data. We assume WT and HT are normally distributed random
 # variables, with means and standard deviations of 16 and 3.4 for WT and 132
 # and 13.6 for HT.
 
-p1 <- list("WT" = list("rnorm", 16, 3.4), "HT" = list("rnorm", 132, 13.6))
+p1 <-
+  list("WT" = list("rnorm", 16, 3.4),
+       "HT" = list("rnorm", 132, 13.6))
 
-df4 <- cohort(param = p1, include = inc, n = 20,
-              obs_times = ot, dose_times = dt, amt = 200)
+cohort(
+  param = p1,
+  include = inc,
+  n = 20,
+  pop_size = 1000,
+  obs_times = ot,
+  dose_times = dt,
+  amt = 200,
+  original_id = FALSE
+)
 
-
-# 5. As in (4), except we now define a dosing function.
+# 3. As in (2), except we now define a dosing function.
 
 dose_fun <- function(WT) {
   ifelse(WT < 16, 150,
-  ifelse(WT < 20, 200, 250))
-  }
+         ifelse(WT < 20, 200, 250))
+}
 
-df5 <- cohort(param = p1, include = inc, n = 20,
-              obs_times = ot, dose_times = dt, amt = dose_fun)
-
+cohort(
+  param = p1,
+  include = inc,
+  n = 20,
+  pop_size = 500,
+  obs_times = ot,
+  dose_times = dt,
+  original_id = FALSE,
+  amt = dose_fun
+)
 }
 \author{
-Alexander Floren
+Sandy Floren
+
+Sandy Floren
 }

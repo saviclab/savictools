@@ -11,36 +11,35 @@ ttcc(time, ttp, threshold = , interval = , compare = "gt")
 
 \item{ttp}{a vector of numeric data representing Time to Positivity (TTP)}
 
-\item{threshold}{a numeric bound for the value of \emph{ttp}}
+\item{threshold}{a numeric bound for the value of `ttp``}
 
 \item{interval}{a numeric upper bound for the length between two observations}
 
 \item{compare}{a string to specify whether threshold is a lower (default) or
-upper bound. "gt" (greater than) is the default, and makes \emph{threshold}
-a lower bound. "lt" (less than) makes \emph{threshold} an upper bound.}
+upper bound. "gt" (greater than) is the default, and makes \verb{threshold`` a lower bound. "lt" (less than) makes }threshold`` an upper bound.}
 }
 \value{
-a vector, \emph{consec} of 0s and 1s with the same length as \emph{time}
+a vector, \verb{consec`` of 0s and 1s with the same length as }time``
 }
 \description{
 Find consecutive negatives past some threshold occuring within an interval.
 
 ttcc will assume that data is grouped by individual, so as to not compare
-timestamps from two different patients. ttcc returns a vector \emph{consec} which
-has value 1 at index i if \emph{ttp\link{i}} at \emph{time\link{i}} is both greater than or equal
-to (default), or less than or equal to \emph{threshold}, and is the ith consecutive
-such observation spaced at least \emph{interval} apart.
+timestamps from two different patients. ttcc returns a vector \verb{consec`` which has value 1 at index i if }ttp\link{i}\code{at}time\link{i}\verb{is both greater than or equal to (default), or less than or equal to `threshold}, and is the ith consecutive
+such observation spaced at least `interval`` apart.
 }
 \examples{
-> data \%>\%
-     group_by(ID) \%>\%
-     summarize(
-         time = TIME,
-         ttp = DVTTP,
-         TTCC = ttcc(TIME, DVTTP, threshold = 30, interval = 25)
-     )
+\dontrun{
+data \%>\%
+    group_by(ID) \%>\%
+   summarize(
+       time = TIME,
+       ttp = DVTTP,
+       TTCC = ttcc(TIME, DVTTP, threshold = 30, interval = 25)
+   )
+ }
 
 }
 \author{
-Alexander Floren
+Sandy Floren
 }

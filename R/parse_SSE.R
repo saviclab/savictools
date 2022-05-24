@@ -1,6 +1,6 @@
 #' @title Summarize all SSE results in a directory
 #'
-#' @author Alexander Floren
+#' @author Sandy Floren
 #'
 #' @description
 #' `parse_all_sse()` recursively searches for SSE results csv files, parses them, and
@@ -18,6 +18,7 @@
 #' "type_I_error" and "type_II_error" are summaries of ofv statistics.
 #'
 #' @examples
+#' \dontrun{
 #' setwd(~/Path/To/SSE/Results)
 #'
 #' # Parse all "sse_results.csv" files in a directory
@@ -29,6 +30,7 @@
 #'
 #' # Generate summary .csv files
 #' parse_all_sse(summary = TRUE)
+#' }
 #' @export
 
 parse_all_sse <- function(path = getwd(), exclude = NULL, file = "sse_results.csv",

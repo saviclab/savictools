@@ -1,6 +1,8 @@
 #' @title
 #' Clinical relevance plots
 #'
+#' @author Hwi-yeol (Thomas) Yun, Sandy Floren
+#'
 #' @description
 #' `cr_plot()` visualizes the clinical relevance of covariate effects.
 #'
@@ -16,9 +18,11 @@
 #' distribution of covariate effects. Defaults to 0.95, or 95%.
 #'
 #' @examples
+#' \dontrun{
 #' # WT on V, WAZ on F1, FORMULATION on KA
 #' cr_plot(27, VWT = 1 + THETA(12), WAZF1 = 1 + THETA(11),
 #'         KAFORMULATION = 1 + THETA(9))
+#'}
 #'
 #' @export
 
@@ -143,7 +147,7 @@ model_paste0 <- function(runno, ext = "") {
 }
 
 get_cov <- function(file) {
-  read.table(file, skip = 1, header = TRUE)[,-1]
+  utils::read.table(file, skip = 1, header = TRUE)[,-1]
 }
 
 #' @export

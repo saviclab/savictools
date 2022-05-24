@@ -32,8 +32,13 @@ Using the variance-covariance matrix together with parameter estimates,
 relative to the range of clinical importance.
 }
 \examples{
+\dontrun{
 # WT on V, WAZ on F1, FORMULATION on KA
 cr_plot(27, VWT = 1 + THETA(12), WAZF1 = 1 + THETA(11),
         KAFORMULATION = 1 + THETA(9))
+}
 
+}
+\author{
+Hwi-yeol (Thomas) Yun, Sandy Floren
 }

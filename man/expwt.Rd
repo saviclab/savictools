@@ -15,5 +15,5 @@ expwt(data, units = c("months", "years", "weeks"))
 Calculate expected weight based on age and sex for under-5 children.
 }
 \author{
-Alexander Floren
+Sandy Floren
 }

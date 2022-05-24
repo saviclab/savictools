@@ -18,3 +18,6 @@ sparse(
 \description{
 sparse
 }
+\author{
+Sandy Floren
+}

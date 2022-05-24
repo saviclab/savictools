@@ -1,10 +1,10 @@
 #' @title Create parameter tables
-#' @author Alexander Floren
+#' @author Sandy Floren
 #'
 #' @description
 #'
 #' @param ... Run number(s) or model names(s).
-#' @param nice Whether to use Value [%RSE] formatting.
+#' @param nice Whether to use Value \[%RSE\] formatting.
 #' @param transform Whether to transform diagonal elements of OMEGA and SIGMA to standard deviations, and off-diagonal elements to correlations.
 #' @param write Whether to write to a csv file.
 #' @param filename Filename.
@@ -177,18 +177,19 @@ nmsum <- function(runno,
   if (nice) {
     xpsum <- xpsum %>%
 
-      mutate(Value_pct_RSE = paste0(
+      dplyr::mutate(Value_pct_RSE = paste0(
         round_format(Value, value_digits),
         " [",
         round_format(as.numeric(RSE) * 100, rse_digits),
         "]"
-      )) %>% select(-Value,-RSE)
+      )) %>%
+      dplyr::select(-Value,-RSE)
     xpsum[1:3, "Value_pct_RSE"] <- ""
   }
 
 
   if (write) {
-    write.csv(xpsum, paste0("run", n, "_params.csv"))
+    readr::write_csv(xpsum, paste0("run", n, "_params.csv"))
   } else {
     xpsum
   }

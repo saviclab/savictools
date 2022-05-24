@@ -35,7 +35,7 @@ workflow faster, simpler, and more intuitive.
 ##### Visualization
 - `cr_plot()` visualizes the clinical relevance of covariates.
 - `etacorr_cat()` and `etacorr_cont()` plot ETA-covariate correlations.
-- `plot_pk()` creates PK concentration curves ("spaghetti plots").
+- `pk_plot()` creates PK concentration curves ("spaghetti plots").
 - `VPC()` runs the Perl-speaks-Nonmem (PsN) `vpc` command from R, and is also a wrapper for xpose::VPC.
 
 ##### Workflow optimization

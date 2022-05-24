@@ -19,17 +19,13 @@
 #' drug *X* dosing events.
 #'
 #' @examples
-#' # 1. Basic TAD calculation
-#' tad(data)
-#'
-#' # 2. Calculating TAD only when RIF_FLAG is 0
-#' tad(data, RIF_FLAG == 0)
-#'
+#' # Basic TAD calculation
+#' tad(pk_example)
 #'
 #' @return A NONMEM-formatted dataframe with a TAD column
 #'
 #' @importFrom magrittr %>%
-#' @author Alexander Floren
+#' @author Sandy Floren
 #' @export
 
 

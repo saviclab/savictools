@@ -29,6 +29,7 @@ exists from a previous VPC, \emph{and} force = FALSE, psn_args can be left
 blank, and you need only supply the run number/model name.
 }
 \examples{
+\dontrun{
 # run VPC for run46.mod using runno = 46
 VPC(46, "-samples=500 -bin_array=-0.5,0.5,1.5,2.5,3.5,5,7,11,13,24.5
 -idv=TAD -bin_by_count=0", subset = "TAD <= 24")
@@ -38,6 +39,7 @@ VPC("run46", "-samples=500 -bin_array=-0.5,0.5,1.5,2.5,3.5,5,7,11,13,24.5
 -idv=TAD -bin_by_count=0", subset = "TAD <= 24")
 
 }
+}
 \author{
-Alexander Floren
+Sandy Floren
 }

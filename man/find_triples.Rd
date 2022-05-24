@@ -24,17 +24,17 @@ find_triples will begin a searching for the next triple at the index of the
 final member of the most recently found triple.
 }
 \examples{
-> source("find_triples.R")
-> find_triples(c(0, 4, 12, 16))
-   1
 
-> find_triples(c(0, 12, 25))
-   0
+# 1 triple
+ find_triples(c(0, 4, 12, 16))
 
-> find_triples(c(0, 12, 24, 36, 48))
-   2
+# No triples
+find_triples(c(0, 12, 25))
+
+# 2 triples
+find_triples(c(0, 12, 24, 36, 48))
 
 }
 \author{
-Alexander Floren
+Sandy Floren
 }

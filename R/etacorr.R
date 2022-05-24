@@ -1,5 +1,5 @@
 #' @title Plot ETA-covariate correlations
-#' @author Kendra Radtke, Dhruv Vaish, Alexander Floren
+#' @author Kendra Radtke, Dhruv Vaish, Sandy Floren
 #'
 #' @description For categorical covariates, use `etacorr_cat()`. For continuous
 #'  covariates, use `etacorr_cont()`.
@@ -10,6 +10,7 @@
 #' @param ... Covariates to plot against ETAs.
 #'
 #' @examples
+#' \dontrun{
 #' # Continuous Covariates:
 #'
 #' # Plot WT, HT, and AGE against ETA1 and ETA2 from run3
@@ -23,6 +24,7 @@
 #'
 #' # Plot HIV against ETA1 and ETA2 from run3
 #' etacorr_cat("run3", c(1, 2), WT, HT, AGE)
+#' }
 #'
 #' @export
 etacorr_cont <- function(runno, eta, ...) {

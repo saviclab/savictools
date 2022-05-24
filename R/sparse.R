@@ -1,8 +1,9 @@
 
 # TODO: print QC plot by default
+# TODO: docs
 #' @title sparse
-#' @importFrom rlang .data
 #'
+#' @author Sandy Floren
 #' @export
 
 sparse <- function(data,
@@ -70,7 +71,7 @@ sparse <- function(data,
   }
   if (plot) {
     p <- data %>%
-          dplyr::filter(.data$EVID == 0) %>%
+          dplyr::filter(EVID == 0) %>%
           ggplot2::ggplot(ggplot2::aes(x = TIME, y = DV, group = ID)) +
           ggplot2::geom_line(color = "black", size = 0.3) +
           ggplot2::geom_point(ggplot2::aes(color = as.factor(SPARSE))) +

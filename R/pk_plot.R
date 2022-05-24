@@ -2,7 +2,7 @@
 #' Plot PK curves
 #'
 #' @description
-#' `plot_pk()` creates spaghetti PK plots with connected data points for each
+#' `pk_plot()` creates spaghetti PK plots with connected data points for each
 #' PK curve.
 #'
 #'
@@ -15,7 +15,7 @@
 #'
 #' @export
 
-plot_pk <- function(data, ind = FALSE, nrow = 4, ncol = 4, id = NULL,
+pk_plot <- function(data, ind = FALSE, nrow = 4, ncol = 4, id = NULL,
                      max_tad = 26)
 {
   if (!exists("TAD", data)) {
@@ -42,7 +42,7 @@ plot_pk <- function(data, ind = FALSE, nrow = 4, ncol = 4, id = NULL,
                                                  ncol = ncol, page = i)
         n_plots_remaining <- n_plots_remaining - (nrow * ncol)
       } else {
-        title <- as.character(tail(data$ID))
+        title <- as.character(utils::tail(data$ID))
         plot <- p + ggplot2::ggtitle(title)
       }
       print(plot)

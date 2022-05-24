@@ -1,6 +1,8 @@
 #' @title
 #' Detect individual PK curves
 #'
+#' @author Sandy Floren
+#'
 #' @description
 #' `curve()` assigns a unique number to each PK curve in a dataset.
 #'
