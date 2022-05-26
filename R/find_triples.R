@@ -7,9 +7,9 @@
 #' find_triples will begin a searching for the next triple at the index of the
 #' final member of the most recently found triple.
 #'
-#' @param x: a vector of numeric data
-#' @param from: a numeric lower bound for the length between two observations
-#' @param to: a numeric upper bound for the length between two observations
+#' @param x a vector of numeric data
+#' @param from a numeric lower bound for the length between two observations
+#' @param to a numeric upper bound for the length between two observations
 #'
 #' @usage find_triples(x, from = 4.0, to = 12.0)
 #'
