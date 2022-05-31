@@ -7,11 +7,11 @@
 find_triples(x, from = 4.0, to = 12.0)
 }
 \arguments{
-\item{x:}{a vector of numeric data}
+\item{x}{a vector of numeric data}
 
-\item{from:}{a numeric lower bound for the length between two observations}
+\item{from}{a numeric lower bound for the length between two observations}
 
-\item{to:}{a numeric upper bound for the length between two observations}
+\item{to}{a numeric upper bound for the length between two observations}
 }
 \value{
 int representing the number of triples
