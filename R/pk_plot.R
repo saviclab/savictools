@@ -34,7 +34,7 @@ pk_plot <- function(data, ind = FALSE, nrow = 4, ncol = 4, id = NULL,
   if (ind) {
     n_ids <- length(unique(data$ID))
     n_plots_remaining <- n_ids
-    p <- p + ggplot2::geom_point(color = "purple", cex = 0.5) +
+    p <- p + ggplot2::geom_point(cex = 0.5) +
       ggplot2::geom_line(color = "grey")
     for (i in seq(1, ceiling(n_ids/(nrow * ncol)))) {
       if (n_plots_remaining != 1) {
@@ -49,7 +49,7 @@ pk_plot <- function(data, ind = FALSE, nrow = 4, ncol = 4, id = NULL,
     }
   }
   else {
-    p + ggplot2::geom_point(color = "purple", cex = 0.5) +
+    p + ggplot2::geom_point(cex = 0.5) +
       ggplot2::geom_line(color = "grey", alpha = 0.3)
   }
 }
