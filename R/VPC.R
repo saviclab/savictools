@@ -16,7 +16,7 @@
   #' @param runno A run number or model name.
   #' @param psn_args Optional. A character string containing arguments to PsN's
   #' `vpc`.
-  #' @param force Optional. Logical. Should `VPC()` run a new VPC, deleting old
+  #' @param overwrite Optional. Logical. Should `VPC()` run a new VPC, deleting old
   #' VPC directories?
   #' @param ... Optional. Additional arguments to `xpose4::xpose.VPC()`.
   #'
@@ -39,7 +39,7 @@
 
   VPC <- function(runno,
                   psn_args = NULL,
-                  force = FALSE,
+                  overwrite = FALSE,
                   ...) {
     # ensure runno is a number
     runno <- as.numeric(stringr::str_extract(runno, "\\d+"))
@@ -55,26 +55,24 @@
     dir <- paste0("vpc_", model_paste0(runno))
 
     # ensure directory argument is included
-    if (!any(grepl("-directory=", psn_args))) {
-      psn_args <- c(psn_args, paste0("-directory=", dir))
-    } else {
+    if (any(grepl("-directory=", psn_args))) {
       dir <- strsplit(strsplit(grep("-directory=", psn_args, value = TRUE),
                                "=")[[1]][2], " ")[[1]][1]
+    } else {
+      psn_args <- c(psn_args, paste0("-directory=", dir))
     }
 
+    # overwrite old vpc directory, if necessary
     if (file.exists(dir)) {
       message(paste0(dir), " already exists in working directory.")
-      if (force) {
+      if (overwrite) {
         # delete vpc directory and run new vpc
+        message(paste0("Deleting ", dir, " and running new VPC."))
         unlink(dir, recursive = TRUE)
-        system2("vpc", args = psn_args, wait = TRUE)
-      } else {
-        message("To run a new VPC, use force = TRUE.")
       }
-    } else {
-      # run new vpc
-      system2("vpc", args = psn_args, wait = TRUE)
     }
+
+    system2("vpc", args = psn_args, wait = TRUE)
 
     # set vpc.info argument for xpose.VPC
     if (is.null(xpose_args$vpc.info)) {
