@@ -17,6 +17,7 @@
 #' "params" is a dataframe of parameter statistics.
 #' "type_I_error" and "type_II_error" are summaries of ofv statistics.
 #'
+#' @rdname parse-SSE
 #' @examples
 #' \dontrun{
 #' setwd(~/Path/To/SSE/Results)
@@ -132,6 +133,8 @@ parse_all_sse <- function(path = getwd(), exclude = NULL, file = "sse_results.cs
 #'   A named list of dataframes.
 #'   "params" is a dataframe of parameter statistics.
 #'   "type_I_error" and "type_II_error" are summaries of ofv statistics.
+#'
+#' @rdname parse-SSE
 #' @examples
 #'
 #' @export

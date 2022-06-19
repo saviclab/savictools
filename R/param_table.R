@@ -195,18 +195,3 @@ nmsum <- function(runno,
   }
 }
 
-#' @export
-round_format <- function(x, digits) {
-  round_lt_0 <- FALSE
-  if (digits < 0) {
-    fmt <- "%.0f"
-    round_lt_0 <- TRUE
-  } else {
-    fmt <- paste0("%.", digits, "f")
-  }
-  if (round_lt_0) {
-    suppressWarnings(sprintf(fmt, as.numeric(round(x, digits))))
-  } else {
-    suppressWarnings(sprintf(fmt, as.numeric(x)))
-  }
-}
