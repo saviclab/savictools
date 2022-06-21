@@ -32,10 +32,11 @@ round_format <- function (x, digits)
 
 #' @title Round up from 5s
 
-#' @description `rounde()` is a rounding function that rounds up when rounding off a 5,
-#' instead of to the nearest even number, which is what `round()` does.
-#' @param x A numeric vector
-#' @param digits Number of significant significant digits to round to
+#' @description `rounde()` is a rounding function that rounds up when rounding
+#' off a 5, instead of to the nearest even number, which is what the base R
+#' function `round()` does.
+#' @param x A numeric vector.
+#' @param digits Number of significant significant digits to be used.
 #'
 #' @rdname formatting
 #' @export
