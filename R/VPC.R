@@ -10,12 +10,12 @@
 #' @details
 #' Let the name of your model for VPC be called "runXX.mod". runXX.mod must
 #' exist in your current working directory. If a vpc_runXX directory already
-#' exists from a previous VPC, *and* force = FALSE, psn_args can be left
+#' exists from a previous VPC, *and* overwrite = FALSE, psn_args can be left
 #' blank, and you need only supply the run number/model name.
 #'
 #' @param runno A run number or model name.
 #' @param psn_args Optional. A character string containing arguments to PsN's
-#' `vpc`.
+#' `vpc` program.
 #' @param overwrite Optional. Logical. Should `VPC()` run a new VPC, deleting old
 #' VPC directories?
 #' @param ... Optional. Additional arguments to `xpose4::xpose.VPC()`.
