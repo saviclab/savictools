@@ -47,7 +47,8 @@ cr_plot <-
     n_theta <- length(mu)
 
     # get variance-covariance matrix from .cov file
-    variance_covariance_matrix <- get_cov(model_paste0(runno, ".cov"))
+    variance_covariance_matrix <-
+      get_cov(model_paste0(runno, ".cov"))
     theta_cov <- variance_covariance_matrix[1:n_theta, 1:n_theta]
 
     # sample from multivariate normal distribution
@@ -74,7 +75,7 @@ cr_plot <-
       boot,
       value >= reapply(value, name, quantile, (1 - width) / 2) &
         value <= reapply(value, name, quantile, 1 - ((1 - width) / 2))
-    ),]
+    ), ]
     # plot
 
     if (type  == "ggplot") {
@@ -136,18 +137,9 @@ cr_plot <-
 
 
 # Helpers --------------------------------------------------------------------
-#' @export
-model_paste0 <- function(runno, ext = "") {
-  # If runno is a number, return "run[runno].ext"
-  ifelse(suppressWarnings(!is.na(as.numeric(as.character(runno)))),
-         paste0("run", runno, ext),
-         # If runno is a file name, strip any file extension off and return "runno.ext"
-         paste0(gsub("\\.\\w*", "", runno), ext))
-
-}
 
 get_cov <- function(file) {
-  utils::read.table(file, skip = 1, header = TRUE)[,-1]
+  utils::read.table(file, skip = 1, header = TRUE)[, -1]
 }
 
 #' @export
