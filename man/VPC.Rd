@@ -4,15 +4,15 @@
 \alias{VPC}
 \title{Visual predictive checks}
 \usage{
-VPC(runno, psn_args = NULL, force = FALSE, ...)
+VPC(runno, psn_args = NULL, overwrite = FALSE, ...)
 }
 \arguments{
 \item{runno}{A run number or model name.}
 
 \item{psn_args}{Optional. A character string containing arguments to PsN's
-\code{vpc}.}
+\code{vpc} program.}
 
-\item{force}{Optional. Logical. Should \code{VPC()} run a new VPC, deleting old
+\item{overwrite}{Optional. Logical. Should \code{VPC()} run a new VPC, deleting old
 VPC directories?}
 
 \item{...}{Optional. Additional arguments to \code{xpose4::xpose.VPC()}.}
@@ -25,7 +25,7 @@ console.
 \details{
 Let the name of your model for VPC be called "runXX.mod". runXX.mod must
 exist in your current working directory. If a vpc_runXX directory already
-exists from a previous VPC, \emph{and} force = FALSE, psn_args can be left
+exists from a previous VPC, \emph{and} overwrite = FALSE, psn_args can be left
 blank, and you need only supply the run number/model name.
 }
 \examples{

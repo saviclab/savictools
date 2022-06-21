@@ -7,7 +7,7 @@
 curve(data)
 }
 \arguments{
-\item{data}{A dataframe with ID, and EVID columns.}
+\item{data}{A dataframe with ID, TIME, and EVID columns.}
 }
 \description{
 \code{curve()} assigns a unique number to each PK curve in a dataset.
@@ -16,7 +16,7 @@ curve(data)
 A PK curve is defined as any sequence of consecutive 0s in the EVID column of
 length greater than or equal to 1, corresponding to the same ID.
 
-\code{curve()} is primarily used by \code{plot_pk()} in order to draw separate lines
+\code{curve()} is primarily used by \code{pk_plot()} in order to draw separate lines
 for distinct PK curves belonging to the same individual.
 }
 \author{
