@@ -10,7 +10,7 @@
 #' @param ... A condition that specifies for which rows to calculate TAD.
 #'
 #' @details Expressions in `...` are used to determine under what conditions a
-#' row of `data` should count as a "dose" for  calculating time after dose. This
+#' row of `data` should count as a "dose" for calculating time after dose. This
 #' is especially useful if there is more than one type of dose event, and TAD
 #' should only apply to one of them. For example, suppose the DV column of
 #' `data` contains concentrations of a drug *X*. If a flag colum "Y_FLAG"
@@ -44,13 +44,20 @@ data %>%
     dplyr::group_by(ID) %>%
     dplyr::arrange(TIME, .by_group = TRUE) %>%
     dplyr::group_modify( ~ {
+      evid <- as.integer(dplyr::pull(.x, EVID))
+
       copy <- .x %>%
         dplyr::mutate(rownum = 1:dplyr::n()) %>%
         dplyr::filter(!!cond)
       indices <- dplyr::pull(copy, rownum)
-      evid <- dplyr::pull(.x, EVID)
       copy <- .x
       copy$TAD <- 0
+
+      # handle case of no dosing records or no observations
+      if (!any(c(1, 4) %in% unique(evid)) | !(0 %in% unique(evid))) {
+        return(copy)
+      }
+
       last_dose <- as.double(dplyr::pull(.x, TIME)[2])
       ii_prev <- 0
       for (i in seq(nrow(.x))) {
