@@ -53,7 +53,7 @@ zscores <-
 
     # Check for missing
     below_five <- data %>%
-      dplyr::filter(AGE <= 60) %>%
+      dplyr::filter(AGE <= 60 | is.na(AGE)) %>%
       dplyr::select(ID, rownum, AGE, SEX, WT, HT)
     below_five_frame <- as.data.frame(below_five)
 
@@ -170,7 +170,7 @@ zscores <-
     #  dplyr::rename(ID = ID.x) %>% dplyr::select(-ID.y,-rownum)
 
 
-    # deal with missing and  values
+    # deal with missing and extreme values
 
     extreme_parsed <- data %>%  dplyr::mutate(
       WAZ = ifelse(WAZ_F == 1, extreme_flag, WAZ),
@@ -190,7 +190,8 @@ zscores <-
         WAZ = missing_flag,
         HAZ = missing_flag,
         BAZ = missing_flag,
-        WHZ = missing_flag
+        WHZ = missing_flag,
+        BMI = missing_flag
       )
     )
 
