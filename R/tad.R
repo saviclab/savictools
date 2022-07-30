@@ -67,6 +67,7 @@ data %>%
         ii_prev <- as.numeric(dplyr::pull(dplyr::filter(copy, II != 0), II)[1])
       }
 
+
       for (i in seq(nrow(.x))) {
         this_evid <- evid[i]
         this_time <- as.double(dplyr::pull(.x, TIME)[i])
