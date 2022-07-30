@@ -136,7 +136,6 @@
 #'   original_id = FALSE,
 #'   amt = dose_fun
 #' )
-#' @author Sandy Floren
 #' @export
 
 
