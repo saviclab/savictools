@@ -51,39 +51,65 @@ data %>%
         dplyr::filter(!!cond)
       indices <- dplyr::pull(copy, rownum)
       copy <- .x
-      copy$TAD <- 0
+      copy$TAD <- dplyr::if_else(copy$EVID == 0, NA_real_, 0)
 
       # handle case of no dosing records or no observations
       if (!any(c(1, 4) %in% unique(evid)) | !(0 %in% unique(evid))) {
         return(copy)
       }
 
+      dose_found <- FALSE
       last_dose <- as.double(dplyr::pull(.x, TIME)[2])
-      ii_prev <- 0
+
+      ii_prev <- NA_real_
+
+      if (addl_present) {
+        ii_prev <- as.numeric(dplyr::pull(dplyr::filter(copy, II != 0), II)[1])
+      }
+
       for (i in seq(nrow(.x))) {
         this_evid <- evid[i]
         this_time <- as.double(dplyr::pull(.x, TIME)[i])
         # only count rows where dots are TRUE for last_dose calculation
+
+        # if this is a dose record
         if (i %in% indices & (this_evid == 1 | this_evid == 4)) {
-          # deal with case of ADDL
+          dose_found <- TRUE
+          # ADDL
           if (addl_present) {
-            ii_prev <- as.integer(dplyr::pull(.x, II)[i])
+            ii_prev <- as.numeric(dplyr::pull(.x, II)[i])
             # note that this is the only case where last_dose > this_time,
             # hence the modulo operation below is always appropriate.
             last_dose <- this_time +
               (as.integer(dplyr::pull(.x, ADDL)[i]) *
                  ii_prev)
-          } else {
+          }
+
+          # no ADDL
+          else {
             last_dose <- this_time
           }
         }
+
+        # if this is an observation record
         else {
-          if (last_dose > this_time) {
-            # calculate TAD as time difference from latest dose modulo II
-            copy[i, "TAD"] <- (this_time - last_dose) %% ii_prev
-          } else {
-            copy[i, "TAD"] <- this_time - last_dose
+
+          # prior dosing record
+          if (dose_found) {
+            # ADDL
+            if (last_dose > this_time) {
+
+              # calculate TAD as time difference from latest dose modulo II
+              copy[i, "TAD"] <- (this_time - last_dose) %% ii_prev
+            }
+            # no ADDL
+            else {
+              copy[i, "TAD"] <- this_time - last_dose
+            }
           }
+
+          # if no prior dosing record, leave TAD as NA.
+
         }
       }
       copy
