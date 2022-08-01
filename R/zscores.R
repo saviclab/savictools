@@ -50,15 +50,16 @@ zscores <-
     data$BAZ_F <- NA
     data$HAZ_F <- NA
 
+    age_cutoff <- 1856 / 30.4375 # 60.97741
 
     # Check for missing
     below_five <- data %>%
-      dplyr::filter(AGE <= 60 | is.na(AGE)) %>%
+      dplyr::filter(AGE <= age_cutoff | is.na(AGE)) %>%
       dplyr::select(ID, rownum, AGE, SEX, WT, HT)
     below_five_frame <- as.data.frame(below_five)
 
     above_five <- data %>%
-      dplyr::filter(AGE > 60) %>%
+      dplyr::filter(AGE > age_cutoff) %>%
       dplyr::select(ID, rownum, AGE, SEX, WT, HT)
     above_five_frame <- as.data.frame(above_five)
 
@@ -111,14 +112,19 @@ zscores <-
     # age must be months for this function
 
     if (nrow(above_five_frame) > 0) {
+
+      no_under_61 <- above_five_frame %>%
+        dplyr::mutate(AGE = dplyr::if_else(AGE < 61, 61, AGE))
+
       matz_above_5 <- who2007_vec(
-        mydf = above_five_frame,
+        mydf = no_under_61,
         sex = SEX,
         age = AGE,
         weight = WT,
         height = HT
       )
 
+      matz_above_5$AGE <- above_five_frame$AGE
 
       zvars_above_5 <- matz_above_5[, c('ID',
                                         'rownum',
