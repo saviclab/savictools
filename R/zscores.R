@@ -146,7 +146,7 @@ zscores <-
     }
 
     # To merge data sets, first merge z-scores together
-    if (nrow(below_five_frame) > 0 && nrow(above_five_frame) > 0) {
+    if (nrow(below_five_frame) > 0 & nrow(above_five_frame) > 0) {
       zvars_full <- dplyr::bind_rows(zvars_below_5, zvars_above_5)
     } else if (nrow(below_five_frame) > 0) {
       zvars_full <- zvars_below_5
