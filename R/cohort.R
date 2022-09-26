@@ -23,7 +23,7 @@
 #' variables are assumed to be independent.
 #'
 #' @section Dosing and Observation Events:
-#' After sampling is finsihed, `cohort()` will create duplicate rows for each
+#' After sampling is finished, `cohort()` will create duplicate rows for each
 #' individual corresponding to the timepoints specified in
 #' `dose_times` and `obs_times`, and create a column "EVID" distinguishing
 #' between dosing and observation events.
