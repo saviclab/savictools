@@ -33,7 +33,6 @@
 
 
 tad <- function(data, expand = FALSE, ...) {
-
   # format check
   nmcheck(data)
 
@@ -48,11 +47,10 @@ tad <- function(data, expand = FALSE, ...) {
   res <- expanded_addl %>%
     dplyr::group_by(ID) %>%
     dplyr::arrange(TIME, .by_group = TRUE) %>%
-    dplyr::group_modify( ~ {
-
+    dplyr::group_modify(~ {
       evid <- as.integer(dplyr::pull(.x, "EVID"))
 
-      if(rlang::quo_is_missing(cond)) {
+      if (rlang::quo_is_missing(cond)) {
         calc_tad <- rep(1, nrow(expanded_addl))
       } else {
         calc_tad <- .x %>%
@@ -61,13 +59,14 @@ tad <- function(data, expand = FALSE, ...) {
       }
 
       # handle case of no dosing records or no observations
-      if (!any(c(1, 4) %in% unique(evid)) | !(0 %in% unique(evid))) {
+      if (!any(c(1, 4) %in% unique(evid)) |
+          !(0 %in% unique(evid))) {
         return(.x)
       }
 
       .x$TAD <- computeTAD(evid, dplyr::pull(.x, "TIME"), calc_tad)
 
-     .x
+      .x
     }) %>%
     dplyr::ungroup() %>%
     dplyr::arrange(ID, TIME, dplyr::desc(EVID))
@@ -76,18 +75,12 @@ tad <- function(data, expand = FALSE, ...) {
     res
   } else {
     suppressMessages(dplyr::left_join(data, res) %>%
-      tidyr::replace_na(list(TAD = 0)))
+                       tidyr::replace_na(list(TAD = 0)))
   }
 }
 
 
-
-
-
-
-
-
-
+# Deprecated
 tad_old <- function(data, ...) {
   cond <- dplyr::quo(...)
   addl_present <- FALSE
@@ -102,7 +95,7 @@ tad_old <- function(data, ...) {
   data %>%
     dplyr::group_by(ID) %>%
     dplyr::arrange(TIME, .by_group = TRUE) %>%
-    dplyr::group_modify( ~ {
+    dplyr::group_modify(~ {
       evid <- as.integer(dplyr::pull(.x, EVID))
 
       copy <- .x %>%
@@ -113,7 +106,8 @@ tad_old <- function(data, ...) {
       copy$TAD <- dplyr::if_else(copy$EVID == 0, NA_real_, 0)
 
       # handle case of no dosing records or no observations
-      if (!any(c(1, 4) %in% unique(evid)) | !(0 %in% unique(evid))) {
+      if (!any(c(1, 4) %in% unique(evid)) |
+          !(0 %in% unique(evid))) {
         return(copy)
       }
 
@@ -123,9 +117,9 @@ tad_old <- function(data, ...) {
       ii_prev <- NA_real_
 
       if (addl_present) {
-        ii_prev <- as.numeric(dplyr::pull(dplyr::filter(copy, II != 0), II)[1])
+        ii_prev <-
+          as.numeric(dplyr::pull(dplyr::filter(copy, II != 0), II)[1])
       }
-
 
       for (i in seq(nrow(.x))) {
         this_evid <- evid[i]
@@ -153,12 +147,10 @@ tad_old <- function(data, ...) {
 
         # if this is an observation record
         else {
-
           # prior dosing record
           if (dose_found) {
             # ADDL
             if (last_dose > this_time) {
-
               # calculate TAD as time difference from latest dose modulo II
               copy[i, "TAD"] <- (this_time - last_dose) %% ii_prev
             }
@@ -178,7 +170,8 @@ tad_old <- function(data, ...) {
     dplyr::arrange(ID, TIME, dplyr::desc(EVID))
 }
 
-Rcpp::cppFunction('NumericVector computeTAD(IntegerVector evid, NumericVector time, IntegerVector calc_tad) {
+Rcpp::cppFunction(
+  'NumericVector computeTAD(IntegerVector evid, NumericVector time, IntegerVector calc_tad) {
 
   // assume data is already in expanded form (no ADDL)
   bool dose_found = FALSE;
@@ -214,4 +207,3 @@ Rcpp::cppFunction('NumericVector computeTAD(IntegerVector evid, NumericVector ti
   return tad;
 }
 ')
-

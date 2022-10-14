@@ -42,8 +42,9 @@ round_format <- function (x, digits)
 #' @export
 rounde <- function(x, digits = 0) {
   expo <- 10 ^ digits
-  return(ifelse(abs(x * expo) - floor(abs(x * expo)) < 0.5,
-                sign(x * expo) * floor(abs(x * expo)),
-                sign(x * expo) * (floor(abs(x * expo)) + 1)) / expo)
+  return(ifelse(
+    abs(x * expo) - floor(abs(x * expo)) < 0.5,
+    sign(x * expo) * floor(abs(x * expo)),
+    sign(x * expo) * (floor(abs(x * expo)) + 1)
+  ) / expo)
 }
-
