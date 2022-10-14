@@ -4,7 +4,7 @@
 \alias{tad}
 \title{Calculate time after dose (TAD)}
 \usage{
-tad(data, ...)
+tad(data, expand = FALSE, ...)
 }
 \arguments{
 \item{data}{A NONMEM-formatted dataframe}
@@ -23,7 +23,7 @@ is called EVID, and the time column is called TIME. Data is grouped by ID
 internally before TAD is calculated.
 
 Expressions in \code{...} are used to determine under what conditions a
-row of \code{data} should count as a "dose" for  calculating time after dose. This
+row of \code{data} should count as a "dose" for calculating time after dose. This
 is especially useful if there is more than one type of dose event, and TAD
 should only apply to one of them. For example, suppose the DV column of
 \code{data} contains concentrations of a drug \emph{X}. If a flag colum "Y_FLAG"

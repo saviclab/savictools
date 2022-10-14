@@ -28,10 +28,6 @@
 #' @author Sandy Floren
 #' @export
 
-
-
-
-
 tad <- function(data, expand = FALSE, ...) {
   # format check
   nmcheck(data)

@@ -13,6 +13,7 @@
 #'
 #' @importFrom magrittr %>%
 #' @author Sandy Floren
+#' @rdname nonmem-data
 #' @export
 
 nmcheck <- function(data) {

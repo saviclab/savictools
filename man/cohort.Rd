@@ -100,7 +100,7 @@ variables are assumed to be independent.
 
 \section{Dosing and Observation Events}{
 
-After sampling is finsihed, \code{cohort()} will create duplicate rows for each
+After sampling is finished, \code{cohort()} will create duplicate rows for each
 individual corresponding to the timepoints specified in
 \code{dose_times} and \code{obs_times}, and create a column "EVID" distinguishing
 between dosing and observation events.
@@ -171,7 +171,5 @@ cohort(
 )
 }
 \author{
-Sandy Floren
-
 Sandy Floren
 }
