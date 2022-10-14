@@ -29,7 +29,66 @@
 #' @export
 
 
-tad <- function(data, ...) {
+
+
+
+tad <- function(data, expand = FALSE, ...) {
+
+  # format check
+  nmcheck(data)
+
+  cond <- dplyr::quo(...)
+
+  addl_present <- FALSE
+  if ("ADDL" %in% colnames(data)) {
+    addl_present <- TRUE
+  }
+  expanded_addl <- expand_addl(data, check = FALSE)
+
+  res <- expanded_addl %>%
+    dplyr::group_by(ID) %>%
+    dplyr::arrange(TIME, .by_group = TRUE) %>%
+    dplyr::group_modify( ~ {
+
+      evid <- as.integer(dplyr::pull(.x, "EVID"))
+
+      if(rlang::quo_is_missing(cond)) {
+        calc_tad <- rep(1, nrow(expanded_addl))
+      } else {
+        calc_tad <- .x %>%
+          dplyr::mutate(calc_tad = as.numeric(!!cond)) %>%
+          dplyr::pull("calc_tad")
+      }
+
+      # handle case of no dosing records or no observations
+      if (!any(c(1, 4) %in% unique(evid)) | !(0 %in% unique(evid))) {
+        return(.x)
+      }
+
+      .x$TAD <- computeTAD(evid, dplyr::pull(.x, "TIME"), calc_tad)
+
+     .x
+    }) %>%
+    dplyr::ungroup() %>%
+    dplyr::arrange(ID, TIME, dplyr::desc(EVID))
+
+  if (expand) {
+    res
+  } else {
+    suppressMessages(dplyr::left_join(data, res) %>%
+      tidyr::replace_na(list(TAD = 0)))
+  }
+}
+
+
+
+
+
+
+
+
+
+tad_old <- function(data, ...) {
   cond <- dplyr::quo(...)
   addl_present <- FALSE
   if ("ADDL" %in% colnames(data)) {
@@ -40,7 +99,7 @@ tad <- function(data, ...) {
       (stop("To use the ADDL data record, you must also specify II."))
   }
 
-data %>%
+  data %>%
     dplyr::group_by(ID) %>%
     dplyr::arrange(TIME, .by_group = TRUE) %>%
     dplyr::group_modify( ~ {
@@ -118,3 +177,41 @@ data %>%
     dplyr::ungroup() %>%
     dplyr::arrange(ID, TIME, dplyr::desc(EVID))
 }
+
+Rcpp::cppFunction('NumericVector computeTAD(IntegerVector evid, NumericVector time, IntegerVector calc_tad) {
+
+  // assume data is already in expanded form (no ADDL)
+  bool dose_found = FALSE;
+  double last_dose = NA_REAL;
+
+  int length = evid.length();
+  NumericVector tad (length, NA_REAL);
+
+  for(int i = 0; i < length; i++) {
+
+        // only calculate TAD for rows satisfying cond
+        if(calc_tad[i] == 0) continue;
+
+        int this_evid = evid[i];
+        double this_time = time[i];
+
+        // if this is a dose record
+        if(this_evid == 1 || this_evid == 4) {
+
+          dose_found = TRUE;
+          tad[i] = 0;
+
+          last_dose = this_time;
+        }
+        else {
+
+          if(dose_found) {
+            tad[i] = this_time - last_dose;
+          }
+          // if no prior dosing record, leave TAD as NA.
+        }
+  }
+  return tad;
+}
+')
+
