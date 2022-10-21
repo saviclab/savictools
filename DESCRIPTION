@@ -7,7 +7,7 @@ Authors@R:
            role = c("aut", "cre"),
            email = "first.last@example.com",
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description:  A collection of functions designed to make the pharmacometrics workflow faster, simpler, and more intuitive.
+Description: A collection of functions designed to make the pharmacometrics workflow faster, simpler, and more intuitive.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Imports:
@@ -24,10 +24,13 @@ Imports:
     purrr,
     rlang,
     tidyr,
-    xpose4
+    xpose4,
+    Rcpp
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
 Depends: 
     R (>= 2.10)
+LinkingTo: 
+    Rcpp
