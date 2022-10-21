@@ -24,3 +24,6 @@ export(tad)
 export(ttcc)
 export(zscores)
 importFrom(magrittr,"%>%")
+
+useDynLib(savictools)
+importFrom(Rcpp, sourceCpp)
