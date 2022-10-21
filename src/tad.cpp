@@ -1,8 +1,8 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-// [[Rcpp::export]]
-NumericVector computeTAD(IntegerVector evid, NumericVector time, IntegerVector calc_tad) {
+// [[Rcpp::export(.tad)]]
+NumericVector tad(IntegerVector evid, NumericVector time, IntegerVector calc_tad) {
 
   // assume data is already in expanded form (no ADDL)
   bool dose_found = FALSE;

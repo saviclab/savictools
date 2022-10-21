@@ -60,7 +60,7 @@ tad <- function(data, expand = FALSE, ...) {
         return(.x)
       }
 
-      .x$TAD <- computeTAD(evid, dplyr::pull(.x, "TIME"), calc_tad)
+      .x$TAD <- .tad(evid, dplyr::pull(.x, "TIME"), calc_tad)
 
       .x
     }) %>%
