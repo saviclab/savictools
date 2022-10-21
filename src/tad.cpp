@@ -9,7 +9,7 @@ NumericVector tad(IntegerVector evid, NumericVector time, IntegerVector calc_tad
   double last_dose = NA_REAL;
 
   int length = evid.size();
-  NumericVector tad (length, NA_REAL);
+  NumericVector tad(length);
 
   for(int i = 0; i < length; i++) {
 
