@@ -28,23 +28,20 @@
 #' @author Sandy Floren
 #' @export
 
-tad <- function(data, expand = FALSE, ...) {
+tad <- function(data, ..., expand = FALSE) {
   # format check
   nmcheck(data)
 
   cond <- dplyr::quo(...)
-
-  addl_present <- FALSE
-  if ("ADDL" %in% colnames(data)) {
-    addl_present <- TRUE
-  }
   expanded_addl <- expand_addl(data, check = FALSE)
 
   res <- expanded_addl %>%
     dplyr::group_by(ID) %>%
     dplyr::arrange(TIME, .by_group = TRUE) %>%
     dplyr::group_modify(~ {
-      evid <- as.integer(dplyr::pull(.x, "EVID"))
+
+      evid <- as.integer(.x$EVID)
+      time <- .x$TIME
 
       if (rlang::quo_is_missing(cond)) {
         calc_tad <- rep(1, nrow(expanded_addl))
@@ -60,14 +57,13 @@ tad <- function(data, expand = FALSE, ...) {
         return(.x)
       }
 
-      .x$TAD <- .tad(evid, dplyr::pull(.x, "TIME"), calc_tad)
 
+      .x$TAD <- .tad(evid, time, calc_tad)
       .x
     }) %>%
-    dplyr::ungroup() %>%
-    dplyr::arrange(ID, TIME, dplyr::desc(EVID))
+    dplyr::ungroup()
 
-  if (expand) {
+  if (expand | !("ADDL" %in% colnames(data))) {
     res
   } else {
     suppressMessages(dplyr::left_join(data, res) %>%
