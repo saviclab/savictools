@@ -19,7 +19,7 @@
 
 curve <- function(data) {
   data <- data %>%
-    dplyr::arrange(ID, TIME, EVID)
+    dplyr::arrange(ID, TIME, desc(EVID))
   if (!exists("TAD", data)) {
     data <- tad(data)
   }
