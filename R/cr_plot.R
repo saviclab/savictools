@@ -12,10 +12,13 @@
 #' relative to the range of clinical importance.
 #'
 #' @param runno A run number or model name.
-#' @param effect_size The size of a clinically relevant effect. Defaults is 0.2,
-#' or 20%.
+#' @param effect_size The effect size needed for clinical relevance. Default is 0.2.
 #' @param width Size of the interval of the posterior
 #' distribution of covariate effects. Defaults to 0.95, or 95%.
+#' @param type Plotting library to use. Either "lattice" (the default) or "ggplot".
+#' @param adjust Passed to `adjust` argument in `ggplot2::geom_density`.
+#' @param n Number of samples to draw from the normal distribution for bootstrapping parameter estimates.
+#' @param ... Unquoted expressions representing covariate relations; see example.
 #'
 #' @examples
 #' \dontrun{
@@ -116,7 +119,7 @@ cr_plot <-
       pl1 <- lattice::stripplot(
         name ~ value,
         boot,
-        panel = savictools:::panel.covplot,
+        panel = panel.covplot,
         rlim = c(1 - effect_size, 1 + effect_size),
         xlim = c(0, 2),
         main = paste("Clinical Relevance of Covariates:", model_paste0(runno)),
