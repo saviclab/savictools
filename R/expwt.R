@@ -1,11 +1,11 @@
 #' @title Calculate expected weight based on age and sex for under-5 children.
-#' @author Sandy Floren
 #'
 #' @description Calculate expected weight based on age and sex for under-5 children.
 #'
 #' @param data A dataframe with AGE and SEX columns.
 #' @param units Units for age. Default is "months".
 #'
+#' @author Sandy Floren
 #' @export
 expwt <- function(data, units = c("months", "years", "weeks")) {
   units <- match.arg(units)

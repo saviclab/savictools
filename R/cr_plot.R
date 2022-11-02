@@ -141,7 +141,6 @@ get_cov <- function(file) {
   utils::read.table(file, skip = 1, header = TRUE)[,-1]
 }
 
-#' @export
 get_final_params <- function(file) {
   lst <- readLines(file)
   pos <- grep("FINAL PARAMETER ESTIMATE", lst)

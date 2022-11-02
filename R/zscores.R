@@ -101,9 +101,12 @@ zscores <-
         HAZ = zlen,
         WHZ = zwfl,
         BAZ = zbmi,
-        WAZ_F = fwei, # WAZ out of range flag
-        HAZ_F = flen, # HAZ out of range flag
-        WHZ_F = fwfl, # WHZ out of range flag
+        WAZ_F = fwei,
+        # WAZ out of range flag
+        HAZ_F = flen,
+        # HAZ out of range flag
+        WHZ_F = fwfl,
+        # WHZ out of range flag
         BAZ_F = fbmi  # BAZ out of range flag
       )
     }
@@ -112,7 +115,6 @@ zscores <-
     # age must be months for this function
 
     if (nrow(above_five_frame) > 0) {
-
       no_under_61 <- above_five_frame %>%
         dplyr::mutate(AGE = dplyr::if_else(AGE < 61, 61, AGE))
 
@@ -141,14 +143,14 @@ zscores <-
         WAZ = zwfa,
         HAZ = zhfa,
         BAZ = zbfa,
-        WAZ_F = fwfa, # WAZ out of range flag
-        HAZ_F = fhfa, # HAZ out of range flag
+        WAZ_F = fwfa,
+        # WAZ out of range flag
+        HAZ_F = fhfa,
+        # HAZ out of range flag
         BAZ_F = fbfa  # BAZ out of range flag
       ) %>%
-        dplyr::mutate(
-          WHZ_F = 0,
-          WHZ = NA
-        )
+        dplyr::mutate(WHZ_F = 0,
+                      WHZ = NA)
     }
 
     # To merge data sets, first merge z-scores together
@@ -212,13 +214,14 @@ zscores <-
 calc.zlen_vec <- function(mat, lenanthro) {
   age_sex <- lenanthro$age * 10 + lenanthro$sex
   x <-
-    lenanthro[match(mat$age.days * 10 + mat$sex, age_sex),]
+    lenanthro[match(mat$age.days * 10 + mat$sex, age_sex), ]
 
   l.val <- x$l
   m.val <- x$m
   s.val <- x$s
 
-  mat$zlen <- (((mat$clenhei / m.val) ^ l.val) - 1) / (s.val * l.val)
+  mat$zlen <-
+    (((mat$clenhei / m.val) ^ l.val) - 1) / (s.val * l.val)
   mat$zlen <- ifelse(!is.na(mat$age.days) &
                        mat$age.days >= 0 & mat$age.days <= 1856,
                      mat$zlen,
@@ -232,10 +235,9 @@ calc.zlen_vec <- function(mat, lenanthro) {
 ######################################################################################
 
 calc.zhc_vec <- function(mat, hcanthro) {
-
   age_sex <- hcanthro$age * 10 + hcanthro$sex
   x <-
-    hcanthro[match(mat$age.days * 10 + mat$sex, age_sex),]
+    hcanthro[match(mat$age.days * 10 + mat$sex, age_sex), ]
 
   l.val <- x$l
   m.val <- x$m
@@ -243,9 +245,9 @@ calc.zhc_vec <- function(mat, hcanthro) {
 
   mat$zhc <- (((mat$headc / m.val) ^ l.val) - 1) / (s.val * l.val)
   mat$zhc <- ifelse(!is.na(mat$age.days) &
-                       mat$age.days >= 0 & mat$age.days <= 1856,
-                     mat$zhc,
-                     NA_real_)
+                      mat$age.days >= 0 & mat$age.days <= 1856,
+                    mat$zhc,
+                    NA_real_)
   mat
 
 }
@@ -255,10 +257,9 @@ calc.zhc_vec <- function(mat, hcanthro) {
 ######################################################################################
 
 calc.zwei_vec <- function(mat, weianthro) {
-
   age_sex <- weianthro$age * 10 + weianthro$sex
   x <-
-    weianthro[match(mat$age.days * 10 + mat$sex, age_sex),]
+    weianthro[match(mat$age.days * 10 + mat$sex, age_sex), ]
 
   l.val <- x$l
   m.val <- x$m
@@ -267,16 +268,19 @@ calc.zwei_vec <- function(mat, weianthro) {
   mat$zwei <- (((mat$weight / m.val) ^ l.val) - 1) / (s.val * l.val)
 
   sd3pos <- m.val * ((1 + l.val * s.val * 3) ^ (1 / l.val))
-  sd23pos <- sd3pos - m.val * ((1 + l.val * s.val * 2) ^ (1 / l.val))
+  sd23pos <-
+    sd3pos - m.val * ((1 + l.val * s.val * 2) ^ (1 / l.val))
   sd3neg <- m.val * ((1 + l.val * s.val * (-3)) ^ (1 / l.val))
-  sd23neg <- m.val * ((1 + l.val * s.val * (-2)) ^ (1 / l.val)) - sd3neg
+  sd23neg <-
+    m.val * ((1 + l.val * s.val * (-2)) ^ (1 / l.val)) - sd3neg
 
 
   mat$zwei <- ifelse(mat$zwei > 3,
                      3 + ((mat$weight - sd3pos) / sd23pos),
-                     ifelse(mat$zwei < -3,
-                            -3 + ((mat$weight - sd3neg) / sd23neg),
-                            mat$zwei))
+                     ifelse(mat$zwei < -3,-3 + ((
+                       mat$weight - sd3neg
+                     ) / sd23neg),
+                     mat$zwei))
 
   mat$zwei <- ifelse(
     !is.na(mat$age.days) &
@@ -299,7 +303,7 @@ calc.zwei_vec <- function(mat, weianthro) {
 calc.zac_vec <- function(mat, acanthro) {
   age_sex <- acanthro$age * 10 + acanthro$sex
   x <-
-    acanthro[match(mat$age.days * 10 + mat$sex, age_sex), ]
+    acanthro[match(mat$age.days * 10 + mat$sex, age_sex),]
 
   l.val <- x$l
   m.val <- x$m
@@ -308,13 +312,15 @@ calc.zac_vec <- function(mat, acanthro) {
   mat$zac <- (((mat$armc / m.val) ^ l.val) - 1) / (s.val * l.val)
 
   sd3pos <- m.val * ((1 + l.val * s.val * 3) ^ (1 / l.val))
-  sd23pos <- sd3pos - m.val * ((1 + l.val * s.val * 2) ^ (1 / l.val))
+  sd23pos <-
+    sd3pos - m.val * ((1 + l.val * s.val * 2) ^ (1 / l.val))
   sd3neg <- m.val * ((1 + l.val * s.val * (-3)) ^ (1 / l.val))
-  sd23neg <- m.val * ((1 + l.val * s.val * (-2)) ^ (1 / l.val)) - sd3neg
+  sd23neg <-
+    m.val * ((1 + l.val * s.val * (-2)) ^ (1 / l.val)) - sd3neg
 
   mat$zac <- ifelse(mat$zac > 3,
                     3 + ((mat$armc - sd3pos) / sd23pos),
-                    ifelse(mat$zac < -3,-3 + ((mat$armc - sd3neg) / sd23neg),
+                    ifelse(mat$zac < -3, -3 + ((mat$armc - sd3neg) / sd23neg),
                            mat$zac))
 
   mat$zac <- ifelse(!is.na(mat$age.days) &
@@ -332,7 +338,7 @@ calc.zac_vec <- function(mat, acanthro) {
 calc.zts_vec <- function(mat, tsanthro) {
   age_sex <- tsanthro$age * 10 + tsanthro$sex
   x <-
-    tsanthro[match(mat$age.days * 10 + mat$sex, age_sex),]
+    tsanthro[match(mat$age.days * 10 + mat$sex, age_sex), ]
 
   l.val <- x$l
   m.val <- x$m
@@ -341,13 +347,15 @@ calc.zts_vec <- function(mat, tsanthro) {
   mat$zts <- (((mat$triskin / m.val) ^ l.val) - 1) / (s.val * l.val)
 
   sd3pos <- m.val * ((1 + l.val * s.val * 3) ^ (1 / l.val))
-  sd23pos <- sd3pos - m.val * ((1 + l.val * s.val * 2) ^ (1 / l.val))
+  sd23pos <-
+    sd3pos - m.val * ((1 + l.val * s.val * 2) ^ (1 / l.val))
   sd3neg <- m.val * ((1 + l.val * s.val * (-3)) ^ (1 / l.val))
-  sd23neg <- m.val * ((1 + l.val * s.val * (-2)) ^ (1 / l.val)) - sd3neg
+  sd23neg <-
+    m.val * ((1 + l.val * s.val * (-2)) ^ (1 / l.val)) - sd3neg
 
   mat$zts <- ifelse(mat$zts > 3,
                     3 + ((mat$triskin - sd3pos) / sd23pos),
-                    ifelse(mat$zts < -3,-3 + ((
+                    ifelse(mat$zts < -3, -3 + ((
                       mat$triskin - sd3neg
                     ) / sd23neg),
                     mat$zts))
@@ -368,7 +376,7 @@ calc.zts_vec <- function(mat, tsanthro) {
 calc.zss_vec <- function(mat, ssanthro) {
   age_sex <- ssanthro$age * 10 + ssanthro$sex
   x <-
-    ssanthro[match(mat$age.days * 10 + mat$sex, age_sex), ]
+    ssanthro[match(mat$age.days * 10 + mat$sex, age_sex),]
 
   l.val <- x$l
   m.val <- x$m
@@ -377,13 +385,15 @@ calc.zss_vec <- function(mat, ssanthro) {
   mat$zss <- (((mat$subskin / m.val) ^ l.val) - 1) / (s.val * l.val)
 
   sd3pos <- m.val * ((1 + l.val * s.val * 3) ^ (1 / l.val))
-  sd23pos <- sd3pos - m.val * ((1 + l.val * s.val * 2) ^ (1 / l.val))
+  sd23pos <-
+    sd3pos - m.val * ((1 + l.val * s.val * 2) ^ (1 / l.val))
   sd3neg <- m.val * ((1 + l.val * s.val * (-3)) ^ (1 / l.val))
-  sd23neg <- m.val * ((1 + l.val * s.val * (-2)) ^ (1 / l.val)) - sd3neg
+  sd23neg <-
+    m.val * ((1 + l.val * s.val * (-2)) ^ (1 / l.val)) - sd3neg
 
   mat$zss <- ifelse(mat$zss > 3,
                     3 + ((mat$subskin - sd3pos) / sd23pos),
-                    ifelse(mat$zss < -3, -3 + ((
+                    ifelse(mat$zss < -3,-3 + ((
                       mat$subskin - sd3neg
                     ) / sd23neg),
                     mat$zss))
@@ -410,19 +420,21 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
   height_sex <- wfhanthro$height * 100 + wfhanthro$sex
 
   x_length_low <-
-    wflanthro[match(low.len * 100 + mat$sex, length_sex),]
+    wflanthro[match(low.len * 100 + mat$sex, length_sex), ]
   x_length_upp <-
-    wflanthro[match(upp.len * 100 + mat$sex, length_sex),]
+    wflanthro[match(upp.len * 100 + mat$sex, length_sex), ]
 
   x_height_low <-
-    wfhanthro[match(low.len * 100 + mat$sex, height_sex),]
+    wfhanthro[match(low.len * 100 + mat$sex, height_sex), ]
   x_height_upp <-
-    wfhanthro[match(upp.len * 100 + mat$sex, height_sex),]
+    wfhanthro[match(upp.len * 100 + mat$sex, height_sex), ]
 
   l.val <-
     ifelse(
-      mat$age.days < 731 | (is.na(mat$age.days) &
-        (mat$l.h == "l" | mat$l.h == "L" | mat$clenhei < 87)),
+      mat$age.days < 731 | (
+        is.na(mat$age.days) &
+          (mat$l.h == "l" | mat$l.h == "L" | mat$clenhei < 87)
+      ),
       # length
       ifelse(
         mat$clenhei >= 45 & mat$clenhei < 110,
@@ -431,7 +443,7 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
           x_length_low$l + diff.len * (x_length_upp$l - x_length_low$l),
           x_length_low$l
         ),
-       NA
+        NA
       ),
       # height
       ifelse(
@@ -447,8 +459,11 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
 
   m.val <-
     ifelse(
-      mat$age.days < 731 | (is.na(mat$age.days) &
-                              (mat$l.h == "l" | mat$l.h == "L" | mat$clenhei < 87)),
+      mat$age.days < 731 | (
+        is.na(mat$age.days) &
+          (mat$l.h == "l" |
+             mat$l.h == "L" | mat$clenhei < 87)
+      ),
       # length
       ifelse(
         mat$clenhei >= 45 & mat$clenhei < 110,
@@ -474,8 +489,11 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
 
   s.val <-
     ifelse(
-      mat$age.days < 731 | (is.na(mat$age.days) &
-                              (mat$l.h == "l" | mat$l.h == "L" | mat$clenhei < 87)),
+      mat$age.days < 731 | (
+        is.na(mat$age.days) &
+          (mat$l.h == "l" |
+             mat$l.h == "L" | mat$clenhei < 87)
+      ),
       # length
       ifelse(
         mat$clenhei >= 45 & mat$clenhei < 110,
@@ -503,14 +521,16 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
   mat$zwfl <- (((mat$weight / m.val) ^ l.val) - 1) / (s.val * l.val)
 
   sd3pos <- m.val * ((1 + l.val * s.val * 3) ^ (1 / l.val))
-  sd23pos <- sd3pos - m.val * ((1 + l.val * s.val * 2) ^ (1 / l.val))
+  sd23pos <-
+    sd3pos - m.val * ((1 + l.val * s.val * 2) ^ (1 / l.val))
   sd3neg <- m.val * ((1 + l.val * s.val * (-3)) ^ (1 / l.val))
-  sd23neg <- m.val * ((1 + l.val * s.val * (-2)) ^ (1 / l.val)) - sd3neg
+  sd23neg <-
+    m.val * ((1 + l.val * s.val * (-2)) ^ (1 / l.val)) - sd3neg
 
 
   mat$zwfl <- ifelse(mat$zwfl > 3,
                      3 + ((mat$weight - sd3pos) / sd23pos),
-                     ifelse(mat$zwfl < -3,-3 + ((
+                     ifelse(mat$zwfl < -3, -3 + ((
                        mat$weight - sd3neg
                      ) / sd23neg),
                      mat$zwfl))
@@ -536,7 +556,7 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
 calc.zbmi_vec <- function(mat, bmianthro) {
   age_sex <- bmianthro$age * 10 + bmianthro$sex
   x <-
-    bmianthro[match(mat$age.days * 10 + mat$sex, age_sex),]
+    bmianthro[match(mat$age.days * 10 + mat$sex, age_sex), ]
 
   l.val <- x$l
   m.val <- x$m
@@ -545,13 +565,15 @@ calc.zbmi_vec <- function(mat, bmianthro) {
   mat$zbmi <- (((mat$cbmi / m.val) ^ l.val) - 1) / (s.val * l.val)
 
   sd3pos <- m.val * ((1 + l.val * s.val * 3) ^ (1 / l.val))
-  sd23pos <- sd3pos - m.val * ((1 + l.val * s.val * 2) ^ (1 / l.val))
+  sd23pos <-
+    sd3pos - m.val * ((1 + l.val * s.val * 2) ^ (1 / l.val))
   sd3neg <- m.val * ((1 + l.val * s.val * (-3)) ^ (1 / l.val))
-  sd23neg <- m.val * ((1 + l.val * s.val * (-2)) ^ (1 / l.val)) - sd3neg
+  sd23neg <-
+    m.val * ((1 + l.val * s.val * (-2)) ^ (1 / l.val)) - sd3neg
 
   mat$zbmi <- ifelse(mat$zbmi > 3,
                      3 + ((mat$cbmi - sd3pos) / sd23pos),
-                     ifelse(mat$zbmi < -3,-3 + ((mat$cbmi - sd3neg) / sd23neg),
+                     ifelse(mat$zbmi < -3, -3 + ((mat$cbmi - sd3neg) / sd23neg),
                             mat$zbmi))
 
   mat$zbmi <- ifelse(
@@ -582,72 +604,173 @@ calc.zbmi_vec <- function(mat, bmianthro) {
 ##### Function for calculating the z-scores for all indicators
 #############################################################################
 
-igrowup.standard_vec <- function(
-  mydf,
-  sex,
-  age,
-  age.month=F,
-  weight=NA,
-  lenhei=NA,
-  measure=NA,
-  headc=NA,
-  armc=NA,
-  triskin=NA,
-  subskin=NA,
-  oedema="n",
-  sw=1) {
-
+igrowup.standard_vec <- function(mydf,
+                                 sex,
+                                 age,
+                                 age.month = F,
+                                 weight = NA,
+                                 lenhei = NA,
+                                 measure = NA,
+                                 headc = NA,
+                                 armc = NA,
+                                 triskin = NA,
+                                 subskin = NA,
+                                 oedema = "n",
+                                 sw = 1) {
   #############################################################################
   ###########   Calculating the z-scores for all indicators
   #############################################################################
 
-  sex.x<-as.character(mydf[,deparse(substitute(sex))])
-  age.x<-as.double(mydf[,deparse(substitute(age))])
-  if(!missing(weight)) weight.x<-as.double(mydf[,deparse(substitute(weight))]) else weight.x<-as.double(weight)
-  if(!missing(lenhei)) lenhei.x<-as.double(mydf[,deparse(substitute(lenhei))]) else lenhei.x<-as.double(lenhei)
-  if(!missing(headc)) headc.x<-as.double(mydf[,deparse(substitute(headc))]) else headc.x<-as.double(headc)
-  if(!missing(armc)) armc.x<-as.double(mydf[,deparse(substitute(armc))]) else armc.x<-as.double(armc)
-  if(!missing(triskin)) triskin.x<-as.double(mydf[,deparse(substitute(triskin))]) else triskin.x<-as.double(triskin)
-  if(!missing(subskin)) subskin.x<-as.double(mydf[,deparse(substitute(subskin))]) else subskin.x<-as.double(subskin)
-  if(!missing(measure)) lorh.vec<-as.character(mydf[,deparse(substitute(measure))]) else lorh.vec<-as.character(measure)
-  if(!missing(oedema)) oedema.vec<-as.character(mydf[,deparse(substitute(oedema))]) else oedema.vec<-oedema
-  if(!missing(sw))	sw<-as.double(mydf[,deparse(substitute(sw))])	else sw<-as.double(sw)
-  sw <- ifelse(is.na(sw),0,sw)
+  sex.x <- as.character(mydf[, deparse(substitute(sex))])
+  age.x <- as.double(mydf[, deparse(substitute(age))])
+  if (!missing(weight))
+    weight.x <-
+    as.double(mydf[, deparse(substitute(weight))])
+  else
+    weight.x <- as.double(weight)
+  if (!missing(lenhei))
+    lenhei.x <-
+    as.double(mydf[, deparse(substitute(lenhei))])
+  else
+    lenhei.x <- as.double(lenhei)
+  if (!missing(headc))
+    headc.x <-
+    as.double(mydf[, deparse(substitute(headc))])
+  else
+    headc.x <- as.double(headc)
+  if (!missing(armc))
+    armc.x <-
+    as.double(mydf[, deparse(substitute(armc))])
+  else
+    armc.x <- as.double(armc)
+  if (!missing(triskin))
+    triskin.x <-
+    as.double(mydf[, deparse(substitute(triskin))])
+  else
+    triskin.x <- as.double(triskin)
+  if (!missing(subskin))
+    subskin.x <-
+    as.double(mydf[, deparse(substitute(subskin))])
+  else
+    subskin.x <- as.double(subskin)
+  if (!missing(measure))
+    lorh.vec <-
+    as.character(mydf[, deparse(substitute(measure))])
+  else
+    lorh.vec <- as.character(measure)
+  if (!missing(oedema))
+    oedema.vec <-
+    as.character(mydf[, deparse(substitute(oedema))])
+  else
+    oedema.vec <- oedema
+  if (!missing(sw))
+    sw <-
+    as.double(mydf[, deparse(substitute(sw))])
+  else
+    sw <- as.double(sw)
+  sw <- ifelse(is.na(sw), 0, sw)
 
-  sex.vec<-NULL
+  sex.vec <- NULL
 
-  if(age.month) age.vec<-rounde(age.x*30.4375) else age.vec<-rounde(age.x)
-  lenhei.vec<-ifelse((!is.na(age.vec) & age.vec<731 & !is.na(lorh.vec) & (lorh.vec=="h" | lorh.vec=="H")),lenhei.x+0.7,#
-                     ifelse((!is.na(age.vec) & age.vec>=731 & !is.na(lorh.vec) & (lorh.vec=="l" | lorh.vec=="L")),lenhei.x-0.7,lenhei.x))
+  if (age.month)
+    age.vec <- rounde(age.x * 30.4375)
+  else
+    age.vec <- rounde(age.x)
+  lenhei.vec <-
+    ifelse((
+      !is.na(age.vec) &
+        age.vec < 731 &
+        !is.na(lorh.vec) & (lorh.vec == "h" |
+                              lorh.vec == "H")
+    ),
+    lenhei.x + 0.7,
+    #
+    ifelse((
+      !is.na(age.vec) &
+        age.vec >= 731 &
+        !is.na(lorh.vec) &
+        (lorh.vec == "l" | lorh.vec == "L")
+    ), lenhei.x - 0.7, lenhei.x))
 
-  sex.vec<-ifelse(!is.na(sex.x) & (sex.x=="m" | sex.x=="M" | sex.x=="1"),1,ifelse(!is.na(sex.x) & (sex.x=="f" | sex.x=="F" | sex.x=="2"),2,NA))
+  sex.vec <-
+    ifelse(!is.na(sex.x) &
+             (sex.x == "m" |
+                sex.x == "M" |
+                sex.x == "1"),
+           1,
+           ifelse(!is.na(sex.x) & (sex.x == "f" |
+                                     sex.x == "F" | sex.x == "2"), 2, NA))
 
-  lorh.vec<-ifelse(is.na(lorh.vec) | lorh.vec=="l" | lorh.vec=="L" | lorh.vec=="h" | lorh.vec=="H",lorh.vec,NA)
+  lorh.vec <-
+    ifelse(
+      is.na(lorh.vec) |
+        lorh.vec == "l" |
+        lorh.vec == "L" | lorh.vec == "h" | lorh.vec == "H",
+      lorh.vec,
+      NA
+    )
 
-  oedema.vec<-ifelse(oedema.vec=="n" | oedema.vec=="N","n",ifelse(oedema.vec=="y" | oedema.vec=="Y","y","n"))
+  oedema.vec <-
+    ifelse(
+      oedema.vec == "n" |
+        oedema.vec == "N",
+      "n",
+      ifelse(oedema.vec == "y" | oedema.vec == "Y", "y", "n")
+    )
 
-  mat<-cbind.data.frame(age.x,as.integer(age.vec),as.double(sex.vec),weight.x,lenhei.x,lorh.vec,lenhei.vec,headc.x,armc.x,triskin.x,subskin.x,oedema.vec,sw,stringsAsFactors=F)
-  names(mat)<-c("age","age.days","sex","weight","len.hei","l.h","clenhei","headc","armc","triskin","subskin","oedema","sw")
+  mat <-
+    cbind.data.frame(
+      age.x,
+      as.integer(age.vec),
+      as.double(sex.vec),
+      weight.x,
+      lenhei.x,
+      lorh.vec,
+      lenhei.vec,
+      headc.x,
+      armc.x,
+      triskin.x,
+      subskin.x,
+      oedema.vec,
+      sw,
+      stringsAsFactors = F
+    )
+  names(mat) <-
+    c(
+      "age",
+      "age.days",
+      "sex",
+      "weight",
+      "len.hei",
+      "l.h",
+      "clenhei",
+      "headc",
+      "armc",
+      "triskin",
+      "subskin",
+      "oedema",
+      "sw"
+    )
 
-  mat$cbmi<-mat$weight/((lenhei.vec/100)^2)
-  mat$zlen<-rep(NA,length(mat$age))
-  mat$zwei<-rep(NA,length(mat$age))
-  mat$zwfl<-rep(NA,length(mat$age))
-  mat$zbmi<-rep(NA,length(mat$age))
-  mat$zhc<-rep(NA,length(mat$age))
-  mat$zac<-rep(NA,length(mat$age))
-  mat$zts<-rep(NA,length(mat$age))
-  mat$zss<-rep(NA,length(mat$age))
+  mat$cbmi <- mat$weight / ((lenhei.vec / 100) ^ 2)
+  mat$zlen <- rep(NA, length(mat$age))
+  mat$zwei <- rep(NA, length(mat$age))
+  mat$zwfl <- rep(NA, length(mat$age))
+  mat$zbmi <- rep(NA, length(mat$age))
+  mat$zhc <- rep(NA, length(mat$age))
+  mat$zac <- rep(NA, length(mat$age))
+  mat$zts <- rep(NA, length(mat$age))
+  mat$zss <- rep(NA, length(mat$age))
 
-  mat$zlen<-rep(NA,length(mat$age))
-  mat$flen<-rep(NA,length(mat$age))
-  mat$fwei<-rep(NA,length(mat$age))
-  mat$fwfl<-rep(NA,length(mat$age))
-  mat$fbmi<-rep(NA,length(mat$age))
-  mat$fhc<-rep(NA,length(mat$age))
-  mat$fac<-rep(NA,length(mat$age))
-  mat$fts<-rep(NA,length(mat$age))
-  mat$fss<-rep(NA,length(mat$age))
+  mat$zlen <- rep(NA, length(mat$age))
+  mat$flen <- rep(NA, length(mat$age))
+  mat$fwei <- rep(NA, length(mat$age))
+  mat$fwfl <- rep(NA, length(mat$age))
+  mat$fbmi <- rep(NA, length(mat$age))
+  mat$fhc <- rep(NA, length(mat$age))
+  mat$fac <- rep(NA, length(mat$age))
+  mat$fts <- rep(NA, length(mat$age))
+  mat$fss <- rep(NA, length(mat$age))
 
 
 
@@ -657,58 +780,58 @@ igrowup.standard_vec <- function(
 
   ### Length-for-age z-score
 
-  mat<-calc.zlen_vec(mat,lenanthro)
+  mat <- calc.zlen_vec(mat, lenanthro)
   ### Head circumference-for-age z-score
 
-  mat<-calc.zhc_vec(mat,hcanthro)
+  mat <- calc.zhc_vec(mat, hcanthro)
 
   ### Weight-for-age z-score
 
-  mat<-calc.zwei_vec(mat,weianthro)
+  mat <- calc.zwei_vec(mat, weianthro)
 
   ### Arm circumference-for-age z-score
 
-  mat<-calc.zac_vec(mat,acanthro)
+  mat <- calc.zac_vec(mat, acanthro)
 
   ### Triceps skinfold-for-age z-score
 
-  mat<-calc.zts_vec(mat,tsanthro)
+  mat <- calc.zts_vec(mat, tsanthro)
 
   ### Subscapular skinfold-for-age z-score
 
-  mat<-calc.zss_vec(mat,ssanthro)
+  mat <- calc.zss_vec(mat, ssanthro)
 
   ### Weight-for-length/height z-score
 
-  mat<-calc.zwfl_vec(mat,wflanthro,wfhanthro)
+  mat <- calc.zwfl_vec(mat, wflanthro, wfhanthro)
 
   ### BMI-for-age z-score
 
-  mat<-calc.zbmi_vec(mat,bmianthro)
+  mat <- calc.zbmi_vec(mat, bmianthro)
 
   #### roundeing the z-scores to two decimals
 
-  mat$zlen<-rounde(mat$zlen,digits=2)
-  mat$zwei<-rounde(mat$zwei,digits=2)
-  mat$zwfl<-rounde(mat$zwfl,digits=2)
-  mat$zbmi<-rounde(mat$zbmi,digits=2)
-  mat$zhc<-rounde(mat$zhc,digits=2)
-  mat$zac<-rounde(mat$zac,digits=2)
-  mat$zts<-rounde(mat$zts,digits=2)
-  mat$zss<-rounde(mat$zss,digits=2)
+  mat$zlen <- rounde(mat$zlen, digits = 2)
+  mat$zwei <- rounde(mat$zwei, digits = 2)
+  mat$zwfl <- rounde(mat$zwfl, digits = 2)
+  mat$zbmi <- rounde(mat$zbmi, digits = 2)
+  mat$zhc <- rounde(mat$zhc, digits = 2)
+  mat$zac <- rounde(mat$zac, digits = 2)
+  mat$zts <- rounde(mat$zts, digits = 2)
+  mat$zss <- rounde(mat$zss, digits = 2)
 
   #### Flagging z-score values for individual indicators
 
-  mat$flen<-ifelse(abs(mat$zlen) > 6,1,0)
-  mat$fwei<-ifelse(mat$zwei > 5 | mat$zwei < (-6),1,0)
-  mat$fwfl<-ifelse(abs(mat$zwfl) > 5,1,0)
-  mat$fbmi<-ifelse(abs(mat$zbmi) > 5,1,0)
-  mat$fhc<-ifelse(abs(mat$zhc) > 5,1,0)
-  mat$fac<-ifelse(abs(mat$zac) > 5,1,0)
-  mat$fts<-ifelse(abs(mat$zts) > 5,1,0)
-  mat$fss<-ifelse(abs(mat$zss) > 5,1,0)
+  mat$flen <- ifelse(abs(mat$zlen) > 6, 1, 0)
+  mat$fwei <- ifelse(mat$zwei > 5 | mat$zwei < (-6), 1, 0)
+  mat$fwfl <- ifelse(abs(mat$zwfl) > 5, 1, 0)
+  mat$fbmi <- ifelse(abs(mat$zbmi) > 5, 1, 0)
+  mat$fhc <- ifelse(abs(mat$zhc) > 5, 1, 0)
+  mat$fac <- ifelse(abs(mat$zac) > 5, 1, 0)
+  mat$fts <- ifelse(abs(mat$zts) > 5, 1, 0)
+  mat$fss <- ifelse(abs(mat$zss) > 5, 1, 0)
 
-  mat <- cbind.data.frame(mydf,mat[,-c(1,3:6,8:9)])
+  mat <- cbind.data.frame(mydf, mat[, -c(1, 3:6, 8:9)])
 
 
   ###################################################################################################
@@ -732,9 +855,9 @@ calc.zhfa2007_vec <- function(mat, hfawho2007) {
   age_sex <- hfawho2007$age * 100 + hfawho2007$sex
 
   x_age_low <-
-    hfawho2007[match(low.age * 100 + mat$sex, age_sex),]
+    hfawho2007[match(low.age * 100 + mat$sex, age_sex), ]
   x_age_upp <-
-    hfawho2007[match(upp.age * 100 + mat$sex, age_sex),]
+    hfawho2007[match(upp.age * 100 + mat$sex, age_sex), ]
 
   l.val <-
     ifelse(diff.age > 0,
@@ -774,9 +897,9 @@ calc.zwei2007_vec <- function(mat, wfawho2007) {
   age_sex <- wfawho2007$age * 100 + wfawho2007$sex
 
   x_age_low <-
-    wfawho2007[match(low.age * 100 + mat$sex, age_sex), ]
+    wfawho2007[match(low.age * 100 + mat$sex, age_sex),]
   x_age_upp <-
-    wfawho2007[match(upp.age * 100 + mat$sex, age_sex), ]
+    wfawho2007[match(upp.age * 100 + mat$sex, age_sex),]
 
   l.val <-
     ifelse(diff.age > 0,
@@ -795,16 +918,17 @@ calc.zwei2007_vec <- function(mat, wfawho2007) {
 
   mat$zwfa <- (((mat$weight / m.val) ^ l.val) - 1) / (s.val * l.val)
 
-  sd3pos<- m.val*((1+l.val*s.val*3)^(1/l.val))
-  sd23pos<- sd3pos- m.val*((1+l.val*s.val*2)^(1/l.val))
-  sd3neg<- m.val*((1+l.val*s.val*(-3))**(1/l.val))
-  sd23neg<- m.val*((1+l.val*s.val*(-2))**(1/l.val))-sd3neg
+  sd3pos <- m.val * ((1 + l.val * s.val * 3) ^ (1 / l.val))
+  sd23pos <- sd3pos - m.val * ((1 + l.val * s.val * 2) ^ (1 / l.val))
+  sd3neg <- m.val * ((1 + l.val * s.val * (-3)) ** (1 / l.val))
+  sd23neg <- m.val * ((1 + l.val * s.val * (-2)) ** (1 / l.val)) - sd3neg
 
   mat$zwfa <- ifelse(mat$zwfa > 3,
                      3 + ((mat$weight - sd3pos) / sd23pos),
-                     ifelse(mat$zwfa < -3,
-                            -3 + ((mat$weight - sd3neg) / sd23neg),
-                            mat$zwfa))
+                     ifelse(mat$zwfa < -3,-3 + ((
+                       mat$weight - sd3neg
+                     ) / sd23neg),
+                     mat$zwfa))
 
   mat$zwfa <- ifelse(
     !is.na(mat$age.mo) &
@@ -819,7 +943,7 @@ calc.zwei2007_vec <- function(mat, wfawho2007) {
 }
 
 ######################################################################################
-### Function for calulating individual BMI-for-age z-scores
+### Function for calculating individual BMI-for-age z-scores
 ######################################################################################
 
 
@@ -831,9 +955,9 @@ calc.zbmi2007_vec <- function(mat, bfawho2007) {
   age_sex <- bfawho2007$age * 100 + bfawho2007$sex
 
   x_age_low <-
-    bfawho2007[match(low.age * 100 + mat$sex, age_sex),]
+    bfawho2007[match(low.age * 100 + mat$sex, age_sex), ]
   x_age_upp <-
-    bfawho2007[match(upp.age * 100 + mat$sex, age_sex),]
+    bfawho2007[match(upp.age * 100 + mat$sex, age_sex), ]
 
   l.val <-
     ifelse(diff.age > 0,
@@ -853,13 +977,15 @@ calc.zbmi2007_vec <- function(mat, bfawho2007) {
   mat$zbfa <- (((mat$cbmi / m.val) ^ l.val) - 1) / (s.val * l.val)
 
   sd3pos <- m.val * ((1 + l.val * s.val * 3) ^ (1 / l.val))
-  sd23pos <- sd3pos - m.val * ((1 + l.val * s.val * 2) ^ (1 / l.val))
+  sd23pos <-
+    sd3pos - m.val * ((1 + l.val * s.val * 2) ^ (1 / l.val))
   sd3neg <- m.val * ((1 + l.val * s.val * (-3)) ** (1 / l.val))
-  sd23neg <- m.val * ((1 + l.val * s.val * (-2)) ** (1 / l.val)) - sd3neg
+  sd23neg <-
+    m.val * ((1 + l.val * s.val * (-2)) ** (1 / l.val)) - sd3neg
 
   mat$zbfa <- ifelse(mat$zbfa > 3,
                      3 + ((mat$cbmi - sd3pos) / sd23pos),
-                     ifelse(mat$zbfa < -3,-3 + ((mat$cbmi - sd3neg) / sd23neg),
+                     ifelse(mat$zbfa < -3, -3 + ((mat$cbmi - sd3neg) / sd23neg),
                             mat$zbfa))
 
   mat$zbfa <- ifelse(
@@ -892,79 +1018,105 @@ calc.zbmi2007_vec <- function(mat, bfawho2007) {
 ##### Function for calculating the z-scores for all indicators
 #############################################################################
 
-who2007_vec <- function(
-  mydf,
-  sex,
-  age,
-  weight,
-  height,
-  oedema="n",
-  sw=1) {
-
+who2007_vec <- function(mydf,
+                        sex,
+                        age,
+                        weight,
+                        height,
+                        oedema = "n",
+                        sw = 1) {
   #############################################################################
   ###########   Calculating the z-scores for all indicators
   #############################################################################
 
-  sex.x<-as.character(mydf[,deparse(substitute(sex))])
-  age.x<-as.double(mydf[,deparse(substitute(age))])
-  weight.x<-as.double(mydf[,deparse(substitute(weight))])
-  height.x<-as.double(mydf[,deparse(substitute(height))])
-  if(!missing(oedema)) oedema.vec<-as.character(mydf[,deparse(substitute(oedema))]) else oedema.vec<-oedema
-  if(!missing(sw))	sw<-as.double(mydf[,deparse(substitute(sw))])	else sw<-as.double(sw)
-  sw<-ifelse(is.na(sw),0,sw)
+  sex.x <- as.character(mydf[, deparse(substitute(sex))])
+  age.x <- as.double(mydf[, deparse(substitute(age))])
+  weight.x <- as.double(mydf[, deparse(substitute(weight))])
+  height.x <- as.double(mydf[, deparse(substitute(height))])
+  if (!missing(oedema))
+    oedema.vec <-
+    as.character(mydf[, deparse(substitute(oedema))])
+  else
+    oedema.vec <- oedema
+  if (!missing(sw))
+    sw <-
+    as.double(mydf[, deparse(substitute(sw))])
+  else
+    sw <- as.double(sw)
+  sw <- ifelse(is.na(sw), 0, sw)
 
-  sex.vec<-NULL
-  sex.vec<-ifelse(sex.x!="NA" & (sex.x=="m" | sex.x=="M" | sex.x=="1"),1,ifelse(sex.x!="NA" & (sex.x=="f" | sex.x=="F" | sex.x=="2"),2,NA))
-  age.vec<-age.x
-  height.vec<-height.x
-  oedema.vec<-ifelse(oedema.vec=="n" | oedema.vec=="N","n",ifelse(oedema.vec=="y" | oedema.vec=="Y","y","n"))
+  sex.vec <- NULL
+  sex.vec <-
+    ifelse(sex.x != "NA" &
+             (sex.x == "m" |
+                sex.x == "M" |
+                sex.x == "1"),
+           1,
+           ifelse(sex.x != "NA" & (sex.x == "f" |
+                                     sex.x == "F" | sex.x == "2"), 2, NA))
+  age.vec <- age.x
+  height.vec <- height.x
+  oedema.vec <-
+    ifelse(
+      oedema.vec == "n" |
+        oedema.vec == "N",
+      "n",
+      ifelse(oedema.vec == "y" | oedema.vec == "Y", "y", "n")
+    )
 
-  mat<-cbind.data.frame(age.x,as.double(sex.vec),weight.x,height.x,oedema.vec,sw,stringsAsFactors=F)
-  names(mat)<-c("age.mo","sex","weight","height","oedema","sw")
+  mat <-
+    cbind.data.frame(age.x,
+                     as.double(sex.vec),
+                     weight.x,
+                     height.x,
+                     oedema.vec,
+                     sw,
+                     stringsAsFactors = F)
+  names(mat) <- c("age.mo", "sex", "weight", "height", "oedema", "sw")
 
-  mat$cbmi<-mat$weight/((height.vec/100)^2)
-  mat$zhfa<-NULL
-  mat$fhfa<-NULL
-  mat$zwfa<-NULL
-  mat$fwfa<-NULL
-  mat$zbfa<-NULL
-  mat$fbfa<-NULL
+  mat$cbmi <- mat$weight / ((height.vec / 100) ^ 2)
+  mat$zhfa <- NULL
+  mat$fhfa <- NULL
+  mat$zwfa <- NULL
+  mat$fwfa <- NULL
+  mat$zbfa <- NULL
+  mat$fbfa <- NULL
 
   #############################################################################
   ###########   Calculating the z-scores for all indicators
   #############################################################################
   ### Height-for-age z-score
 
-  mat<-calc.zhfa2007_vec(mat,hfawho2007)
+  mat <- calc.zhfa2007_vec(mat, hfawho2007)
 
   ### Weight-for-age z-score
 
-  mat<-calc.zwei2007_vec(mat,wfawho2007)
+  mat <- calc.zwei2007_vec(mat, wfawho2007)
 
   ### BMI-for-age z-score
 
-  mat<-calc.zbmi2007_vec(mat,bfawho2007)
+  mat <- calc.zbmi2007_vec(mat, bfawho2007)
 
 
   #### rounding the z-scores to two decimals
 
-  mat$zhfa<-round(mat$zhfa,digits=2)
-  mat$zwfa<-round(mat$zwfa,digits=2)
-  mat$zbfa<-round(mat$zbfa,digits=2)
+  mat$zhfa <- round(mat$zhfa, digits = 2)
+  mat$zwfa <- round(mat$zwfa, digits = 2)
+  mat$zbfa <- round(mat$zbfa, digits = 2)
 
   #### Flagging z-score values for individual indicators
 
-  mat$fhfa<-ifelse(abs(mat$zhfa) > 6,1,0)
-  mat$fwfa<-ifelse(mat$zwfa > 5 | mat$zwfa < (-6),1,0)
-  mat$fbfa<-ifelse(abs(mat$zbfa) > 5,1,0)
+  mat$fhfa <- ifelse(abs(mat$zhfa) > 6, 1, 0)
+  mat$fwfa <- ifelse(mat$zwfa > 5 | mat$zwfa < (-6), 1, 0)
+  mat$fbfa <- ifelse(abs(mat$zbfa) > 5, 1, 0)
 
-  ifelse(is.na(mat$age.mo) & mat$oedema=="y", function () {
-    mat$fhfa<-NA
-    mat$zwfa<-NA
-    mat$zbfa<-NA
+  ifelse(is.na(mat$age.mo) & mat$oedema == "y", function () {
+    mat$fhfa <- NA
+    mat$zwfa <- NA
+    mat$zbfa <- NA
   }, NA)
 
-  mat<-cbind.data.frame(mydf,mat[,-c(2:6)])
+  mat <- cbind.data.frame(mydf, mat[, -c(2:6)])
 
   ###################################################################################################
   ######### Export data frame with z-scores and flag variables
@@ -972,17 +1124,3 @@ who2007_vec <- function(
 
   return(mat)
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

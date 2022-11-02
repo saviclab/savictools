@@ -2,21 +2,31 @@
 % Please edit documentation in R/sparse.R
 \name{sparse}
 \alias{sparse}
-\title{sparse}
+\title{Detect sparse sampling occasions}
 \usage{
-sparse(
-  data,
-  min_cluster = 3,
-  max_distance = 24,
-  plot = FALSE,
-  plot_only = FALSE,
-  nrow = 4,
-  ncol = 4,
-  page = 1
-)
+sparse(data, min_cluster = 3, max_distance = 26, plot = FALSE)
+}
+\arguments{
+\item{data}{A NONMEM-formatted dataframe.}
+
+\item{min_cluster}{The minimum size of a cluster of consecutive observations to be considered
+intensive (i.e. not sparse) sampling.}
+
+\item{max_distance}{The maximum allowed distance between the earliest and latest observation
+of a single cluster.}
+
+\item{plot}{Logical. Whether to make a plot of individual PKK curves with sparse observations labelled.}
 }
 \description{
-sparse
+\code{sparse()} detects differentiates between clusters of consecutive samples
+and more spread out, or "sparse," samples in a NONMEM-formatted dataset.
+}
+\details{
+For each ID, \code{sparse()} iterates through each line of the dataset until
+it finds an observation. It then checks for "neighbors," meaning consecutive observations without
+a dose record in between. Any group of \code{min_cluster} or more observations within at most \code{max_distance} from
+one another is considered a cluster. \code{sparse()} returns the original dataframe with a new column,
+"SPARSE," which has value 1 for all observation points not contained in a cluster, and is 1 otherwise.
 }
 \author{
 Sandy Floren

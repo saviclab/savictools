@@ -4,7 +4,7 @@
 \alias{ttcc}
 \title{ttcc}
 \usage{
-ttcc(time, ttp, threshold = , interval = , compare = "gt")
+ttcc(time, ttp, threshold, interval, compare = "gt")
 }
 \arguments{
 \item{time}{a vector of numeric data representing the time of each observation}
@@ -19,14 +19,15 @@ ttcc(time, ttp, threshold = , interval = , compare = "gt")
 upper bound. "gt" (greater than) is the default, and makes \verb{threshold`` a lower bound. "lt" (less than) makes }threshold`` an upper bound.}
 }
 \value{
-a vector, \verb{consec`` of 0s and 1s with the same length as }time``
+a vector of 0s and 1s with the same length as \code{time}
 }
 \description{
 Find consecutive negatives past some threshold occuring within an interval.
 
 ttcc will assume that data is grouped by individual, so as to not compare
-timestamps from two different patients. ttcc returns a vector \verb{consec`` which has value 1 at index i if }ttp\link{i}\code{at}time\link{i}\verb{is both greater than or equal to (default), or less than or equal to `threshold}, and is the ith consecutive
-such observation spaced at least `interval`` apart.
+timestamps from two different patients. ttcc returns a vector which
+has value 1 at index i if \verb{ttp\[i\]} at \verb{time\[i\]} is both greater than or equal
+to (default), or less than or equal to \verb{threshold``, and is the ith consecutive such observation spaced at least }interval`` apart.
 }
 \examples{
 \dontrun{

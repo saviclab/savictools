@@ -4,7 +4,17 @@
 \alias{param_table}
 \title{Create parameter tables}
 \usage{
-
+param_table(
+  ...,
+  nice = TRUE,
+  transform = TRUE,
+  write = FALSE,
+  filename = NULL,
+  value_digits = 2,
+  rse_digits = 1,
+  max_omega = 30,
+  max_sigma = 5
+)
 }
 \arguments{
 \item{...}{Run number(s) or model names(s).}
@@ -15,7 +25,7 @@
 
 \item{write}{Whether to write to a csv file.}
 
-\item{filename}{Filename.}
+\item{filename}{Name of the csv file, if \code{write} == TRUE.}
 
 \item{value_digits}{How many decimal places to display for parameter estimates when using "nice" formatting.}
 
@@ -26,12 +36,24 @@
 \item{max_sigma}{Maximum number of SIGMAs in model.}
 }
 \value{
-
+A dataframe.
 }
 \description{
-
+\code{param_table()} is useful for formatting tables of NONMEM parameter etimates
+for single or multiple runs. If successive runs have more/fewer parameters
+(THETAs, OMEGAs, or SIGMAs), the parameters in c ommon between runs will be
+aligned for ease of comparison.
 }
 \examples{
+\dontrun{
+# Make a parameter table for a single model called "run3.mod", which must be
+# present in the current directory
+param_table(3)
+
+# For 3 successive runs: "run3.mod", "run4.mod", and "run5.mod" and write to
+# a csv
+param_table(3, 4, 5, write = TRUE)
+}
 
 }
 \author{

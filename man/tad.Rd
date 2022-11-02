@@ -4,23 +4,24 @@
 \alias{tad}
 \title{Calculate time after dose (TAD)}
 \usage{
-tad(data, expand = FALSE, ...)
+tad(data, cond = "", expand = FALSE)
 }
 \arguments{
-\item{data}{A NONMEM-formatted dataframe}
+\item{data}{A NONMEM-formatted dataframe.}
 
-\item{...}{A condition that specifies for which rows to calculate TAD.}
+\item{cond}{A filtering condition that specifies for which rows to calculate TAD, as a string (optional).}
+
+\item{expand}{Whether to expand the ADDL column in the result.}
 }
 \value{
-A NONMEM-formatted dataframe with a TAD column
+A NONMEM-formatted dataframe with a TAD column.
 }
 \description{
 \code{tad()} computes the time after dose, adding a new column to a dataframe.
 }
 \details{
-\code{tad()} assumes that the identifier column is called ID, the event id column
-is called EVID, and the time column is called TIME. Data is grouped by ID
-internally before TAD is calculated.
+\code{tad()} assumes NONMEM-formatted data. It will expand the ADDL column internally,
+but will return the data in its un-expanded form unless \code{expand} is set to TRUE.
 
 Expressions in \code{...} are used to determine under what conditions a
 row of \code{data} should count as a "dose" for calculating time after dose. This
@@ -34,6 +35,9 @@ drug \emph{X} dosing events.
 \examples{
 # Basic TAD calculation
 tad(pk_example)
+
+# compute TAD only for even ID numbers, and return in expanded form
+tad(pk_example, "ID \%\% 2 == 0", expand = TRUE)
 
 }
 \author{

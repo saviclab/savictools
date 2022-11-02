@@ -25,7 +25,7 @@
 #' # Plot HIV against ETA1 and ETA2 from run3
 #' etacorr_cat("run3", c(1, 2), WT, HT, AGE)
 #' }
-#'
+#' @rdname eta-correlations
 #' @export
 etacorr_cont <- function(runno, eta, ...) {
 
@@ -48,6 +48,8 @@ etacorr_cont <- function(runno, eta, ...) {
   suppressMessages(ggpubr::ggarrange(plotlist = plots))
 }
 
+#' @rdname parse-SSE
+#' @inheritParams etacorr_cont
 #' @export
 etacorr_cat <- function(runno, eta, ...) {
 
@@ -69,9 +71,8 @@ etacorr_cat <- function(runno, eta, ...) {
 }
 
 # Helpers --------------------------------------------------------------------
-#' Provide either an xpdb object, run number, or model name and return the
-#' dataframe of results from that run.
-#' @export
+# Provide either an xpdb object, run number, or model name and return the
+# dataframe of results from that run.
 get_data_from_runno <- function(runno) {
   if (class(runno)[1] == "xpose_data") {
     # runno is an xpdb object

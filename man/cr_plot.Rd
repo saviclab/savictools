@@ -17,11 +17,18 @@ cr_plot(
 \arguments{
 \item{runno}{A run number or model name.}
 
-\item{effect_size}{The size of a clinically relevant effect. Defaults is 0.2,
-or 20\%.}
+\item{effect_size}{The effect size needed for clinical relevance. Default is 0.2.}
 
 \item{width}{Size of the interval of the posterior
 distribution of covariate effects. Defaults to 0.95, or 95\%.}
+
+\item{type}{Plotting library to use. Either "lattice" (the default) or "ggplot".}
+
+\item{adjust}{Passed to \code{adjust} argument in \code{ggplot2::geom_density}.}
+
+\item{n}{Number of samples to draw from the normal distribution for bootstrapping parameter estimates.}
+
+\item{...}{Unquoted expressions representing covariate relations; see example.}
 }
 \description{
 \code{cr_plot()} visualizes the clinical relevance of covariate effects.

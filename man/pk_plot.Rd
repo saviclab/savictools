@@ -23,3 +23,6 @@ pk_plot(data, ind = FALSE, nrow = 4, ncol = 4, id = NULL, max_tad = 26)
 \code{pk_plot()} creates spaghetti PK plots with connected data points for each
 PK curve.
 }
+\author{
+Sandy Floren
+}

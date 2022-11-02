@@ -1,13 +1,13 @@
-#' Calculate time after dose (TAD)
+#' @title Calculate time after dose (TAD)
 #'
-#' `tad()` computes the time after dose, adding a new column to a dataframe.
+#' @description `tad()` computes the time after dose, adding a new column to a dataframe.
 #'
-#' `tad()` assumes that the identifier column is called ID, the event id column
-#' is called EVID, and the time column is called TIME. Data is grouped by ID
-#' internally before TAD is calculated.
+#' @details `tad()` assumes NONMEM-formatted data. It will expand the ADDL column internally,
+#' but will return the data in its un-expanded form unless `expand` is set to TRUE.
 #'
-#' @param data A NONMEM-formatted dataframe
-#' @param ... A condition that specifies for which rows to calculate TAD.
+#' @param data A NONMEM-formatted dataframe.
+#' @param cond A filtering condition that specifies for which rows to calculate TAD, as a string (optional).
+#' @param expand Whether to expand the ADDL column in the result.
 #'
 #' @details Expressions in `...` are used to determine under what conditions a
 #' row of `data` should count as a "dose" for calculating time after dose. This
@@ -22,28 +22,30 @@
 #' # Basic TAD calculation
 #' tad(pk_example)
 #'
-#' @return A NONMEM-formatted dataframe with a TAD column
+#' # compute TAD only for even ID numbers, and return in expanded form
+#' tad(pk_example, "ID %% 2 == 0", expand = TRUE)
+#'
+#' @return A NONMEM-formatted dataframe with a TAD column.
 #'
 #' @importFrom magrittr %>%
 #' @author Sandy Floren
 #' @export
 
-tad <- function(data, ..., expand = FALSE) {
+tad <- function(data, cond = "", expand = FALSE) {
   # format check
   nmcheck(data)
 
-  cond <- dplyr::quo(...)
+  cond <- dplyr::enexpr(cond)
   expanded_addl <- expand_addl(data, check = FALSE)
 
   res <- expanded_addl %>%
     dplyr::group_by(ID) %>%
     dplyr::arrange(TIME, .by_group = TRUE) %>%
-    dplyr::group_modify(~ {
-
+    dplyr::group_modify( ~ {
       evid <- as.integer(.x$EVID)
       time <- .x$TIME
 
-      if (rlang::quo_is_missing(cond)) {
+      if (cond == "") {
         calc_tad <- rep(1, nrow(expanded_addl))
       } else {
         calc_tad <- .x %>%
@@ -86,7 +88,7 @@ tad_old <- function(data, ...) {
   data %>%
     dplyr::group_by(ID) %>%
     dplyr::arrange(TIME, .by_group = TRUE) %>%
-    dplyr::group_modify(~ {
+    dplyr::group_modify( ~ {
       evid <- as.integer(dplyr::pull(.x, EVID))
 
       copy <- .x %>%
@@ -160,42 +162,3 @@ tad_old <- function(data, ...) {
     dplyr::ungroup() %>%
     dplyr::arrange(ID, TIME, dplyr::desc(EVID))
 }
-
-#Rcpp::cppFunction(
-#  'NumericVector computeTAD(IntegerVector evid, NumericVector time, IntegerVector calc_tad) {
-#
-#  // assume data is already in expanded form (no ADDL)
-#  bool dose_found = FALSE;
-#  double last_dose = NA_REAL;
-#
-#  int length = evid.length();
-#  NumericVector tad (length, NA_REAL);
-#
-#  for(int i = 0; i < length; i++) {
-#
-#        // only calculate TAD for rows satisfying cond
-#        if(calc_tad[i] == 0) continue;
-#
-#        int this_evid = evid[i];
-#        double this_time = time[i];
-#
-#        // if this is a dose record
-#        if(this_evid == 1 || this_evid == 4) {
-#
-#          dose_found = TRUE;
-#          tad[i] = 0;
-#
-#          last_dose = this_time;
-#        }
-#        else {
-#
-#          if(dose_found) {
-#            tad[i] = this_time - last_dose;
-#          }
-#          // if no prior dosing record, leave TAD as NA.
-#        }
-#  }
-#  return tad;
-#}
-#')
-#

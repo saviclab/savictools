@@ -5,8 +5,8 @@
 #' Find consecutive negatives past some threshold occuring within an interval.
 #'
 #' ttcc will assume that data is grouped by individual, so as to not compare
-#' timestamps from two different patients. ttcc returns a vector `consec`` which
-#' has value 1 at index i if `ttp[i]` at `time[i]``is both greater than or equal
+#' timestamps from two different patients. ttcc returns a vector which
+#' has value 1 at index i if `ttp\[i\]` at `time\[i\]` is both greater than or equal
 #' to (default), or less than or equal to `threshold``, and is the ith consecutive
 #' such observation spaced at least `interval`` apart.
 #'
@@ -18,9 +18,7 @@
 #' upper bound. "gt" (greater than) is the default, and makes `threshold``
 #' a lower bound. "lt" (less than) makes `threshold`` an upper bound.
 #'
-#' @usage ttcc(time, ttp, threshold = , interval = , compare = "gt")
-#'
-#' @return a vector, `consec`` of 0s and 1s with the same length as `time``
+#' @return a vector of 0s and 1s with the same length as `time`
 #'
 #' @examples
 #' \dontrun{
