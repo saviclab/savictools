@@ -26,8 +26,6 @@
 #'
 #' @export
 
-# TODO: Read in sdtab to take distribution of covariates into account (i.e. HT )
-
 cr_plot <-
   function(runno,
            effect_size = 0.2,
@@ -68,14 +66,12 @@ cr_plot <-
     # change to long format
     boot <- tidyr::pivot_longer(boot, cols = names(boot))
 
-
-
     # restrict posterior distribution to corredt interval width
     boot <- boot[with(
       boot,
       value >= reapply(value, name, quantile, (1 - width) / 2) &
         value <= reapply(value, name, quantile, 1 - ((1 - width) / 2))
-    ), ]
+    ),]
     # plot
 
     if (type  == "ggplot") {
@@ -120,7 +116,7 @@ cr_plot <-
       pl1 <- lattice::stripplot(
         name ~ value,
         boot,
-        panel = panel.covplot,
+        panel = savictools:::panel.covplot,
         rlim = c(1 - effect_size, 1 + effect_size),
         xlim = c(0, 2),
         main = paste("Clinical Relevance of Covariates:", model_paste0(runno)),
@@ -139,7 +135,7 @@ cr_plot <-
 # Helpers --------------------------------------------------------------------
 
 get_cov <- function(file) {
-  utils::read.table(file, skip = 1, header = TRUE)[, -1]
+  utils::read.table(file, skip = 1, header = TRUE)[,-1]
 }
 
 #' @export
