@@ -1,5 +1,5 @@
 ##── R CMD check results ────────────────────────────── savictools 0.0.0.9000 ────
-Duration: 1m 17.6s
+Duration: 44.5s
 
 0 errors ✔ | 0 warnings ✔ | 0 notes ✔
 

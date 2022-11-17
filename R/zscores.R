@@ -231,17 +231,28 @@ zscores <-
 
     zvars_full <- dplyr::arrange(zvars_full, .data$rownum)
 
-    data$WHZ <- zvars_full$WHZ
-    data$WAZ <- zvars_full$WAZ
-    data$BAZ <- zvars_full$BAZ
-    data$HAZ <- zvars_full$HAZ
     data$BMI <- zvars_full$BMI
-    data$WHZ_F <- zvars_full$WHZ_F
-    data$WAZ_F <- zvars_full$WAZ_F
-    data$BAZ_F <- zvars_full$BAZ_F
-    data$HAZ_F <- zvars_full$HAZ_F
 
+    data$HAZ <- zvars_full$HAZ
+    data$WAZ <- zvars_full$WAZ
+    data$WHZ <- zvars_full$WHZ
+    data$BAZ <- zvars_full$BAZ
+
+    data$HCZ <- zvars_full$HCZ
+    data$ACZ <- zvars_full$ACZ
     data$TSZ <- zvars_full$TSZ
+    data$SSZ <- zvars_full$SSZ
+
+    data$HAZ_F <- zvars_full$HAZ_F
+    data$WAZ_F <- zvars_full$WAZ_F
+    data$WHZ_F <- zvars_full$WHZ_F
+    data$BAZ_F <- zvars_full$BAZ_F
+    data$HCZ_F <- zvars_full$HCZ_F
+    data$ACZ_F <- zvars_full$ACZ_F
+    data$TSZ_F <- zvars_full$TSZ_F
+    data$SSZ_F <- zvars_full$SSZ_F
+
+
     # zvars_full <- zvars_below_5
     # result <- dplyr::left_join(data, zvars_full, by = "rownum") %>%
     #  dplyr::rename(ID = ID.x) %>% dplyr::select(-ID.y,-rownum)
@@ -250,25 +261,37 @@ zscores <-
     # deal with missing and extreme values
 
     extreme_parsed <- data %>%  dplyr::mutate(
-      WAZ = ifelse(.data$WAZ_F == 1, extreme_flag, .data$WAZ),
       HAZ = ifelse(.data$HAZ_F == 1, extreme_flag, .data$HAZ),
+      WAZ = ifelse(.data$WAZ_F == 1, extreme_flag, .data$WAZ),
+      WHZ = ifelse(.data$WHZ_F == 1, extreme_flag, .data$WHZ),
       BAZ = ifelse(.data$BAZ_F == 1, extreme_flag, .data$BAZ),
-      WHZ = ifelse(.data$WHZ_F == 1, extreme_flag, .data$WHZ)
+      HCZ = ifelse(.data$HCZ_F == 1, extreme_flag, .data$HCZ),
+      ACZ = ifelse(.data$ACZ_F == 1, extreme_flag, .data$ACZ),
+      TSZ = ifelse(.data$TSZ_F == 1, extreme_flag, .data$TSZ),
+      SSZ = ifelse(.data$SSZ_F == 1, extreme_flag, .data$SSZ),
     )
 
-    extreme_parsed$WAZ_F <- NULL
-    extreme_parsed$HAZ_F <- NULL
-    extreme_parsed$BAZ_F <- NULL
-    extreme_parsed$WHZ_F <- NULL
     extreme_parsed$rownum <- NULL
+    extreme_parsed$HAZ_F <- NULL
+    extreme_parsed$WAZ_F <- NULL
+    extreme_parsed$WHZ_F <- NULL
+    extreme_parsed$BAZ_F <- NULL
+    extreme_parsed$HCZ_F <- NULL
+    extreme_parsed$ACZ_F <- NULL
+    extreme_parsed$TSZ_F <- NULL
+    extreme_parsed$SSZ_F <- NULL
 
     na_parsed <- extreme_parsed %>% tidyr::replace_na(
       list(
-        WAZ = missing_flag,
+        BMI = missing_flag,
         HAZ = missing_flag,
-        BAZ = missing_flag,
+        WAZ = missing_flag,
         WHZ = missing_flag,
-        BMI = missing_flag
+        BAZ = missing_flag,
+        HCZ = missing_flag,
+        ACZ = missing_flag,
+        TSZ = missing_flag,
+        SSZ = missing_flag
       )
     )
 
