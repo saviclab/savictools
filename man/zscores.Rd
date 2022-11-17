@@ -24,12 +24,14 @@ Default is NA.}
 \description{
 \code{zscores()} computes z-scores indicating nutritional status, adding new
 columns to the end of a dataframe.
-}
-\details{
+
 \code{zscores()} is a vectorized, more streamlined implementation of the WHO scripts
 \code{igrowup_standard.R}, \code{igrowup_restricted.R}, and \code{who2007.R}.
 }
 \examples{
 zscores(pop_example, units = "months")
 
+}
+\author{
+Sandy Floren, Dhruv Vaish, World Health Organization
 }

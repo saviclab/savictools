@@ -10,12 +10,12 @@ Authors@R:
     person(given = "Dhruv",
            family = "Vaish",
            role = c("ctb"))
+    person("UCSF", 
+            role = c("cph", "fnd"))
     person("World Health Organization",
            role = c("ctb"))
     person("Metrum Research Group", 
             role = c("ctb"))
-    person("UCSF", 
-            role = c("cph", "fnd"))
 Description: A collection of functions designed to make the pharmacometrics workflow faster, simpler, and more intuitive.
 License: GPL (>= 3)
 URL: https://github.com/saviclab/savictools

@@ -23,4 +23,6 @@ function \code{round()} does.
 }
 \author{
 Sandy Floren
+
+World Health Organization
 }
