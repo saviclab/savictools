@@ -15,26 +15,26 @@ pharmacometrics workflow faster, simpler, and more intuitive.
 
 ##### Data preparation
 
-  - `cohort()` generates simulation datasets for NONMEM.
-  - `expwt()` computes expected weight for children under 5.
-  - `sparse()` detects sparse vs. intensive PK sampling occasions.
-  - `tad()` computes time after dose.
-  - `zscores()` computes z-scores for WHO’s anthropometric indicators.
+-   `cohort()` generates simulation datasets for NONMEM.
+-   `expwt()` computes expected weight for children under 5.
+-   `sparse()` detects sparse vs. intensive PK sampling occasions.
+-   `tad()` computes time after dose.
+-   `zscores()` computes z-scores for WHO’s anthropometric indicators.
 
 ##### Visualization
 
-  - `cr_plot()` visualizes the clinical relevance of covariates.
-  - `etacorr_cat()` and `etacorr_cont()` plot ETA-covariate
+-   `cr_plot()` visualizes the clinical relevance of covariates.
+-   `etacorr_cat()` and `etacorr_cont()` plot ETA-covariate
     correlations.
-  - `pk_plot()` creates PK concentration curves (“spaghetti plots”).
-  - `VPC()` runs the Perl-speaks-Nonmem (PsN) `vpc` command from R, and
+-   `pk_plot()` creates PK concentration curves (“spaghetti plots”).
+-   `VPC()` runs the Perl-speaks-Nonmem (PsN) `vpc` command from R, and
     is also a wrapper for xpose::VPC.
 
 ##### Workflow optimization
 
-  - `param_table()` creates nicely formatted tables of parameter
+-   `param_table()` creates nicely formatted tables of parameter
     estimates for single or multiple models.
-  - `parse_all_sse()` parses PsN `sse`-generated SSE\_results.csv files
+-   `parse_all_sse()` parses PsN `sse`-generated SSE_results.csv files
     and combines them into dataframes summarizing parameter statistics
     and error rates.
 
@@ -60,7 +60,7 @@ library(savictools)
 ``` r
 
 pop_example
-#> # A tibble: 1,000 x 5
+#> # A tibble: 1,000 × 5
 #>        ID   SEX   AGE    WT    HT
 #>     <dbl> <dbl> <dbl> <dbl> <dbl>
 #>  1 308857     2    38  13.9  95  
@@ -91,19 +91,19 @@ cohort(
   dose_times = dt,
   amt = 200
 )
-#> # A tibble: 200 x 10
-#>       ID  TIME  EVID   AMT    DV   TAD   SEX   AGE    WT    HT
-#>    <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
-#>  1 23381     0     1   200     0     0     2    53  18.8  111.
-#>  2 23381     0     0     0     0     0     2    53  18.8  111.
-#>  3 23381     4     0     0     0     4     2    53  18.8  111.
-#>  4 23381     5     1   200     0     0     2    53  18.8  111.
-#>  5 23381     8     0     0     0     3     2    53  18.8  111.
-#>  6 23381    12     1   200     0     0     2    53  18.8  111.
-#>  7 23381    12     0     0     0     0     2    53  18.8  111.
-#>  8 23381    16     0     0     0     4     2    53  18.8  111.
-#>  9 23381    20     0     0     0     8     2    53  18.8  111.
-#> 10 23381    24     0     0     0    12     2    53  18.8  111.
+#> # A tibble: 200 × 9
+#>       ID  TIME  EVID   AMT    DV   SEX   AGE    WT    HT
+#>    <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+#>  1 14402     0     1   200     0     1    43  14.3  96.5
+#>  2 14402     0     0     0     0     1    43  14.3  96.5
+#>  3 14402     4     0     0     0     1    43  14.3  96.5
+#>  4 14402     5     1   200     0     1    43  14.3  96.5
+#>  5 14402     8     0     0     0     1    43  14.3  96.5
+#>  6 14402    12     1   200     0     1    43  14.3  96.5
+#>  7 14402    12     0     0     0     1    43  14.3  96.5
+#>  8 14402    16     0     0     0     1    43  14.3  96.5
+#>  9 14402    20     0     0     0     1    43  14.3  96.5
+#> 10 14402    24     0     0     0     1    43  14.3  96.5
 #> # … with 190 more rows
 
 
@@ -125,19 +125,19 @@ cohort(
   amt = 200,
   original_id = FALSE
 )
-#> # A tibble: 200 x 8
-#>       ID  TIME  EVID   AMT    DV   TAD    WT    HT
-#>    <int> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
-#>  1     5     0     1   200     0     0  11.3  111.
-#>  2     5     0     0     0     0     0  11.3  111.
-#>  3     5     4     0     0     0     4  11.3  111.
-#>  4     5     5     1   200     0     0  11.3  111.
-#>  5     5     8     0     0     0     3  11.3  111.
-#>  6     5    12     1   200     0     0  11.3  111.
-#>  7     5    12     0     0     0     0  11.3  111.
-#>  8     5    16     0     0     0     4  11.3  111.
-#>  9     5    20     0     0     0     8  11.3  111.
-#> 10     5    24     0     0     0    12  11.3  111.
+#> # A tibble: 200 × 7
+#>       ID  TIME  EVID   AMT    DV    WT    HT
+#>    <int> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+#>  1    10     0     1   200     0  13.2  107.
+#>  2    10     0     0     0     0  13.2  107.
+#>  3    10     4     0     0     0  13.2  107.
+#>  4    10     5     1   200     0  13.2  107.
+#>  5    10     8     0     0     0  13.2  107.
+#>  6    10    12     1   200     0  13.2  107.
+#>  7    10    12     0     0     0  13.2  107.
+#>  8    10    16     0     0     0  13.2  107.
+#>  9    10    20     0     0     0  13.2  107.
+#> 10    10    24     0     0     0  13.2  107.
 #> # … with 190 more rows
 
 # 3. As in (2), except we now define a dosing function.
@@ -157,19 +157,19 @@ cohort(
   original_id = FALSE,
   amt = dose_fun
 )
-#> # A tibble: 200 x 8
-#>       ID  TIME  EVID   AMT    DV   TAD    WT    HT
-#>    <int> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
-#>  1     1     0     1   150     0     0  14.7  119.
-#>  2     1     0     0     0     0     0  14.7  119.
-#>  3     1     4     0     0     0     4  14.7  119.
-#>  4     1     5     1   150     0     0  14.7  119.
-#>  5     1     8     0     0     0     3  14.7  119.
-#>  6     1    12     1   150     0     0  14.7  119.
-#>  7     1    12     0     0     0     0  14.7  119.
-#>  8     1    16     0     0     0     4  14.7  119.
-#>  9     1    20     0     0     0     8  14.7  119.
-#> 10     1    24     0     0     0    12  14.7  119.
+#> # A tibble: 200 × 7
+#>       ID  TIME  EVID   AMT    DV    WT    HT
+#>    <int> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+#>  1     2     0     1   200     0  19.5  110.
+#>  2     2     0     0     0     0  19.5  110.
+#>  3     2     4     0     0     0  19.5  110.
+#>  4     2     5     1   200     0  19.5  110.
+#>  5     2     8     0     0     0  19.5  110.
+#>  6     2    12     1   200     0  19.5  110.
+#>  7     2    12     0     0     0  19.5  110.
+#>  8     2    16     0     0     0  19.5  110.
+#>  9     2    20     0     0     0  19.5  110.
+#> 10     2    24     0     0     0  19.5  110.
 #> # … with 190 more rows
 ```
 
@@ -177,7 +177,7 @@ cohort(
 
 ``` r
 expwt(pop_example)
-#> # A tibble: 1,000 x 6
+#> # A tibble: 1,000 × 6
 #>        ID   SEX   AGE    WT    HT EXPWT
 #>     <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
 #>  1 308857     2    38  13.9  95    14.2
@@ -199,7 +199,7 @@ expwt(pop_example)
 library(ggplot2)
 
 pk_example
-#> # A tibble: 489 x 7
+#> # A tibble: 489 × 7
 #>       ID  TIME   AMT    DV  EVID  ADDL    II
 #>    <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
 #>  1     1   0      25  0        1     0    12
@@ -232,7 +232,7 @@ sparse(pk_example, plot = TRUE) +
 ``` r
 # Deleting and re-calculating TAD
 tad(pk_example)
-#> # A tibble: 489 x 8
+#> # A tibble: 489 × 8
 #>       ID  TIME   AMT    DV  EVID  ADDL    II   TAD
 #>    <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
 #>  1     1   0      25  0        1     0    12   0  
@@ -252,7 +252,7 @@ tad(pk_example)
 
 ``` r
 zscores(pop_example, units = "months")
-#> # A tibble: 1,000 x 10
+#> # A tibble: 1,000 × 10
 #>        ID   SEX   AGE    WT    HT   WHZ   WAZ   BAZ   HAZ   BMI
 #>     <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
 #>  1 308857     2    38  13.9  95    0.01 -0.18  0.03 -0.37  15.4
