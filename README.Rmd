@@ -60,8 +60,9 @@ library(savictools)
 
 ##### `cohort()` is used to generate NONMEM-ready datasets for clinical PK trials, either by sampling from real datasets or generating synthetic data.
 ```{r cohort}
+set.seed(12345)
 
-pop_example
+savictools::pop_example
 
 # 1. Sampling 20 individuals, above 10 kg and below 120 cm, with a fixed dose of
 # 200 mg, observing every 4 hours for one day and dosing at times 0, 5, and 12.
@@ -117,6 +118,8 @@ cohort(
   original_id = FALSE,
   amt = dose_fun
 )
+
+set.seed(NULL)
 ```
 
 ##### `expwt()` calculates expected weight based on age and sex in under-5 children, adding a column called EXPWT.
