@@ -1,4 +1,4 @@
-#' @title NONMEM dataset utilites
+#' @title NONMEM dataset utilities
 #' @author Sandy Floren
 #'
 #' @description

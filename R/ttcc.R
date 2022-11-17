@@ -2,7 +2,7 @@
 #' @author Sandy Floren
 #'
 #' @description
-#' Find consecutive negatives past some threshold occuring within an interval.
+#' Find consecutive negatives past some threshold occurring within an interval.
 #'
 #' ttcc will assume that data is grouped by individual, so as to not compare
 #' timestamps from two different patients. ttcc returns a vector which

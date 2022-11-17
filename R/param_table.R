@@ -2,9 +2,9 @@
 #' @author Sandy Floren
 #'
 #' @description
-#' `param_table()` is useful for formatting tables of NONMEM parameter etimates
+#' `param_table()` is useful for formatting tables of NONMEM parameter estimates
 #' for single or multiple runs. If successive runs have more/fewer parameters
-#' (THETAs, OMEGAs, or SIGMAs), the parameters in c ommon between runs will be
+#' (THETAs, OMEGAs, or SIGMAs), the parameters in common between runs will be
 #' aligned for ease of comparison.
 #'
 #' @param ... Run number(s) or model names(s).

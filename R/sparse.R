@@ -14,7 +14,7 @@
 #' intensive (i.e. not sparse) sampling.
 #' @param max_distance The maximum allowed distance between the earliest and latest observation
 #' of a single cluster.
-#' @param plot Logical. Whether to make a plot of individual PKK curves with sparse observations labelled.
+#' @param plot Logical. Whether to make a plot of individual PK curves with sparse observations labeled.
 #'
 #' @author Sandy Floren
 #' @export

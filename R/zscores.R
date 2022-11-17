@@ -1,4 +1,4 @@
-#' @title Calculate z-scores for anthrompometric indicators
+#' @title Calculate z-scores for anthropometric indicators
 #' @author Sandy Floren, Dhruv Vaish, World Health Organization
 #'
 #' @description `zscores()` computes z-scores indicating nutritional status, adding new

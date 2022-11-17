@@ -3,7 +3,7 @@
 #' @description `tad()` computes the time after dose, adding a new column to a dataframe.
 #'
 #' @details `tad()` assumes NONMEM-formatted data. It will expand the ADDL column internally,
-#' but will return the data in its un-expanded form unless `expand` is set to TRUE.
+#' but will return the data in its non-expanded form unless `expand` is set to TRUE.
 #'
 #' @param data A NONMEM-formatted dataframe.
 #' @param cond A filtering condition that specifies for which rows to calculate TAD, as a string (optional).
@@ -13,7 +13,7 @@
 #' row of `data` should count as a "dose" for calculating time after dose. This
 #' is especially useful if there is more than one type of dose event, and TAD
 #' should only apply to one of them. For example, suppose the DV column of
-#' `data` contains concentrations of a drug *X*. If a flag colum "Y_FLAG"
+#' `data` contains concentrations of a drug *X*. If a flag column "Y_FLAG"
 #' exists to indicate that a drug *Y* is given, as opposed to *X*, passing
 #' `Y_FLAG = 0` to `...` will ensure that TAD is only calculated with respect to
 #' drug *X* dosing events.
