@@ -27,7 +27,11 @@ zscores <-
   function(data,
            units = c("months", "years", "weeks"),
            missing_flag = NA,
-           extreme_flag = NA) {
+           extreme_flag = NA
+           ) {
+    # for R CMD CHECK
+    SEX <- AGE <- WT <- HT <- NULL
+
     units <- match.arg(units)
 
     # convert units to months, if necessary
@@ -54,20 +58,14 @@ zscores <-
 
     # Check for missing
     below_five <- data %>%
-      dplyr::filter(AGE <= age_cutoff | is.na(AGE)) %>%
-      dplyr::select(ID, rownum, AGE, SEX, WT, HT)
+      dplyr::filter(.data$AGE <= age_cutoff | is.na(.data$AGE)) %>%
+      dplyr::select(.data$ID, .data$rownum, .data$AGE, .data$SEX, .data$WT, .data$HT)
     below_five_frame <- as.data.frame(below_five)
 
     above_five <- data %>%
-      dplyr::filter(AGE > age_cutoff) %>%
-      dplyr::select(ID, rownum, AGE, SEX, WT, HT)
+      dplyr::filter(.data$AGE > age_cutoff) %>%
+      dplyr::select(.data$ID, .data$rownum, .data$AGE, .data$SEX, .data$WT, .data$HT)
     above_five_frame <- as.data.frame(above_five)
-
-    # Load WHO datasets
-
-    # SCRIPT: Under 5 years
-    # source("R/igrowup_standard.r", local = TRUE)
-    # load("R/sysdata.rda")
 
     if (nrow(below_five_frame) > 0) {
       #calculate Z-scores
@@ -96,18 +94,18 @@ zscores <-
       )]
       zvars_below_5 <- dplyr::rename(
         zvars_below_5,
-        BMI = cbmi,
-        WAZ = zwei,
-        HAZ = zlen,
-        WHZ = zwfl,
-        BAZ = zbmi,
-        WAZ_F = fwei,
+        BMI = .data$cbmi,
+        WAZ = .data$zwei,
+        HAZ = .data$zlen,
+        WHZ = .data$zwfl,
+        BAZ = .data$zbmi,
+        WAZ_F = .data$fwei,
         # WAZ out of range flag
-        HAZ_F = flen,
+        HAZ_F = .data$flen,
         # HAZ out of range flag
-        WHZ_F = fwfl,
+        WHZ_F = .data$fwfl,
         # WHZ out of range flag
-        BAZ_F = fbmi  # BAZ out of range flag
+        BAZ_F = .data$fbmi  # BAZ out of range flag
       )
     }
 
@@ -116,7 +114,7 @@ zscores <-
 
     if (nrow(above_five_frame) > 0) {
       no_under_61 <- above_five_frame %>%
-        dplyr::mutate(AGE = dplyr::if_else(AGE < 61, 61, AGE))
+        dplyr::mutate(AGE = dplyr::if_else(.data$AGE < 61, 61, .data$AGE))
 
       matz_above_5 <- who2007_vec(
         mydf = no_under_61,
@@ -139,15 +137,15 @@ zscores <-
                                         'fbfa')]
       zvars_above_5 <- dplyr::rename(
         zvars_above_5,
-        BMI = cbmi,
-        WAZ = zwfa,
-        HAZ = zhfa,
-        BAZ = zbfa,
-        WAZ_F = fwfa,
+        BMI = .data$cbmi,
+        WAZ = .data$zwfa,
+        HAZ = .data$zhfa,
+        BAZ = .data$zbfa,
+        WAZ_F = .data$fwfa,
         # WAZ out of range flag
-        HAZ_F = fhfa,
+        HAZ_F = .data$fhfa,
         # HAZ out of range flag
-        BAZ_F = fbfa  # BAZ out of range flag
+        BAZ_F = .data$fbfa  # BAZ out of range flag
       ) %>%
         dplyr::mutate(WHZ_F = 0,
                       WHZ = NA)
@@ -162,7 +160,7 @@ zscores <-
       zvars_full <- zvars_above_5
     }
 
-    zvars_full <- dplyr::arrange(zvars_full, rownum)
+    zvars_full <- dplyr::arrange(zvars_full, .data$rownum)
 
     data$WHZ <- zvars_full$WHZ
     data$WAZ <- zvars_full$WAZ
@@ -181,10 +179,10 @@ zscores <-
     # deal with missing and extreme values
 
     extreme_parsed <- data %>%  dplyr::mutate(
-      WAZ = ifelse(WAZ_F == 1, extreme_flag, WAZ),
-      HAZ = ifelse(HAZ_F == 1, extreme_flag, HAZ),
-      BAZ = ifelse(BAZ_F == 1, extreme_flag, BAZ),
-      WHZ = ifelse(WHZ_F == 1, extreme_flag, WHZ)
+      WAZ = ifelse(.data$WAZ_F == 1, extreme_flag, .data$WAZ),
+      HAZ = ifelse(.data$HAZ_F == 1, extreme_flag, .data$HAZ),
+      BAZ = ifelse(.data$BAZ_F == 1, extreme_flag, .data$BAZ),
+      WHZ = ifelse(.data$WHZ_F == 1, extreme_flag, .data$WHZ)
     )
 
     extreme_parsed$WAZ_F <- NULL

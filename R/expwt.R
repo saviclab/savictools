@@ -25,6 +25,6 @@ expwt <- function(data, units = c("months", "years", "weeks")) {
     else {rlang::warn("SEX must be 1 or 2."); NA}}
 
   data %>%
-    dplyr::mutate(EXPWT = mapply(calc_expwt, age_vec, SEX))
+    dplyr::mutate(EXPWT = mapply(calc_expwt, age_vec, .data$SEX))
 
 }

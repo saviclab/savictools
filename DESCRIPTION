@@ -2,11 +2,11 @@ Package: savictools
 Title: A Toolbox for PK/PD Analysis
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Sandy",
+           family = "Floren",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+           email = "sandy_floren@yahoo.com",
+           comment = c(ORCID = "0000-0003-3087-5476"))
 Description: A collection of functions designed to make the pharmacometrics workflow faster, simpler, and more intuitive.
 License: GPL (>= 3)
 Imports:

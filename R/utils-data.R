@@ -1,18 +1,16 @@
 #' @title NONMEM dataset utilites
 #' @author Sandy Floren
 #'
-
 #' @description
-#' Check a NONMEM dataset for formatting errors
+#' `nmcheck` checks a NONMEM dataset for formatting errors.
 #'
-#' @param data A dataframe
-
-#' @details
+#' `expand_addl` expands doses coded with ADDL to distinct rows for each dose.
 #'
-#' @examples
+#' @param data a NONMEM-formatted dataset.
+#' @param check whether to perform nmcheck.
 #'
 #' @importFrom magrittr %>%
-#' @author Sandy Floren
+#' @importFrom rlang .data
 #' @rdname nonmem-data
 #' @export
 
@@ -22,13 +20,6 @@ nmcheck <- function(data) {
   check_addl_ii(data)
 }
 
-
-#' @description
-#' Expand doses coded with ADDL to distinct rows for each dose.
-#'
-#' @param data a NONMEM-formatted dataset.
-#' @param check whether to perform nmcheck.
-#'
 #' @rdname nonmem-data
 #' @export
 
@@ -45,14 +36,14 @@ expand_addl <- function(data, check = T) {
   }
 
   data <- data %>%
-    dplyr::arrange(ID, TIME, desc(EVID), .by_group = TRUE)
+    dplyr::arrange(.data$ID, .data$TIME, dplyr::desc(.data$EVID), .by_group = TRUE)
 
   if (all(data$ADDL == 0)) {
     return(data)
   }
 
   doses <-
-    data %>% dplyr::filter((EVID == 1 | EVID == 4) & ADDL > 0)
+    data %>% dplyr::filter((.data$EVID == 1 | .data$EVID == 4) & .data$ADDL > 0)
   time <- doses$TIME
   addl <- doses$ADDL
   ii <- doses$II
@@ -69,10 +60,10 @@ expand_addl <- function(data, check = T) {
   })
   res <- dplyr::bind_rows(list(data, tmp)) %>%
     dplyr::mutate(ADDL = 0) %>%
-    dplyr::arrange(ID, TIME, desc(EVID), by_group = TRUE)
+    dplyr::arrange(.data$ID, .data$TIME, dplyr::desc(.data$EVID), by_group = TRUE)
 
   if (dummy_id) {
-    res %>% dplyr::select(-ID)
+    res %>% dplyr::select(-.data$ID)
   } else {
     res
   }
@@ -81,6 +72,7 @@ expand_addl <- function(data, check = T) {
 
 
 # EVID checker
+
 check_evid <- function(data) {
   evid <- data$EVID
 
@@ -161,10 +153,6 @@ check_evid <- function(data) {
 }
 
 
-# PREDPP  recognizes two varieties of doses, transient and steady-state.
-# Steady-state  doses  are  described  separately   (See SS_dose_event).
-# Transient doses are described here.
-
 
 # II/ADDL checker
 
@@ -216,9 +204,7 @@ check_addl_ii <- function(data) {
 
 }
 
-
-
-
+# SS checker
 
 check_ss <- function(data) {
   if (!("SS" %in% colnames(data))) {

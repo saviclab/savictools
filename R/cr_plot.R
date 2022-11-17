@@ -37,6 +37,9 @@ cr_plot <-
            adjust = 1,
            n = 10000,
            ...) {
+    # for R CMD check
+    value <- NULL
+
     # delay evaluation of `...`, but get variable names
     theta_quos <- dplyr::enquos(...)
     new_varnames <- names(theta_quos)
@@ -57,7 +60,6 @@ cr_plot <-
       data.frame(MASS::mvrnorm(n = n, mu = mu, Sigma = theta_cov))
     boot <- boot[, theta, drop = FALSE]
 
-
     # calculate covariate relations
     for (name in names(new_exprs)) {
       boot[[name]] <- eval(str2lang(new_exprs[[name]]), envir = boot)
@@ -65,11 +67,10 @@ cr_plot <-
 
     boot <- dplyr::select(boot, dplyr::all_of(new_varnames))
 
-    #print(boot)
     # change to long format
     boot <- tidyr::pivot_longer(boot, cols = names(boot))
 
-    # restrict posterior distribution to corredt interval width
+    # restrict posterior distribution to correct interval width
     boot <- boot[with(
       boot,
       value >= reapply(value, name, quantile, (1 - width) / 2) &

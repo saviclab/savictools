@@ -15,18 +15,10 @@ expand_addl(data, check = T)
 \item{check}{whether to perform nmcheck.}
 }
 \description{
-Check a NONMEM dataset for formatting errors
+\code{nmcheck} checks a NONMEM dataset for formatting errors.
 
-Expand doses coded with ADDL to distinct rows for each dose.
-}
-\details{
-
-}
-\examples{
-
+\code{expand_addl} expands doses coded with ADDL to distinct rows for each dose.
 }
 \author{
-Sandy Floren
-
 Sandy Floren
 }

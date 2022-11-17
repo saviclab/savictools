@@ -264,7 +264,7 @@ cohort <- function(data = NULL,
   }
 
   # ensure one row per ID
-  df <- dplyr::group_by(df, ID)
+  df <- dplyr::group_by(df, .data$ID)
   df <- dplyr::slice(df, 1)
   df <- dplyr::ungroup(df)
 
@@ -290,20 +290,20 @@ cohort <- function(data = NULL,
   df$DV   <- 0
 
   # sort by ID and TIME
-  df <- dplyr::arrange(df, ID, TIME)
+  df <- dplyr::arrange(df, .data$ID, .data$TIME)
 
   # assign dose amounts
   if (is.numeric(amt)) {
-    df <- dplyr::mutate(df, AMT = dplyr::if_else(EVID == 1, amt, 0))
+    df <- dplyr::mutate(df, AMT = dplyr::if_else(.data$EVID == 1, amt, 0))
   } else {
     # extract formals from dosing function and apply where EVID = 1
     dose_args <- as.list(dplyr::syms(names(formals(amt))))
     df <- dplyr::mutate(df,
-                        AMT = dplyr::if_else(EVID == 1,
+                        AMT = dplyr::if_else(.data$EVID == 1,
                                              do.call(amt, eval(dose_args)), 0))
   }
 
-  df <- dplyr::relocate(df, ID, TIME, EVID, AMT, DV)
+  df <- dplyr::relocate(df, .data$ID, .data$TIME, .data$EVID, .data$AMT, .data$DV)
 
   # calculate TAD
   if (tad) {

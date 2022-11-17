@@ -25,7 +25,7 @@ sparse <- function(data,
                    max_distance = 26,
                    plot = FALSE) {
   data <- data %>%
-    dplyr::group_by(ID) %>%
+    dplyr::group_by(.data$ID) %>%
     dplyr::group_modify( ~ {
       .x$SPARSE <- 1
       len <- nrow(.x)
@@ -79,14 +79,13 @@ sparse <- function(data,
 
   if (plot) {
     p <- data %>%
-      dplyr::filter(EVID == 0) %>%
-      ggplot2::ggplot(ggplot2::aes(x = TIME, y = DV, group = ID)) +
+      dplyr::filter(.data$EVID == 0) %>%
+      ggplot2::ggplot(ggplot2::aes(x = .data$TIME, y = .data$DV, group = .data$ID)) +
       ggplot2::geom_line(color = "black", size = 0.3) +
-      ggplot2::geom_point(ggplot2::aes(color = as.factor(SPARSE))) +
+      ggplot2::geom_point(ggplot2::aes(color = as.factor(.data$SPARSE))) +
       ggplot2::labs(color = "SPARSE") +
       ggplot2::scale_color_manual(values = c("red3", "darkblue"))
 
-    #     ggforce::facet_wrap_paginate("ID", nrow = nrow, ncol = ncol, scales = "free_x", page = page)
     p
 
   } else {

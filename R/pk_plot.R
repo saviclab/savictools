@@ -27,15 +27,15 @@ pk_plot <-
     if (!exists("TAD", data)) {
       data <- tad(data, expand = T)
     }
-    data <- dplyr::filter(curve(data), EVID == 0, TAD <= max_tad)
+    data <- dplyr::filter(curve(data), .data$EVID == 0, .data$TAD <= max_tad)
     if (is.null(id)) {
-      p <- ggplot2::ggplot(data, ggplot2::aes(x = TAD, y = DV,
-                                              group = CURVE))
+      p <- ggplot2::ggplot(data, ggplot2::aes(x = .data$TAD, y = .data$DV,
+                                              group = .data$CURVE))
     }
     else {
-      data <- dplyr::filter(data, ID %in% id)
-      p <- ggplot2::ggplot(data, ggplot2::aes(x = TAD, y = DV,
-                                              group = CURVE))
+      data <- dplyr::filter(data, .data$ID %in% id)
+      p <- ggplot2::ggplot(data, ggplot2::aes(x = .data$TAD, y = .data$DV,
+                                              group = .data$CURVE))
     }
     if (ind) {
       n_ids <- length(unique(data$ID))

@@ -39,8 +39,8 @@ tad <- function(data, cond = "", expand = FALSE) {
   expanded_addl <- expand_addl(data, check = FALSE)
 
   res <- expanded_addl %>%
-    dplyr::group_by(ID) %>%
-    dplyr::arrange(TIME, .by_group = TRUE) %>%
+    dplyr::group_by(.data$ID) %>%
+    dplyr::arrange(.data$TIME, .by_group = TRUE) %>%
     dplyr::group_modify( ~ {
       evid <- as.integer(.x$EVID)
       time <- .x$TIME
@@ -86,10 +86,10 @@ tad_old <- function(data, ...) {
   }
 
   data %>%
-    dplyr::group_by(ID) %>%
-    dplyr::arrange(TIME, .by_group = TRUE) %>%
+    dplyr::group_by(.data$ID) %>%
+    dplyr::arrange(.data$TIME, .by_group = TRUE) %>%
     dplyr::group_modify( ~ {
-      evid <- as.integer(dplyr::pull(.x, EVID))
+      evid <- as.integer(dplyr::pull(.x, .data$EVID))
 
       copy <- .x %>%
         dplyr::mutate(rownum = 1:dplyr::n()) %>%
@@ -160,5 +160,5 @@ tad_old <- function(data, ...) {
       copy
     }) %>%
     dplyr::ungroup() %>%
-    dplyr::arrange(ID, TIME, dplyr::desc(EVID))
+    dplyr::arrange(.data$ID, .data$TIME, dplyr::desc(.data$EVID))
 }

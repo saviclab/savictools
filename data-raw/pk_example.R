@@ -1,4 +1,5 @@
 #pk_example <- readr::read_csv("data-raw/pk_example.csv")
+set.seed(12345)
 pk_example <- tibble(
   ID = rep(1:20, each = 27),
   TIME = rep(c(
@@ -63,5 +64,7 @@ pk_example <- tibble(
     DV = exp(DV),
     DV = if_else(EVID == 0, DV, 0),
   )
+
+set.seed(NULL)
 
 usethis::use_data(pk_example, overwrite = TRUE)

@@ -151,15 +151,15 @@ nmsum <- function(runno,
                       ext = ".lst",
                       quiet = TRUE)
   summary <- xpose::get_summary(xpdb)
-  ofv <- dplyr::filter(summary, label == "ofv")$value
-  ref <- paste0("run", dplyr::filter(summary, label == "ref")$value)
-  descr <- dplyr::filter(summary, label == "descr")$value
+  ofv <- dplyr::filter(summary, .data$label == "ofv")$value
+  ref <- paste0("run", dplyr::filter(summary, .data$label == "ref")$value)
+  descr <- dplyr::filter(summary, .data$label == "descr")$value
 
   param_tab <- xpose::get_prm(xpdb, transform = transform) %>%
-    dplyr::select(name, label, value, rse, fixed) %>%
-    dplyr::mutate(rse = ifelse(fixed == TRUE, "FIX", rse),
-                  value = as.character(value)) %>%
-    dplyr::select(-fixed)
+    dplyr::select(.data$name, .data$label, .data$value, .data$rse, .data$fixed) %>%
+    dplyr::mutate(rse = ifelse(.data$fixed == TRUE, "FIX", .data$rse),
+                  value = as.character(.data$value)) %>%
+    dplyr::select(-.data$fixed)
 
   xpsum <-
     dplyr::bind_rows(
@@ -205,26 +205,26 @@ nmsum <- function(runno,
   xpsum <-
     dplyr::rename(
       xpsum,
-      Parameter = name,
-      Description = label,
-      Value = value,
-      RSE = rse
+      Parameter = .data$name,
+      Description = .data$label,
+      Value = .data$value,
+      RSE = .data$rse
     )
 
   if (nice) {
     xpsum <- xpsum %>%
       dplyr::mutate(Value_pct_RSE = paste0(
-        round_format(Value, value_digits),
+        round_format(.data$Value, value_digits),
         " [",
-        round_format(as.numeric(RSE) * 100, rse_digits),
+        round_format(as.numeric(.data$RSE) * 100, rse_digits),
         "]"
       )) %>%
-      dplyr::select(-Value, -RSE)
+      dplyr::select(-.data$Value, -.data$RSE)
     xpsum[1:3, "Value_pct_RSE"] <- ""
   }
 
   if (write) {
-    readr::write_csv(xpsum, paste0("run", n, "_params.csv"))
+    readr::write_csv(xpsum, paste0("run", .data$n, "_params.csv"))
   } else {
     xpsum
   }
