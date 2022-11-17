@@ -62,7 +62,7 @@ library(savictools)
 ```{r cohort}
 set.seed(12345)
 
-savictools::pop_example
+pop_example
 
 # 1. Sampling 20 individuals, above 10 kg and below 120 cm, with a fixed dose of
 # 200 mg, observing every 4 hours for one day and dosing at times 0, 5, and 12.
