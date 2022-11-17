@@ -1,6 +1,7 @@
 #pk_example <- readr::read_csv("data-raw/pk_example.csv")
 set.seed(12345)
-pk_example <- tibble(
+
+pk_example <- dplyr::tibble(
   ID = rep(1:20, each = 27),
   TIME = rep(c(
     0, 24, 48, 72, 96, 120,
@@ -56,13 +57,13 @@ pk_example <- tibble(
     24,
     0, 0  # sparse samples
   ), 20)
-) %>%
-  dplyr::mutate(
-    TIME = if_else(TIME != 0, jitter(TIME, amount = 0.5), TIME),
+)
+pk_example <- dplyr::mutate(pk_example,
+    TIME = dplyr::if_else(TIME != 0, jitter(TIME, amount = 0.5), TIME),
     DV = log(DV),
     DV = jitter(DV, factor=10),
     DV = exp(DV),
-    DV = if_else(EVID == 0, DV, 0),
+    DV = dplyr::if_else(EVID == 0, DV, 0),
   )
 
 set.seed(NULL)
