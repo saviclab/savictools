@@ -8,25 +8,72 @@ zscores(
   data,
   units = c("months", "years", "weeks"),
   missing_flag = NA,
-  extreme_flag = NA
+  extreme_flag = NA,
+  id = "ID",
+  age = "AGE",
+  sex = "SEX",
+  weight = "WT",
+  height = "HT",
+  measure = NA,
+  headc = NA,
+  armc = NA,
+  triskin = NA,
+  subskin = NA,
+  oedema = NA,
+  sw = NA
 )
 }
 \arguments{
 \item{data}{A dataframe with ID, AGE, SEX, WT, and HT columns.}
 
-\item{units}{Units for AGE. Default is "months".}
+\item{units}{Optional. Units for age Default is "months".}
 
 \item{missing_flag}{Value used to replace missing z-scores Default is NA.}
 
 \item{extreme_flag}{Value used to replace extreme/implausible z-scores.
 Default is NA.}
+
+\item{id}{Optional. Name of the patient identifier column.}
+
+\item{age}{Optional. Name of the age column.}
+
+\item{sex}{Optional. Name of the sex column.}
+
+\item{weight}{Optional. Name of the weight column.}
+
+\item{height}{Optional. Name of the height column.}
+
+\item{measure}{Optional. Name of the column indicating whether height was measured standing ("H" or "h"), or recumbent ("L" or "l").}
+
+\item{headc}{Optional. Name of the column containing head circumference measurements. Measurements must be in centimeters.}
+
+\item{armc}{Optional. Name of the column containing arm circumference measurements. Measurements must be in centimeters.}
+
+\item{triskin}{Optional. Name of the column containing triceps skinfold measurements. Measurements must be in millimeters.}
+
+\item{subskin}{Optional. Name of the column containing subscapular skinfold measurements. Measurements must be in millimeters.}
+
+\item{oedema}{Optional. Name of the column containing oedema information. "Y" or "y" for oedema; "N" or "n" for non-oedema.}
+
+\item{sw}{Optional. Name of the column containing the sample weights.}
 }
 \description{
 \code{zscores()} computes z-scores indicating nutritional status, adding new
 columns to the end of a dataframe.
-
-\code{zscores()} is a vectorized, more streamlined implementation of the WHO scripts
+}
+\details{
+\code{zscores} is a vectorized, more streamlined implementation of the WHO scripts
 \code{igrowup_standard.R}, \code{igrowup_restricted.R}, and \code{who2007.R}.
+In addition to BMI, \code{zscores} can calculate the following z-scores:
+
+HAZ: Height-for-age z-score
+WAZ: Weight-for-age z-score
+WHZ: Weight-for-height z-score
+BAZ: BMI-for-age z-score
+HCZ: Head circumference-for-age z-score
+ACZ: Arm circumference-for-age z-score
+TSZ: Triceps skinfold-for-age z-score
+SSZ: Subscapular skinfold-for-age z-score
 }
 \examples{
 zscores(pop_example, units = "months")

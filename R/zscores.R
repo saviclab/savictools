@@ -4,14 +4,38 @@
 #' @description `zscores()` computes z-scores indicating nutritional status, adding new
 #'  columns to the end of a dataframe.
 #'
-#' `zscores()` is a vectorized, more streamlined implementation of the WHO scripts
+#' @details `zscores` is a vectorized, more streamlined implementation of the WHO scripts
 #' `igrowup_standard.R`, `igrowup_restricted.R`, and `who2007.R`.
+#' In addition to BMI, `zscores` can calculate the following z-scores:
+#'
+#' HAZ: Height-for-age z-score
+#' WAZ: Weight-for-age z-score
+#' WHZ: Weight-for-height z-score
+#' BAZ: BMI-for-age z-score
+#' HCZ: Head circumference-for-age z-score
+#' ACZ: Arm circumference-for-age z-score
+#' TSZ: Triceps skinfold-for-age z-score
+#' SSZ: Subscapular skinfold-for-age z-score
+#'
+#'
 #'
 #' @param data A dataframe with ID, AGE, SEX, WT, and HT columns.
-#' @param units Units for AGE. Default is "months".
+#' @param units Optional. Units for age Default is "months".
 #' @param missing_flag Value used to replace missing z-scores Default is NA.
 #' @param extreme_flag Value used to replace extreme/implausible z-scores.
 #' Default is NA.
+#' @param id Optional. Name of the patient identifier column.
+#' @param age Optional. Name of the age column.
+#' @param sex Optional. Name of the sex column.
+#' @param weight Optional. Name of the weight column.
+#' @param height Optional. Name of the height column.
+#' @param measure Optional. Name of the column indicating whether height was measured standing ("H" or "h"), or recumbent ("L" or "l").
+#' @param headc Optional. Name of the column containing head circumference measurements. Measurements must be in centimeters.
+#' @param armc Optional. Name of the column containing arm circumference measurements. Measurements must be in centimeters.
+#' @param triskin Optional. Name of the column containing triceps skinfold measurements. Measurements must be in millimeters.
+#' @param subskin Optional. Name of the column containing subscapular skinfold measurements. Measurements must be in millimeters.
+#' @param oedema Optional. Name of the column containing oedema information. "Y" or "y" for oedema; "N" or "n" for non-oedema.
+#' @param sw Optional. Name of the column containing the sample weights.
 #'
 #' @importFrom magrittr %>%
 #'
@@ -20,7 +44,6 @@
 #'
 #' @export
 
-# TODO: Include some authorship info for WHO functions
 # TODO: Clean up WHO function docs
 # TODO: Make lines wrap at 80 characters
 # TODO: Preserve column order
@@ -28,85 +51,117 @@ zscores <-
   function(data,
            units = c("months", "years", "weeks"),
            missing_flag = NA,
-           extreme_flag = NA
+           extreme_flag = NA,
+           id = "ID",
+           age = "AGE",
+           sex = "SEX",
+           weight = "WT",
+           height = "HT",
+           measure = NA,
+           headc = NA,
+           armc = NA,
+           triskin = NA,
+           subskin = NA,
+           oedema = NA,
+           sw = NA
            ) {
-    # for R CMD CHECK
-    SEX <- AGE <- WT <- HT <- NULL
 
     units <- match.arg(units)
 
     # convert units to months, if necessary
     if (units == "years") {
-      data$AGE <- data$AGE * 12
+      data[ , age] <- dplyr::pull(data, {{age}}) * 12
     }
     else if (units == "weeks") {
-      data$AGE <- data$AGE / 4.345
+      data[ , age] <- dplyr::pull(data, {{age}}) / 4.345
     }
     data$rownum <- 1:nrow(data)
 
     # Null out existing z-score columns
-    data$WHZ <- NA
-    data$WAZ <- NA
-    data$BAZ <- NA
-    data$HAZ <- NA
     data$BMI <- NA
-    data$WHZ_F <- NA
-    data$WAZ_F <- NA
-    data$BAZ_F <- NA
+
+    data$HAZ <- NA
+    data$WAZ <- NA
+    data$WHZ <- NA
+    data$BAZ <- NA
+
+    data$HCZ <- NA
+    data$ACZ <- NA
+    data$TSZ <- NA
+    data$SSZ <- NA
+
     data$HAZ_F <- NA
+    data$WAZ_F <- NA
+    data$WHZ_F <- NA
+    data$BAZ_F <- NA
+
+    data$HCZ_F <- NA
+    data$ACZ_F <- NA
+    data$TSZ_F <- NA
+    data$SSZ_F <- NA
 
     age_cutoff <- 1856 / 30.4375 # 60.97741
 
     # Check for missing
     below_five <- data %>%
-      dplyr::filter(.data$AGE <= age_cutoff | is.na(.data$AGE)) %>%
-      dplyr::select(.data$ID, .data$rownum, .data$AGE, .data$SEX, .data$WT, .data$HT)
+      dplyr::filter(!!rlang::sym(age) <= age_cutoff | is.na(!!rlang::sym(age)))
+    #%>%
+     # dplyr::select({{id}}, .data$rownum, {{age}}, {{sex}}, {{weight}}, {{height}})
     below_five_frame <- as.data.frame(below_five)
 
     above_five <- data %>%
-      dplyr::filter(.data$AGE > age_cutoff) %>%
-      dplyr::select(.data$ID, .data$rownum, .data$AGE, .data$SEX, .data$WT, .data$HT)
+      dplyr::filter(!!rlang::sym(age) > age_cutoff)
+    #%>%
+     # dplyr::select({{id}}, .data$rownum, {{age}}, {{sex}}, {{weight}}, {{height}})
     above_five_frame <- as.data.frame(above_five)
 
     if (nrow(below_five_frame) > 0) {
       #calculate Z-scores
       matz_below_5 <- igrowup.standard_vec(
         mydf = below_five_frame,
-        sex = SEX,
-        age = AGE,
+        sex = sex,
+        age = age,
         age.month = T,
-        weight = WT,
-        lenhei = HT
+        weight = weight,
+        lenhei = height,
+        measure = measure,
+        headc = headc,
+        armc = armc,
+        triskin = triskin,
+        subskin = subskin,
+        oedema = oedema,
+        sw = sw
       )
 
-      #select and rename columns
+      # select and rename columns
       zvars_below_5 <- matz_below_5[, c(
         'ID',
         'rownum',
-        'cbmi',
-        'zwei',
-        'zlen',
-        'zbmi',
-        'zwfl',
-        'fwei',
-        'flen',
-        'fwfl',
-        'fbmi'
+        "cbmi",
+        "zlen",	"zwei",	"zwfl",	"zbmi",	"zhc",	"zac",	"zts",	"zss",
+        "flen", "fwei",	"fwfl",	"fbmi",	"fhc",	"fac",	"fts",	"fss"
       )]
       zvars_below_5 <- dplyr::rename(
         zvars_below_5,
         BMI = .data$cbmi,
-        WAZ = .data$zwei,
+
         HAZ = .data$zlen,
+        WAZ = .data$zwei,
         WHZ = .data$zwfl,
         BAZ = .data$zbmi,
-        WAZ_F = .data$fwei,
-        # WAZ out of range flag
+        HCZ = .data$zhc,
+        ACZ = .data$zac,
+        TSZ = .data$zts,
+        SSZ = .data$zss,
+
         HAZ_F = .data$flen,
-        # HAZ out of range flag
+        WAZ_F = .data$fwei,
         WHZ_F = .data$fwfl,
-        # WHZ out of range flag
-        BAZ_F = .data$fbmi  # BAZ out of range flag
+        BAZ_F = .data$fbmi,
+        HCZ_F = .data$fhc,
+        ACZ_F = .data$fac,
+        TSZ_F = .data$ftc,
+        SSZ_F = .data$fss
       )
     }
 
@@ -119,10 +174,12 @@ zscores <-
 
       matz_above_5 <- who2007_vec(
         mydf = no_under_61,
-        sex = SEX,
-        age = AGE,
-        weight = WT,
-        height = HT
+        sex = sex,
+        age = age,
+        weight = weight,
+        height = height,
+        oedema = oedema,
+        sw = sw
       )
 
       matz_above_5$AGE <- above_five_frame$AGE
@@ -139,17 +196,27 @@ zscores <-
       zvars_above_5 <- dplyr::rename(
         zvars_above_5,
         BMI = .data$cbmi,
-        WAZ = .data$zwfa,
+
         HAZ = .data$zhfa,
+        WAZ = .data$zwfa,
         BAZ = .data$zbfa,
-        WAZ_F = .data$fwfa,
-        # WAZ out of range flag
+
         HAZ_F = .data$fhfa,
-        # HAZ out of range flag
-        BAZ_F = .data$fbfa  # BAZ out of range flag
+        WAZ_F = .data$fwfa,
+        BAZ_F = .data$fbfa
       ) %>%
-        dplyr::mutate(WHZ_F = 0,
-                      WHZ = NA)
+        dplyr::mutate(
+          WHZ = NA,
+          HCZ = NA,
+          ACZ = NA,
+          TSZ = NA,
+          SSZ = NA,
+
+          WHZ_F = 0,
+          HCZ_F = 0,
+          ACZ_F = 0,
+          TSZ_F = 0,
+          SSZ_F = 0)
     }
 
     # To merge data sets, first merge z-scores together
@@ -590,15 +657,6 @@ calc.zbmi_vec <- function(mat, bmianthro) {
 #### Main function starts here: igrowup
 ###################################################################################
 
-###############################################################################################################################################
-#### This function can be used to:
-#### 1. Calculate the z-scores for the indicators: length/height-for-age, weight-for-age, weight-for-legnth/height and body mass index-for-age
-####    The output file with z-scores values is exported the file to an Excel spreadsheet (see readme file);
-#### 2. Calculate the prevalence rates of stunting, underweight, wasting and overweight, and z-scores means and standard deviations. Results
-####    are exported to an Excel spreadsheet, displayed by age group.
-###############################################################################################################################################
-
-
 #############################################################################
 ##### Function for calculating the z-scores for all indicators
 #############################################################################
@@ -614,59 +672,59 @@ igrowup.standard_vec <- function(mydf,
                                  armc = NA,
                                  triskin = NA,
                                  subskin = NA,
-                                 oedema = "n",
-                                 sw = 1) {
+                                 oedema = NA,
+                                 sw = NA) {
   #############################################################################
   ###########   Calculating the z-scores for all indicators
   #############################################################################
 
-  sex.x <- as.character(mydf[, deparse(substitute(sex))])
-  age.x <- as.double(mydf[, deparse(substitute(age))])
-  if (!missing(weight))
+  sex.x <- as.character(dplyr::pull(mydf, {{sex}}))
+  age.x <- as.double(dplyr::pull(mydf, {{age}}))
+  if (!is.na(weight))
     weight.x <-
-    as.double(mydf[, deparse(substitute(weight))])
+    as.double(dplyr::pull(mydf, {{weight}}))
   else
     weight.x <- as.double(weight)
-  if (!missing(lenhei))
+  if (!is.na(lenhei))
     lenhei.x <-
-    as.double(mydf[, deparse(substitute(lenhei))])
+    as.double(dplyr::pull(mydf, {{lenhei}}))
   else
     lenhei.x <- as.double(lenhei)
-  if (!missing(headc))
+  if (!is.na(headc))
     headc.x <-
-    as.double(mydf[, deparse(substitute(headc))])
+    as.double(dplyr::pull(mydf, {{headc}}))
   else
     headc.x <- as.double(headc)
-  if (!missing(armc))
+  if (!is.na(armc))
     armc.x <-
-    as.double(mydf[, deparse(substitute(armc))])
+    as.double(dplyr::pull(mydf, {{armc}}))
   else
     armc.x <- as.double(armc)
-  if (!missing(triskin))
+  if (!is.na(triskin))
     triskin.x <-
-    as.double(mydf[, deparse(substitute(triskin))])
+    as.double(dplyr::pull(mydf, {{triskin}}))
   else
     triskin.x <- as.double(triskin)
-  if (!missing(subskin))
+  if (!is.na(subskin))
     subskin.x <-
-    as.double(mydf[, deparse(substitute(subskin))])
+    as.double(dplyr::pull(mydf, {{subskin}}))
   else
     subskin.x <- as.double(subskin)
-  if (!missing(measure))
+  if (!is.na(measure))
     lorh.vec <-
-    as.character(mydf[, deparse(substitute(measure))])
+    as.character(dplyr::pull(mydf, {{measure}}))
   else
     lorh.vec <- as.character(measure)
-  if (!missing(oedema))
+  if (!is.na(oedema))
     oedema.vec <-
-    as.character(mydf[, deparse(substitute(oedema))])
+    as.character(dplyr::pull(mydf, {{oedema}}))
   else
-    oedema.vec <- oedema
-  if (!missing(sw))
+    oedema.vec <- "n"#oedema
+  if (!is.na(sw))
     sw <-
-    as.double(mydf[, deparse(substitute(sw))])
+    as.double(dplyr::pull(mydf, {{sw}}))
   else
-    sw <- as.double(sw)
+    sw <- 1 #as.double(sw)
   sw <- ifelse(is.na(sw), 0, sw)
 
   sex.vec <- NULL
@@ -1022,26 +1080,26 @@ who2007_vec <- function(mydf,
                         age,
                         weight,
                         height,
-                        oedema = "n",
-                        sw = 1) {
+                        oedema = NA,
+                        sw = NA) {
   #############################################################################
   ###########   Calculating the z-scores for all indicators
   #############################################################################
 
-  sex.x <- as.character(mydf[, deparse(substitute(sex))])
-  age.x <- as.double(mydf[, deparse(substitute(age))])
-  weight.x <- as.double(mydf[, deparse(substitute(weight))])
-  height.x <- as.double(mydf[, deparse(substitute(height))])
-  if (!missing(oedema))
+  sex.x <- as.character(dplyr::pull(mydf, {{sex}}))
+  age.x <- as.double(dplyr::pull(mydf, {{age}}))
+  weight.x <- as.double(dplyr::pull(mydf, {{weight}}))
+  height.x <- as.double(dplyr::pull(mydf, {{height}}))
+  if (!is.na(oedema))
     oedema.vec <-
-    as.character(mydf[, deparse(substitute(oedema))])
+    as.character(dplyr::pull(mydf, {{oedema}}))
   else
-    oedema.vec <- oedema
+    oedema.vec <- "n" #oedema
   if (!missing(sw))
     sw <-
-    as.double(mydf[, deparse(substitute(sw))])
+    as.double(dplyr::pull(mydf, {{sw}}))
   else
-    sw <- as.double(sw)
+    sw <- 1 #as.double(sw)
   sw <- ifelse(is.na(sw), 0, sw)
 
   sex.vec <- NULL
