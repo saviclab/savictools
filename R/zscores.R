@@ -169,6 +169,7 @@ zscores <-
     # age must be months for this function
 
     if (nrow(above_five_frame) > 0) {
+
       no_under_61 <- above_five_frame %>%
         dplyr::mutate(AGE = dplyr::if_else(.data$AGE < 61, 61, .data$AGE))
 
@@ -239,6 +240,8 @@ zscores <-
     data$WAZ_F <- zvars_full$WAZ_F
     data$BAZ_F <- zvars_full$BAZ_F
     data$HAZ_F <- zvars_full$HAZ_F
+
+    data$TSZ <- zvars_full$TSZ
     # zvars_full <- zvars_below_5
     # result <- dplyr::left_join(data, zvars_full, by = "rownum") %>%
     #  dplyr::rename(ID = ID.x) %>% dplyr::select(-ID.y,-rownum)
