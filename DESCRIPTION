@@ -1,21 +1,22 @@
 Package: savictools
 Title: Tools for Pharmacometrics
 Version: 0.0.0.9000
-Authors@R: 
+Authors@R: c(
     person(given = "Sandy",
            family = "Floren",
            role = c("aut", "cre"),
            email = "sandy_floren@yahoo.com",
-           comment = c(ORCID = "0000-0003-3087-5476"))
+           comment = c(ORCID = "0000-0003-3087-5476")),
     person(given = "Dhruv",
            family = "Vaish",
-           role = c("ctb"))
+           role = c("ctb")),
     person("UCSF", 
-            role = c("cph", "fnd"))
+            role = c("cph", "fnd")),
     person("World Health Organization",
-           role = c("ctb"))
+           role = c("ctb")),
     person("Metrum Research Group", 
             role = c("ctb"))
+            )
 Description: A collection of functions designed to make the pharmacometrics workflow faster, simpler, and more intuitive.
 License: GPL (>= 3)
 URL: https://github.com/saviclab/savictools
