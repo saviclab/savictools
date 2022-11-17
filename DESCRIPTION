@@ -1,5 +1,5 @@
 Package: savictools
-Title: A Toolbox for PK/PD Analysis
+Title: Tools for Pharmacometrics
 Version: 0.0.0.9000
 Authors@R: 
     person(given = "Sandy",
@@ -7,8 +7,19 @@ Authors@R:
            role = c("aut", "cre"),
            email = "sandy_floren@yahoo.com",
            comment = c(ORCID = "0000-0003-3087-5476"))
+    person(given = "Dhruv",
+           family = "Vaish",
+           role = c("ctb"))
+    person("World Health Organization",
+           role = c("ctb"))
+    person("Metrum Research Group", 
+            role = c("ctb"))
+    person("UCSF", 
+            role = c("cph", "fnd"))
 Description: A collection of functions designed to make the pharmacometrics workflow faster, simpler, and more intuitive.
 License: GPL (>= 3)
+URL: https://github.com/saviclab/savictools
+BugReports: https://github.com/saviclab/savictools/issues
 Imports:
     dplyr,
     xpose,

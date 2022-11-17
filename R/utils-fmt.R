@@ -31,6 +31,7 @@ round_format <- function (x, digits)
 
 
 #' @title Round up from 5s
+#' @author World Health Organization
 
 #' @description `rounde()` is a rounding function that rounds up when rounding
 #' off a 5, instead of to the nearest even number, which is what the base R

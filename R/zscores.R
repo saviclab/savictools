@@ -1,6 +1,7 @@
-#' Calculate z-scores for anthrompometric indicators
+#' @title Calculate z-scores for anthrompometric indicators
+#' @author Sandy Floren, Dhruv Vaish, World Health Organization
 #'
-#' `zscores()` computes z-scores indicating nutritional status, adding new
+#' @description `zscores()` computes z-scores indicating nutritional status, adding new
 #'  columns to the end of a dataframe.
 #'
 #' `zscores()` is a vectorized, more streamlined implementation of the WHO scripts
