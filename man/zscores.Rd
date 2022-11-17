@@ -2,7 +2,7 @@
 % Please edit documentation in R/zscores.R
 \name{zscores}
 \alias{zscores}
-\title{Calculate z-scores for anthrompometric indicators}
+\title{Calculate z-scores for anthropometric indicators}
 \usage{
 zscores(
   data,

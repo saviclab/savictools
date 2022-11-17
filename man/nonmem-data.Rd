@@ -3,7 +3,7 @@
 \name{nmcheck}
 \alias{nmcheck}
 \alias{expand_addl}
-\title{NONMEM dataset utilites}
+\title{NONMEM dataset utilities}
 \usage{
 nmcheck(data)
 

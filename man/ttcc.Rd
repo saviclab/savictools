@@ -22,7 +22,7 @@ upper bound. "gt" (greater than) is the default, and makes \verb{threshold`` a l
 a vector of 0s and 1s with the same length as \code{time}
 }
 \description{
-Find consecutive negatives past some threshold occuring within an interval.
+Find consecutive negatives past some threshold occurring within an interval.
 
 ttcc will assume that data is grouped by individual, so as to not compare
 timestamps from two different patients. ttcc returns a vector which

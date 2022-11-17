@@ -21,13 +21,13 @@ A NONMEM-formatted dataframe with a TAD column.
 }
 \details{
 \code{tad()} assumes NONMEM-formatted data. It will expand the ADDL column internally,
-but will return the data in its un-expanded form unless \code{expand} is set to TRUE.
+but will return the data in its non-expanded form unless \code{expand} is set to TRUE.
 
 Expressions in \code{...} are used to determine under what conditions a
 row of \code{data} should count as a "dose" for calculating time after dose. This
 is especially useful if there is more than one type of dose event, and TAD
 should only apply to one of them. For example, suppose the DV column of
-\code{data} contains concentrations of a drug \emph{X}. If a flag colum "Y_FLAG"
+\code{data} contains concentrations of a drug \emph{X}. If a flag column "Y_FLAG"
 exists to indicate that a drug \emph{Y} is given, as opposed to \emph{X}, passing
 \code{Y_FLAG = 0} to \code{...} will ensure that TAD is only calculated with respect to
 drug \emph{X} dosing events.
