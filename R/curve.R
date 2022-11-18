@@ -4,7 +4,7 @@
 #' @author Sandy Floren
 #'
 #' @description
-#' `curve()` assigns a unique number to each PK curve in a dataset.
+#' `curve()` assigns a unique number to each PK curve in a data set.
 #'
 #' @details
 #' A PK curve is defined as any sequence of consecutive 0s in the EVID column of
@@ -12,9 +12,15 @@
 #'
 #' `curve()` is primarily used by `pk_plot()` in order to draw separate lines
 #' for distinct PK curves belonging to the same individual.
+#' @returns
+#'  A [tibble::tibble()] with an appended column, CURVE, containing a unique number
+#'  for each group of consecutive observations which are not separated by a non-observation
+#'  data record.
 #'
-#' @param data A dataframe with ID, TIME, and EVID columns.
+#' @param data A data frame or data frame extension with ID, TIME, and EVID columns.
 #'
+#' @importFrom rlang .data
+#' @importFrom magrittr %>%
 #' @export
 
 curve <- function(data) {

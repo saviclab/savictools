@@ -1,15 +1,17 @@
 #' @title Detect sparse sampling occasions
 #'
 #' @description `sparse()` detects differentiates between clusters of consecutive samples
-#' and more spread out, or "sparse," samples in a NONMEM-formatted dataset.
+#' and more spread out, or "sparse," samples in a NONMEM-formatted data set.
 #'
-#' @details For each ID, `sparse()` iterates through each line of the dataset until
+#' @details For each ID, `sparse()` iterates through each line of the data set until
 #' it finds an observation. It then checks for "neighbors," meaning consecutive observations without
 #' a dose record in between. Any group of `min_cluster` or more observations within at most `max_distance` from
-#' one another is considered a cluster. `sparse()` returns the original dataframe with a new column,
-#' "SPARSE," which has value 1 for all observation points not contained in a cluster, and is 1 otherwise.
+#' one another is considered a cluster.
 #'
-#' @param data A NONMEM-formatted dataframe.
+#' @returns A [tibble::tibble()] with an appended column, SPARSE, containing a 1
+#' for all observation points not contained in a cluster, and a 0 otherwise.
+#'
+#' @param data A data frame or data frame extension in NONMEM format.
 #' @param min_cluster The minimum size of a cluster of consecutive observations to be considered
 #' intensive (i.e. not sparse) sampling.
 #' @param max_distance The maximum allowed distance between the earliest and latest observation

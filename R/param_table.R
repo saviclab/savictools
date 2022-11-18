@@ -18,7 +18,7 @@
 #' @param max_sigma Maximum number of SIGMAs in model.
 #'
 #' @returns
-#' A dataframe.
+#' A [tibble::tibble()] containing NONMEM parameter estimates.
 #'
 #' @examples
 #' \dontrun{

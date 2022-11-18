@@ -1,12 +1,10 @@
-# TODO: fix docs. n is no longer an argument.
-#' @title
-#' Create NONMEM ready datasets for simulated clinical PK trials
+#' @title Create NONMEM ready datasets for simulated clinical PK trials
 #'
 #' @author Sandy Floren
 #'
 #' @description
 #' The `cohort()` function is used to generate NONMEM-ready datasets for
-#' clinical PK trials, either by sampling from real datasets or
+#' clinical PK trial simulations, either by sampling from real datasets or
 #' generating synthetic data.
 #'
 #' @section Real Data:
@@ -34,10 +32,10 @@
 #' must match the names of variables used in your data. See Example 6 for
 #' details.
 #'
-#' @return
-#' A dplyr dataframe in NONMEM format.
+#' @returns
+#' A [tibble::tibble()] in NONMEM format with dosing and observation records..
 #'
-#' @param data A dataframe containing only one row per individual.
+#' @param data A data frame or data frame extension containing only one row per individual.
 #' @param include A character string in the form of a logical R statement, to
 #' specify the inclusion criteria for this cohort. For example,
 #' if "WT" and "HT" are variables corresponding to weight in kg

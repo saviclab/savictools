@@ -1,8 +1,13 @@
 #' @title Calculate expected weight based on age and sex for under-5 children.
 #'
-#' @description Calculate expected weight based on age and sex for under-5 children.
+#' @description Calculate expected weight in under-5 children. Expected weight
+#' is defined as that weight which would result in a weight-for-age z-score of 0
+#' based on age and sex.
 #'
-#' @param data A dataframe with AGE and SEX columns.
+#' @returns A [tibble::tibble()] with an appended column, EXPWT, containing the expected
+#'  weight,
+#'
+#' @param data A data frame or data frame extension with AGE and SEX columns.
 #' @param units Units for age. Default is "months".
 #'
 #' @author Sandy Floren

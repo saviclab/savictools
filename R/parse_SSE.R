@@ -8,7 +8,7 @@
 #' @param param_stats Parameter statistics to summarize. Must be present in
 #'   param_rows of the SSE results. Default is c("relative_rmse", "bias").
 #' @param ofv_cols Column numbers to include from the ofv statistics table.
-#' @param ofv_colNames Ofv statistics column names. Must be the same length as
+#' @param ofv_colNames OFV statistics column names. Must be the same length as
 #'   ofv_cols.
 #' @param sim_names Optionally, descriptive names for each alternative model,
 #' in the same order as listed in the SSE results.
@@ -21,9 +21,9 @@
 #' results.
 #'
 #' @returns
-#'   A named list of dataframes.
-#'   "params" is a dataframe of parameter statistics.
-#'   "type_I_error" and "type_II_error" are summaries of ofv statistics.
+#'   A named list of data frames.
+#'   "params" is a data frame of parameter statistics.
+#'   "type_I_error" and "type_II_error" are summaries of OFV statistics.
 #'
 #' @rdname parse-SSE
 #' @examples
@@ -106,17 +106,17 @@ parse_sse <- function(file = "sse_results.csv",
 #'
 #' @description
 #' `parse_all_sse()` recursively searches for SSE results csv files, parses them, and
-#' combines them into dataframes summarizing parameter statistics and error
+#' combines them into data frames summarizing parameter statistics and error
 #' rates.
 #'
 #' @param path Path to the parent directory containing the SSE results. Defaults
 #' to the current working  directory.
-#' @param exclude Optionally, a perl-style regular expression matching file
+#' @param exclude Optionally, a Perl-style regular expression matching file
 #' paths to exclude from the results.
 #'
-#' @returns A named list of dataframes.
-#' "params" is a dataframe of parameter statistics.
-#' "type_I_error" and "type_II_error" are summaries of ofv statistics.
+#' @returns A named list of data frames.
+#' "params" is a data frame of parameter statistics.
+#' "type_I_error" and "type_II_error" are summaries of OFV statistics.
 #'
 #' @rdname parse-SSE
 #' @examples
@@ -127,7 +127,7 @@ parse_sse <- function(file = "sse_results.csv",
 #' parse_all_sse()
 #'
 #' # Parse all "sse_results.csv" files in a directory, except those with the
-#' pattern "induc" in their subdirectory
+#' # pattern "induc" in their sub-directory
 #' parse_all_sse(exclude = "induc")
 #'
 #' # Generate summary .csv files

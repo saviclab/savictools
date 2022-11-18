@@ -1,12 +1,16 @@
-#' @title NONMEM dataset utilities
+#' @title NONMEM data set utilities
 #' @author Sandy Floren
 #'
 #' @description
-#' `nmcheck` checks a NONMEM dataset for formatting errors.
+#' `nmcheck` checks a NONMEM data set for formatting errors.
 #'
-#' `expand_addl` expands doses coded with ADDL to distinct rows for each dose.
+#' `expand_addl` expands doses coded with ADDL and II to distinct rows for each dose.
 #'
-#' @param data a NONMEM-formatted dataset.
+#' @returns `expand_addl()` returns a [tibble::tibble()]. `nmcheck()` throws an error
+#' if its input contains a subset of possible NONMEM formatting errors. If there
+#' are no errors, it returns nothing.
+#'
+#' @param data a data frame or data frame extension in NONMEM format.
 #' @param check whether to perform nmcheck.
 #'
 #' @importFrom magrittr %>%
@@ -23,7 +27,7 @@ nmcheck <- function(data) {
 #' @rdname nonmem-data
 #' @export
 
-expand_addl <- function(data, check = T) {
+expand_addl <- function(data, check = TRUE) {
   if (check)
     nmcheck(data)
   if (!("ADDL" %in% colnames(data))) {

@@ -1,6 +1,6 @@
-#' Population dataset
+#' Population data set
 #'
-#' A dataset of demographics, with one row per individual. Used to test
+#' A data set of demographics, with one row per individual. Used to test
 #' savictools functions like `zscores()`, `cohort()`, and `expwt()`.
 #'
 #' @format A tibble with 1000 rows and 5 variables:

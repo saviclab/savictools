@@ -13,6 +13,8 @@
 #' exists from a previous VPC, *and* overwrite = FALSE, psn_args can be left
 #' blank, and you need only supply the run number/model name.
 #'
+#' \value{No return value, called for side effects}
+#'
 #' @param runno A run number or model name.
 #' @param psn_args Optional. A character string containing arguments to PsN's
 #' `vpc` program.
