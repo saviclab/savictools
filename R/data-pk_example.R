@@ -1,6 +1,6 @@
-#' PK dataset
+#' PK data set
 #'
-#' This is a NONMEM-formatted dataset intended for testing savictools functions.
+#' This is a NONMEM-formatted data set intended for testing savictools functions.
 #'
 #' @format A tibble with 540 rows and 7 variables:
 #' \describe{

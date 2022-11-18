@@ -7,6 +7,8 @@
 #' or a complete file name and returns a model name with the desired file
 #' extension.
 #'
+#' @returns A string corresponding to the name of a NONMEM file.
+#'
 #' @param runno Either a NONMEM model name (with or without file extension), or
 #' the number of a NONMEM run as an integer.
 #' @param ext Optional. A file extension (e.g. ".lst") to append to the model

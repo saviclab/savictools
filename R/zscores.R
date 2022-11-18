@@ -2,7 +2,7 @@
 #' @author Sandy Floren, Dhruv Vaish, World Health Organization
 #'
 #' @description `zscores()` computes z-scores indicating nutritional status, adding new
-#'  columns to the end of a dataframe.
+#' columns to the end of a data frame.
 #'
 #' @details `zscores` is a vectorized, more streamlined implementation of the WHO scripts
 #' `igrowup_standard.R`, `igrowup_restricted.R`, and `who2007.R`.
@@ -17,9 +17,9 @@
 #' TSZ: Triceps skinfold-for-age z-score
 #' SSZ: Subscapular skinfold-for-age z-score
 #'
+#' @returns A [tibble::tibble()] with z-score columns appended.
 #'
-#'
-#' @param data A dataframe with ID, AGE, SEX, WT, and HT columns.
+#' @param data A data frame or data frame extension with ID, AGE, SEX, WT, and HT columns.
 #' @param units Optional. Units for age Default is "months".
 #' @param missing_flag Value used to replace missing z-scores Default is NA.
 #' @param extreme_flag Value used to replace extreme/implausible z-scores.

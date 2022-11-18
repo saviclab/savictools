@@ -1,11 +1,14 @@
 #' @title Calculate time after dose (TAD)
 #'
-#' @description `tad()` computes the time after dose, adding a new column to a dataframe.
+#' @description `tad()` computes the time after dose, adding a new column to a data frame.
 #'
 #' @details `tad()` assumes NONMEM-formatted data. It will expand the ADDL column internally,
 #' but will return the data in its non-expanded form unless `expand` is set to TRUE.
 #'
-#' @param data A NONMEM-formatted dataframe.
+#' @returns A [tibble::tibble()] with an appended column, TAD, containing the
+#' time after since the most recent dose for each observation record.
+#'
+#' @param data A data frame or data frame extension in NONMEM format..
 #' @param cond A filtering condition that specifies for which rows to calculate TAD, as a string (optional).
 #' @param expand Whether to expand the ADDL column in the result.
 #'
@@ -24,8 +27,6 @@
 #'
 #' # compute TAD only for even ID numbers, and return in expanded form
 #' tad(pk_example, "ID %% 2 == 0", expand = TRUE)
-#'
-#' @return A NONMEM-formatted dataframe with a TAD column.
 #'
 #' @importFrom magrittr %>%
 #' @author Sandy Floren

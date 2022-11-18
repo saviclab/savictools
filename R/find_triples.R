@@ -4,16 +4,16 @@
 #' @description A general-purpose function to count how many triples of numerics occur
 #' in a vector within a fixed interval of one another.
 #'
-#' find_triples will begin a searching for the next triple at the index of the
+#' `find_triples` will begin a searching for the next triple at the index of the
 #' final member of the most recently found triple.
 #'
-#' @param x a vector of numeric data
+#' @param x a vector of type numeric
 #' @param from a numeric lower bound for the length between two observations
 #' @param to a numeric upper bound for the length between two observations
 #'
 #' @usage find_triples(x, from = 4.0, to = 12.0)
 #'
-#' @returns int representing the number of triples
+#' @returns An integer representing the number of triples.
 #'
 #' @examples
 #'

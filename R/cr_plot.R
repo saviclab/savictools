@@ -1,5 +1,5 @@
 #' @title
-#' Clinical relevance plots
+#' Create a clinical relevance plot
 #'
 #' @author Hwi-yeol (Thomas) Yun, Sandy Floren
 #'
@@ -20,6 +20,7 @@
 #' @param n Number of samples to draw from the normal distribution for bootstrapping parameter estimates.
 #' @param ... Unquoted expressions representing covariate relations; see example.
 #'
+#' \value{No return value, called for side effects}
 #' @examples
 #' \dontrun{
 #' # WT on V, WAZ on F1, FORMULATION on KA

@@ -5,10 +5,12 @@
 #' Find consecutive negatives past some threshold occurring within an interval.
 #'
 #' ttcc will assume that data is grouped by individual, so as to not compare
-#' timestamps from two different patients. ttcc returns a vector which
+#' time stamps from two different patients. ttcc returns a vector which
 #' has value 1 at index i if `ttp\[i\]` at `time\[i\]` is both greater than or equal
 #' to (default), or less than or equal to `threshold``, and is the ith consecutive
 #' such observation spaced at least `interval`` apart.
+#'
+#' @returns a vector of 0s and 1s with the same length as `time`
 #'
 #' @param time a vector of numeric data representing the time of each observation
 #' @param ttp a vector of numeric data representing Time to Positivity (TTP)
@@ -17,8 +19,6 @@
 #' @param compare a string to specify whether threshold is a lower (default) or
 #' upper bound. "gt" (greater than) is the default, and makes `threshold``
 #' a lower bound. "lt" (less than) makes `threshold`` an upper bound.
-#'
-#' @return a vector of 0s and 1s with the same length as `time`
 #'
 #' @examples
 #' \dontrun{

@@ -5,8 +5,9 @@
 #' `pk_plot()` creates spaghetti PK plots with connected data points for each
 #' PK curve.
 #'
+#' \value{No return value, called for side effects}
 #'
-#' @param data A dataframe with ID, EVID, DV, and TIME or TAD columns.
+#' @param data A data frame or data frame extension with ID, EVID, DV, and TIME or TAD columns.
 #' @param ind Whether to create separate plots for each ID.
 #' @param nrow Number of rows per page of plots when ind = TRUE.
 #' @param ncol Number of columns per page of plots when ind = TRUE.
