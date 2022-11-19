@@ -29,8 +29,8 @@ parse_all_sse(
 )
 }
 \arguments{
-\item{runno}{Either a xpose compliant run number, nonmem data in the form of a dataframe,
-or string representing the path to a nonmem tablefile}
+\item{runno}{Either a xpose compliant run number, NONMEM data in the form of a data frame or data frame extension,
+or string representing the path to a NONMEM tablefile}
 
 \item{eta}{Which ETAs to plot, e.g. \code{eta = c(1, 2)}}
 
@@ -43,7 +43,7 @@ param_rows of the SSE results. Default is c("relative_rmse", "bias").}
 
 \item{ofv_cols}{Column numbers to include from the ofv statistics table.}
 
-\item{ofv_colNames}{Ofv statistics column names. Must be the same length as
+\item{ofv_colNames}{OFV statistics column names. Must be the same length as
 ofv_cols.}
 
 \item{sim_names}{Optionally, descriptive names for each alternative model,
@@ -60,23 +60,23 @@ results.}
 \item{path}{Path to the parent directory containing the SSE results. Defaults
 to the current working  directory.}
 
-\item{exclude}{Optionally, a perl-style regular expression matching file
+\item{exclude}{Optionally, a Perl-style regular expression matching file
 paths to exclude from the results.}
 }
 \value{
-A named list of dataframes.
-"params" is a dataframe of parameter statistics.
-"type_I_error" and "type_II_error" are summaries of ofv statistics.
+A named list of data frames.
+"params" is a data frame of parameter statistics.
+"type_I_error" and "type_II_error" are summaries of OFV statistics.
 
-A named list of dataframes.
-"params" is a dataframe of parameter statistics.
-"type_I_error" and "type_II_error" are summaries of ofv statistics.
+A named list of data frames.
+"params" is a data frame of parameter statistics.
+"type_I_error" and "type_II_error" are summaries of OFV statistics.
 }
 \description{
 \code{parse_sse()} parses a single .csv file of SSE summary statistics.
 
 \code{parse_all_sse()} recursively searches for SSE results csv files, parses them, and
-combines them into dataframes summarizing parameter statistics and error
+combines them into data frames summarizing parameter statistics and error
 rates.
 }
 \examples{
@@ -88,7 +88,7 @@ setwd(~/Path/To/SSE/Results)
 parse_all_sse()
 
 # Parse all "sse_results.csv" files in a directory, except those with the
-pattern "induc" in their subdirectory
+# pattern "induc" in their sub-directory
 parse_all_sse(exclude = "induc")
 
 # Generate summary .csv files

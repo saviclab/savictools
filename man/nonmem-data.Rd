@@ -3,21 +3,26 @@
 \name{nmcheck}
 \alias{nmcheck}
 \alias{expand_addl}
-\title{NONMEM dataset utilities}
+\title{NONMEM data set utilities}
 \usage{
 nmcheck(data)
 
-expand_addl(data, check = T)
+expand_addl(data, check = TRUE)
 }
 \arguments{
-\item{data}{a NONMEM-formatted dataset.}
+\item{data}{a data frame or data frame extension in NONMEM format.}
 
 \item{check}{whether to perform nmcheck.}
 }
+\value{
+\code{expand_addl()} returns a \code{\link[tibble:tibble]{tibble::tibble()}}. \code{nmcheck()} throws an error
+if its input contains a subset of possible NONMEM formatting errors. If there
+are no errors, it returns nothing.
+}
 \description{
-\code{nmcheck} checks a NONMEM dataset for formatting errors.
+\code{nmcheck} checks a NONMEM data set for formatting errors.
 
-\code{expand_addl} expands doses coded with ADDL to distinct rows for each dose.
+\code{expand_addl} expands doses coded with ADDL and II to distinct rows for each dose.
 }
 \author{
 Sandy Floren

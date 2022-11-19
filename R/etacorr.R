@@ -4,12 +4,13 @@
 #' @description For categorical covariates, use `etacorr_cat()`. For continuous
 #'  covariates, use `etacorr_cont()`.
 #'
+#' @returns No return value, called for side effects
+#'
 #' @param runno Either a xpose compliant run number, NONMEM data in the form of a data frame or data frame extension,
 #' or string representing the path to a NONMEM tablefile
 #' @param eta Which ETAs to plot, e.g. `eta = c(1, 2)`
 #' @param ... Covariates to plot against ETAs.
 #'
-#' \value{No return value, called for side effects}
 #' @examples
 #' \dontrun{
 #' # Continuous Covariates:

@@ -2,7 +2,7 @@
 % Please edit documentation in R/cr_plot.R
 \name{cr_plot}
 \alias{cr_plot}
-\title{Clinical relevance plots}
+\title{Create a clinical relevance plot}
 \usage{
 cr_plot(
   runno,
@@ -29,6 +29,9 @@ distribution of covariate effects. Defaults to 0.95, or 95\%.}
 \item{n}{Number of samples to draw from the normal distribution for bootstrapping parameter estimates.}
 
 \item{...}{Unquoted expressions representing covariate relations; see example.}
+}
+\value{
+No return value, called for side effects
 }
 \description{
 \code{cr_plot()} visualizes the clinical relevance of covariate effects.

@@ -7,7 +7,7 @@
 pk_plot(data, ind = FALSE, nrow = 4, ncol = 4, id = NULL, max_tad = 26)
 }
 \arguments{
-\item{data}{A dataframe with ID, EVID, DV, and TIME or TAD columns.}
+\item{data}{A data frame or data frame extension with ID, EVID, DV, and TIME or TAD columns.}
 
 \item{ind}{Whether to create separate plots for each ID.}
 
@@ -18,6 +18,9 @@ pk_plot(data, ind = FALSE, nrow = 4, ncol = 4, id = NULL, max_tad = 26)
 \item{id}{Optional. A vector of IDs to plot, instead of plotting every ID.}
 
 \item{max_tad}{The largest allowed value of TAD to be plotted. Defaults to 26.}
+}
+\value{
+No return value, called for side effects
 }
 \description{
 \code{pk_plot()} creates spaghetti PK plots with connected data points for each

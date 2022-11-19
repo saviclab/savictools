@@ -11,6 +11,8 @@
 #' `cr_plot()` displays the posterior distributions of covariate effects
 #' relative to the range of clinical importance.
 #'
+#' @returns No return value, called for side effects
+#'
 #' @param runno A run number or model name.
 #' @param effect_size The effect size needed for clinical relevance. Default is 0.2.
 #' @param width Size of the interval of the posterior
@@ -20,7 +22,6 @@
 #' @param n Number of samples to draw from the normal distribution for bootstrapping parameter estimates.
 #' @param ... Unquoted expressions representing covariate relations; see example.
 #'
-#' \value{No return value, called for side effects}
 #' @examples
 #' \dontrun{
 #' # WT on V, WAZ on F1, FORMULATION on KA

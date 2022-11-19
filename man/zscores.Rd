@@ -24,7 +24,7 @@ zscores(
 )
 }
 \arguments{
-\item{data}{A dataframe with ID, AGE, SEX, WT, and HT columns.}
+\item{data}{A data frame or data frame extension with ID, AGE, SEX, WT, and HT columns.}
 
 \item{units}{Optional. Units for age Default is "months".}
 
@@ -57,9 +57,12 @@ Default is NA.}
 
 \item{sw}{Optional. Name of the column containing the sample weights.}
 }
+\value{
+A \code{\link[tibble:tibble]{tibble::tibble()}} with z-score columns appended.
+}
 \description{
 \code{zscores()} computes z-scores indicating nutritional status, adding new
-columns to the end of a dataframe.
+columns to the end of a data frame.
 }
 \details{
 \code{zscores} is a vectorized, more streamlined implementation of the WHO scripts

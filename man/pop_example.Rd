@@ -3,7 +3,7 @@
 \docType{data}
 \name{pop_example}
 \alias{pop_example}
-\title{Population dataset}
+\title{Population data set}
 \format{
 A tibble with 1000 rows and 5 variables:
 \describe{
@@ -18,7 +18,7 @@ A tibble with 1000 rows and 5 variables:
 pop_example
 }
 \description{
-A dataset of demographics, with one row per individual. Used to test
+A data set of demographics, with one row per individual. Used to test
 savictools functions like \code{zscores()}, \code{cohort()}, and \code{expwt()}.
 }
 \examples{

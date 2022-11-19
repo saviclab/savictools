@@ -20,7 +20,7 @@ cohort(
 )
 }
 \arguments{
-\item{data}{A dataframe containing only one row per individual.}
+\item{data}{A data frame or data frame extension containing only one row per individual.}
 
 \item{include}{A character string in the form of a logical R statement, to
 specify the inclusion criteria for this cohort. For example,
@@ -74,11 +74,11 @@ converted to numeric.}
 \item{tad}{Optional. Whether to calculate time after dose (TAD).}
 }
 \value{
-A dplyr dataframe in NONMEM format.
+A \code{\link[tibble:tibble]{tibble::tibble()}} in NONMEM format with dosing and observation records..
 }
 \description{
 The \code{cohort()} function is used to generate NONMEM-ready datasets for
-clinical PK trials, either by sampling from real datasets or
+clinical PK trial simulations, either by sampling from real datasets or
 generating synthetic data.
 }
 \section{Real Data}{

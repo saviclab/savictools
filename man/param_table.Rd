@@ -36,7 +36,7 @@ param_table(
 \item{max_sigma}{Maximum number of SIGMAs in model.}
 }
 \value{
-A dataframe.
+A \code{\link[tibble:tibble]{tibble::tibble()}} containing NONMEM parameter estimates.
 }
 \description{
 \code{param_table()} is useful for formatting tables of NONMEM parameter estimates

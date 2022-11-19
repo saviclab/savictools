@@ -3,7 +3,7 @@
 \docType{data}
 \name{pk_example}
 \alias{pk_example}
-\title{PK dataset}
+\title{PK data set}
 \format{
 A tibble with 540 rows and 7 variables:
 \describe{
@@ -20,7 +20,7 @@ A tibble with 540 rows and 7 variables:
 pk_example
 }
 \description{
-This is a NONMEM-formatted dataset intended for testing savictools functions.
+This is a NONMEM-formatted data set intended for testing savictools functions.
 }
 \examples{
 pk_example

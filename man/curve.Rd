@@ -7,10 +7,15 @@
 curve(data)
 }
 \arguments{
-\item{data}{A dataframe with ID, TIME, and EVID columns.}
+\item{data}{A data frame or data frame extension with ID, TIME, and EVID columns.}
+}
+\value{
+A \code{\link[tibble:tibble]{tibble::tibble()}} with an appended column, CURVE, containing a unique number
+for each group of consecutive observations which are not separated by a non-observation
+data record.
 }
 \description{
-\code{curve()} assigns a unique number to each PK curve in a dataset.
+\code{curve()} assigns a unique number to each PK curve in a data set.
 }
 \details{
 A PK curve is defined as any sequence of consecutive 0s in the EVID column of

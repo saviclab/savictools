@@ -13,6 +13,9 @@ the number of a NONMEM run as an integer.}
 \item{ext}{Optional. A file extension (e.g. ".lst") to append to the model
 name.}
 }
+\value{
+A string corresponding to the name of a NONMEM file.
+}
 \description{
 \code{model_paste0()} can take either an integer, the name of a model as a string,
 or a complete file name and returns a model name with the desired file

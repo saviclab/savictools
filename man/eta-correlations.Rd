@@ -7,12 +7,15 @@
 etacorr_cont(runno, eta, ...)
 }
 \arguments{
-\item{runno}{Either a xpose compliant run number, nonmem data in the form of a dataframe,
-or string representing the path to a nonmem tablefile}
+\item{runno}{Either a xpose compliant run number, NONMEM data in the form of a data frame or data frame extension,
+or string representing the path to a NONMEM tablefile}
 
 \item{eta}{Which ETAs to plot, e.g. \code{eta = c(1, 2)}}
 
 \item{...}{Covariates to plot against ETAs.}
+}
+\value{
+No return value, called for side effects
 }
 \description{
 For categorical covariates, use \code{etacorr_cat()}. For continuous

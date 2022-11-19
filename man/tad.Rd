@@ -7,17 +7,18 @@
 tad(data, cond = "", expand = FALSE)
 }
 \arguments{
-\item{data}{A NONMEM-formatted dataframe.}
+\item{data}{A data frame or data frame extension in NONMEM format..}
 
 \item{cond}{A filtering condition that specifies for which rows to calculate TAD, as a string (optional).}
 
 \item{expand}{Whether to expand the ADDL column in the result.}
 }
 \value{
-A NONMEM-formatted dataframe with a TAD column.
+A \code{\link[tibble:tibble]{tibble::tibble()}} with an appended column, TAD, containing the
+time after since the most recent dose for each observation record.
 }
 \description{
-\code{tad()} computes the time after dose, adding a new column to a dataframe.
+\code{tad()} computes the time after dose, adding a new column to a data frame.
 }
 \details{
 \code{tad()} assumes NONMEM-formatted data. It will expand the ADDL column internally,

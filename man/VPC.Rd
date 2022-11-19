@@ -17,6 +17,9 @@ VPC directories?}
 
 \item{...}{Optional. Additional arguments to \code{xpose4::xpose.VPC()}.}
 }
+\value{
+No return value, called for side effects
+}
 \description{
 \code{VPC()} allows you to run PsN's \code{vpc} command and generate a visual
 predictive check with \code{xpose4::xpose.VPC()} in one line of code in the R

@@ -7,20 +7,20 @@
 find_triples(x, from = 4.0, to = 12.0)
 }
 \arguments{
-\item{x}{a vector of numeric data}
+\item{x}{a vector of type numeric}
 
 \item{from}{a numeric lower bound for the length between two observations}
 
 \item{to}{a numeric upper bound for the length between two observations}
 }
 \value{
-int representing the number of triples
+An integer representing the number of triples.
 }
 \description{
 A general-purpose function to count how many triples of numerics occur
 in a vector within a fixed interval of one another.
 
-find_triples will begin a searching for the next triple at the index of the
+\code{find_triples} will begin a searching for the next triple at the index of the
 final member of the most recently found triple.
 }
 \examples{
