@@ -1,4 +1,4 @@
-#' @title Calculate expected weight based on age and sex for under-5 children.
+#' @title Calculate expected weight for under-5 children.
 #'
 #' @description Calculate expected weight in under-5 children. Expected weight
 #' is defined as that weight which would result in a weight-for-age z-score of 0
