@@ -21,7 +21,7 @@ Authors@R: c(
             role = c("ctb"))
             )
 Description: A collection of functions designed to make the pharmacometrics workflow faster, simpler, and more intuitive. Most functions focus on pre-processing of datasets for use with NONMEM and analysis/visualization of NONMEM or Perl-speaks-NONMEM (PsN) outputs. Functions generally follow the same design as 'dplyr' verbs (e.g. 'mutate', 'select'), taking in a dataframe and return a modified dataframe. This makes them useful in pipe operations.
-License: GPL (>= 3)
+License: 
 URL: https://github.com/saviclab/savictools
 BugReports: https://github.com/saviclab/savictools/issues
 Imports:
