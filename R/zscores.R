@@ -1121,7 +1121,7 @@ who2007_vec <- function(mydf,
     as.character(dplyr::pull(mydf, {{oedema}}))
   else
     oedema.vec <- "n" #oedema
-  if (!missing(sw))
+  if (!is.na(sw))
     sw <-
     as.double(dplyr::pull(mydf, {{sw}}))
   else

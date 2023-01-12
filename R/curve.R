@@ -1,5 +1,4 @@
-#' @title
-#' Detect individual PK curves
+#' @title Detect individual PK curves
 #'
 #' @author Sandy Floren
 #'
