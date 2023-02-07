@@ -109,7 +109,6 @@ zscores <-
                      ignore.case = T,
                      value = T)) {
     units <- match.arg(units)
-
     id <- ifelse(identical(id, character(0)), NA, id)
     age <- ifelse(identical(age, character(0)), NA, age)
     sex <- ifelse(identical(sex, character(0)), NA, sex)
