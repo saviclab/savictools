@@ -1,5 +1,5 @@
 #' @title Calculate z-scores for anthropometric indicators
-#' @author Sandy Floren, Dhruv Vaish, World Health Organization
+#' @authors Sandy Floren, Dhruv Vaish, World Health Organization
 #'
 #' @description `zscores()` computes z-scores indicating nutritional status, adding new
 #' columns to the end of a data frame.
@@ -10,12 +10,16 @@
 #'
 #' HAZ: Height-for-age z-score
 #' WAZ: Weight-for-age z-score
-#' WHZ: Weight-for-height z-score
+#' WHZ: Weight-for-height/length z-score
 #' BAZ: BMI-for-age z-score
 #' HCZ: Head circumference-for-age z-score
 #' ACZ: Arm circumference-for-age z-score
 #' TSZ: Triceps skinfold-for-age z-score
 #' SSZ: Subscapular skinfold-for-age z-score
+#'
+#' All variables in the input dataset used for z-score calculation should be
+#' numeric. The default units for age are months. This can be changed with the
+#' `units` argument.
 #'
 #' @returns A [tibble::tibble()] with z-score columns appended.
 #'
@@ -24,18 +28,18 @@
 #' @param missing_flag Value used to replace missing z-scores Default is NA.
 #' @param extreme_flag Value used to replace extreme/implausible z-scores.
 #' Default is NA.
-#' @param id Optional. Name of the patient identifier column.
-#' @param age Optional. Name of the age column.
-#' @param sex Optional. Name of the sex column.
-#' @param weight Optional. Name of the weight column.
-#' @param height Optional. Name of the height column.
-#' @param measure Optional. Name of the column indicating whether height was measured standing ("H" or "h"), or recumbent ("L" or "l").
-#' @param headc Optional. Name of the column containing head circumference measurements. Measurements must be in centimeters.
-#' @param armc Optional. Name of the column containing arm circumference measurements. Measurements must be in centimeters.
-#' @param triskin Optional. Name of the column containing triceps skinfold measurements. Measurements must be in millimeters.
-#' @param subskin Optional. Name of the column containing subscapular skinfold measurements. Measurements must be in millimeters.
-#' @param oedema Optional. Name of the column containing oedema information. "Y" or "y" for oedema; "N" or "n" for non-oedema.
-#' @param sw Optional. Name of the column containing the sample weights.
+#' @param id Name of the patient identifier column.
+#' @param age Name of the age column.
+#' @param sex Name of the sex column.
+#' @param weight Name of the weight column.
+#' @param height Name of the height column.
+#' @param measure Name of the column indicating whether height was measured standing ("H" or "h"), or recumbent ("L" or "l").
+#' @param headc Name of the column containing head circumference measurements. Measurements must be in centimeters.
+#' @param armc Name of the column containing arm circumference measurements. Measurements must be in centimeters.
+#' @param triskin Name of the column containing triceps skinfold measurements. Measurements must be in millimeters.
+#' @param subskin Name of the column containing subscapular skinfold measurements. Measurements must be in millimeters.
+#' @param oedema Name of the column containing oedema information. "Y" or "y" for oedema; "N" or "n" for non-oedema.
+#' @param sw Name of the column containing the sample weights.
 #'
 #' @importFrom magrittr %>%
 #'
@@ -45,8 +49,6 @@
 #' @export
 
 # TODO: Clean up WHO function docs
-# TODO: Make lines wrap at 80 characters
-# TODO: Preserve column order
 zscores <-
   function(data,
            units = c("months", "years", "weeks"),
@@ -63,18 +65,8 @@ zscores <-
            triskin = NA,
            subskin = NA,
            oedema = NA,
-           sw = NA
-           ) {
-
+           sw = NA) {
     units <- match.arg(units)
-
-    # convert units to months, if necessary
-    if (units == "years") {
-      data[ , age] <- dplyr::pull(data, {{age}}) * 12
-    }
-    else if (units == "weeks") {
-      data[ , age] <- dplyr::pull(data, {{age}}) / 4.345
-    }
     data$rownum <- 1:nrow(data)
 
     # Null out existing z-score columns
@@ -102,18 +94,46 @@ zscores <-
 
     age_cutoff <- 1856 / 30.4375 # 60.97741
 
-    # Check for missing
-    below_five <- data %>%
-      dplyr::filter(!!rlang::sym(age) <= age_cutoff | is.na(!!rlang::sym(age)))
-    #%>%
-     # dplyr::select({{id}}, .data$rownum, {{age}}, {{sex}}, {{weight}}, {{height}})
-    below_five_frame <- as.data.frame(below_five)
 
-    above_five <- data %>%
-      dplyr::filter(!!rlang::sym(age) > age_cutoff)
-    #%>%
-     # dplyr::select({{id}}, .data$rownum, {{age}}, {{sex}}, {{weight}}, {{height}})
-    above_five_frame <- as.data.frame(above_five)
+    if (is.na(age)) {
+      # if age is missing, then only WHZ can be calculated
+      # therefore we assume all kids are <5 years (since WHZ is only defined for
+      # <5 kids)
+      message(
+        "When no age column is specified, z-scores assumes all kids are under 5 years of age, in order to calculate WHZ."
+      )
+      below_five_frame <- data
+      above_five_frame <- data.frame()
+
+    } else {
+      # convert units to months, if necessary
+      if (units == "years") {
+        data[, age] <- dplyr::pull(data, {
+          {
+            age
+          }
+        }) * 12
+      }
+      else if (units == "weeks") {
+        data[, age] <- dplyr::pull(data, {
+          {
+            age
+          }
+        }) / 4.345
+      }
+
+      # Check for missing
+      below_five <- data %>%
+        dplyr::filter(!!rlang::sym(age) <= age_cutoff |
+                        is.na(!!rlang::sym(age)))
+
+      below_five_frame <- as.data.frame(below_five)
+
+      above_five <- data %>%
+        dplyr::filter(!!rlang::sym(age) > age_cutoff)
+
+      above_five_frame <- as.data.frame(above_five)
+    }
 
     if (nrow(below_five_frame) > 0) {
       #calculate Z-scores
@@ -138,8 +158,22 @@ zscores <-
         'ID',
         'rownum',
         "cbmi",
-        "zlen",	"zwei",	"zwfl",	"zbmi",	"zhc",	"zac",	"zts",	"zss",
-        "flen", "fwei",	"fwfl",	"fbmi",	"fhc",	"fac",	"fts",	"fss"
+        "zlen",
+        "zwei",
+        "zwfl",
+        "zbmi",
+        "zhc",
+        "zac",
+        "zts",
+        "zss",
+        "flen",
+        "fwei",
+        "fwfl",
+        "fbmi",
+        "fhc",
+        "fac",
+        "fts",
+        "fss"
       )]
       zvars_below_5 <- dplyr::rename(
         zvars_below_5,
@@ -169,7 +203,6 @@ zscores <-
     # age must be months for this function
 
     if (nrow(above_five_frame) > 0) {
-
       no_under_61 <- above_five_frame %>%
         dplyr::mutate(AGE = dplyr::if_else(.data$AGE < 61, 61, .data$AGE))
 
@@ -217,7 +250,8 @@ zscores <-
           HCZ_F = 0,
           ACZ_F = 0,
           TSZ_F = 0,
-          SSZ_F = 0)
+          SSZ_F = 0
+        )
     }
 
     # To merge data sets, first merge z-scores together
@@ -306,7 +340,7 @@ zscores <-
 calc.zlen_vec <- function(mat, lenanthro) {
   age_sex <- lenanthro$age * 10 + lenanthro$sex
   x <-
-    lenanthro[match(mat$age.days * 10 + mat$sex, age_sex), ]
+    lenanthro[match(mat$age.days * 10 + mat$sex, age_sex),]
 
   l.val <- x$l
   m.val <- x$m
@@ -329,7 +363,7 @@ calc.zlen_vec <- function(mat, lenanthro) {
 calc.zhc_vec <- function(mat, hcanthro) {
   age_sex <- hcanthro$age * 10 + hcanthro$sex
   x <-
-    hcanthro[match(mat$age.days * 10 + mat$sex, age_sex), ]
+    hcanthro[match(mat$age.days * 10 + mat$sex, age_sex),]
 
   l.val <- x$l
   m.val <- x$m
@@ -351,7 +385,7 @@ calc.zhc_vec <- function(mat, hcanthro) {
 calc.zwei_vec <- function(mat, weianthro) {
   age_sex <- weianthro$age * 10 + weianthro$sex
   x <-
-    weianthro[match(mat$age.days * 10 + mat$sex, age_sex), ]
+    weianthro[match(mat$age.days * 10 + mat$sex, age_sex),]
 
   l.val <- x$l
   m.val <- x$m
@@ -369,7 +403,7 @@ calc.zwei_vec <- function(mat, weianthro) {
 
   mat$zwei <- ifelse(mat$zwei > 3,
                      3 + ((mat$weight - sd3pos) / sd23pos),
-                     ifelse(mat$zwei < -3,-3 + ((
+                     ifelse(mat$zwei < -3, -3 + ((
                        mat$weight - sd3neg
                      ) / sd23neg),
                      mat$zwei))
@@ -395,7 +429,7 @@ calc.zwei_vec <- function(mat, weianthro) {
 calc.zac_vec <- function(mat, acanthro) {
   age_sex <- acanthro$age * 10 + acanthro$sex
   x <-
-    acanthro[match(mat$age.days * 10 + mat$sex, age_sex),]
+    acanthro[match(mat$age.days * 10 + mat$sex, age_sex), ]
 
   l.val <- x$l
   m.val <- x$m
@@ -430,7 +464,7 @@ calc.zac_vec <- function(mat, acanthro) {
 calc.zts_vec <- function(mat, tsanthro) {
   age_sex <- tsanthro$age * 10 + tsanthro$sex
   x <-
-    tsanthro[match(mat$age.days * 10 + mat$sex, age_sex), ]
+    tsanthro[match(mat$age.days * 10 + mat$sex, age_sex),]
 
   l.val <- x$l
   m.val <- x$m
@@ -468,7 +502,7 @@ calc.zts_vec <- function(mat, tsanthro) {
 calc.zss_vec <- function(mat, ssanthro) {
   age_sex <- ssanthro$age * 10 + ssanthro$sex
   x <-
-    ssanthro[match(mat$age.days * 10 + mat$sex, age_sex),]
+    ssanthro[match(mat$age.days * 10 + mat$sex, age_sex), ]
 
   l.val <- x$l
   m.val <- x$m
@@ -485,7 +519,7 @@ calc.zss_vec <- function(mat, ssanthro) {
 
   mat$zss <- ifelse(mat$zss > 3,
                     3 + ((mat$subskin - sd3pos) / sd23pos),
-                    ifelse(mat$zss < -3,-3 + ((
+                    ifelse(mat$zss < -3, -3 + ((
                       mat$subskin - sd3neg
                     ) / sd23neg),
                     mat$zss))
@@ -512,14 +546,14 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
   height_sex <- wfhanthro$height * 100 + wfhanthro$sex
 
   x_length_low <-
-    wflanthro[match(low.len * 100 + mat$sex, length_sex), ]
+    wflanthro[match(low.len * 100 + mat$sex, length_sex),]
   x_length_upp <-
-    wflanthro[match(upp.len * 100 + mat$sex, length_sex), ]
+    wflanthro[match(upp.len * 100 + mat$sex, length_sex),]
 
   x_height_low <-
-    wfhanthro[match(low.len * 100 + mat$sex, height_sex), ]
+    wfhanthro[match(low.len * 100 + mat$sex, height_sex),]
   x_height_upp <-
-    wfhanthro[match(upp.len * 100 + mat$sex, height_sex), ]
+    wfhanthro[match(upp.len * 100 + mat$sex, height_sex),]
 
   l.val <-
     ifelse(
@@ -648,7 +682,7 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
 calc.zbmi_vec <- function(mat, bmianthro) {
   age_sex <- bmianthro$age * 10 + bmianthro$sex
   x <-
-    bmianthro[match(mat$age.days * 10 + mat$sex, age_sex), ]
+    bmianthro[match(mat$age.days * 10 + mat$sex, age_sex),]
 
   l.val <- x$l
   m.val <- x$m
@@ -704,51 +738,95 @@ igrowup.standard_vec <- function(mydf,
   ###########   Calculating the z-scores for all indicators
   #############################################################################
 
-  sex.x <- as.character(dplyr::pull(mydf, {{sex}}))
-  age.x <- as.double(dplyr::pull(mydf, {{age}}))
+  sex.x <- as.character(dplyr::pull(mydf, {
+    {
+      sex
+    }
+  }))
+  age.x <- as.double(dplyr::pull(mydf, {
+    {
+      age
+    }
+  }))
   if (!is.na(weight))
     weight.x <-
-    as.double(dplyr::pull(mydf, {{weight}}))
+    as.double(dplyr::pull(mydf, {
+      {
+        weight
+      }
+    }))
   else
     weight.x <- as.double(weight)
   if (!is.na(lenhei))
     lenhei.x <-
-    as.double(dplyr::pull(mydf, {{lenhei}}))
+    as.double(dplyr::pull(mydf, {
+      {
+        lenhei
+      }
+    }))
   else
     lenhei.x <- as.double(lenhei)
   if (!is.na(headc))
     headc.x <-
-    as.double(dplyr::pull(mydf, {{headc}}))
+    as.double(dplyr::pull(mydf, {
+      {
+        headc
+      }
+    }))
   else
     headc.x <- as.double(headc)
   if (!is.na(armc))
     armc.x <-
-    as.double(dplyr::pull(mydf, {{armc}}))
+    as.double(dplyr::pull(mydf, {
+      {
+        armc
+      }
+    }))
   else
     armc.x <- as.double(armc)
   if (!is.na(triskin))
     triskin.x <-
-    as.double(dplyr::pull(mydf, {{triskin}}))
+    as.double(dplyr::pull(mydf, {
+      {
+        triskin
+      }
+    }))
   else
     triskin.x <- as.double(triskin)
   if (!is.na(subskin))
     subskin.x <-
-    as.double(dplyr::pull(mydf, {{subskin}}))
+    as.double(dplyr::pull(mydf, {
+      {
+        subskin
+      }
+    }))
   else
     subskin.x <- as.double(subskin)
   if (!is.na(measure))
     lorh.vec <-
-    as.character(dplyr::pull(mydf, {{measure}}))
+    as.character(dplyr::pull(mydf, {
+      {
+        measure
+      }
+    }))
   else
     lorh.vec <- as.character(measure)
   if (!is.na(oedema))
     oedema.vec <-
-    as.character(dplyr::pull(mydf, {{oedema}}))
+    as.character(dplyr::pull(mydf, {
+      {
+        oedema
+      }
+    }))
   else
     oedema.vec <- "n"#oedema
   if (!is.na(sw))
     sw <-
-    as.double(dplyr::pull(mydf, {{sw}}))
+    as.double(dplyr::pull(mydf, {
+      {
+        sw
+      }
+    }))
   else
     sw <- 1 #as.double(sw)
   sw <- ifelse(is.na(sw), 0, sw)
@@ -782,7 +860,8 @@ igrowup.standard_vec <- function(mydf,
                 sex.x == "1"),
            1,
            ifelse(!is.na(sex.x) & (sex.x == "f" |
-                                     sex.x == "F" | sex.x == "2"), 2, NA))
+                                     sex.x == "F" |
+                                     sex.x == "2"), 2, NA))
 
   lorh.vec <-
     ifelse(
@@ -938,9 +1017,9 @@ calc.zhfa2007_vec <- function(mat, hfawho2007) {
   age_sex <- hfawho2007$age * 100 + hfawho2007$sex
 
   x_age_low <-
-    hfawho2007[match(low.age * 100 + mat$sex, age_sex), ]
+    hfawho2007[match(low.age * 100 + mat$sex, age_sex),]
   x_age_upp <-
-    hfawho2007[match(upp.age * 100 + mat$sex, age_sex), ]
+    hfawho2007[match(upp.age * 100 + mat$sex, age_sex),]
 
   l.val <-
     ifelse(diff.age > 0,
@@ -980,9 +1059,9 @@ calc.zwei2007_vec <- function(mat, wfawho2007) {
   age_sex <- wfawho2007$age * 100 + wfawho2007$sex
 
   x_age_low <-
-    wfawho2007[match(low.age * 100 + mat$sex, age_sex),]
+    wfawho2007[match(low.age * 100 + mat$sex, age_sex), ]
   x_age_upp <-
-    wfawho2007[match(upp.age * 100 + mat$sex, age_sex),]
+    wfawho2007[match(upp.age * 100 + mat$sex, age_sex), ]
 
   l.val <-
     ifelse(diff.age > 0,
@@ -1002,13 +1081,15 @@ calc.zwei2007_vec <- function(mat, wfawho2007) {
   mat$zwfa <- (((mat$weight / m.val) ^ l.val) - 1) / (s.val * l.val)
 
   sd3pos <- m.val * ((1 + l.val * s.val * 3) ^ (1 / l.val))
-  sd23pos <- sd3pos - m.val * ((1 + l.val * s.val * 2) ^ (1 / l.val))
+  sd23pos <-
+    sd3pos - m.val * ((1 + l.val * s.val * 2) ^ (1 / l.val))
   sd3neg <- m.val * ((1 + l.val * s.val * (-3)) ** (1 / l.val))
-  sd23neg <- m.val * ((1 + l.val * s.val * (-2)) ** (1 / l.val)) - sd3neg
+  sd23neg <-
+    m.val * ((1 + l.val * s.val * (-2)) ** (1 / l.val)) - sd3neg
 
   mat$zwfa <- ifelse(mat$zwfa > 3,
                      3 + ((mat$weight - sd3pos) / sd23pos),
-                     ifelse(mat$zwfa < -3,-3 + ((
+                     ifelse(mat$zwfa < -3, -3 + ((
                        mat$weight - sd3neg
                      ) / sd23neg),
                      mat$zwfa))
@@ -1038,9 +1119,9 @@ calc.zbmi2007_vec <- function(mat, bfawho2007) {
   age_sex <- bfawho2007$age * 100 + bfawho2007$sex
 
   x_age_low <-
-    bfawho2007[match(low.age * 100 + mat$sex, age_sex), ]
+    bfawho2007[match(low.age * 100 + mat$sex, age_sex),]
   x_age_upp <-
-    bfawho2007[match(upp.age * 100 + mat$sex, age_sex), ]
+    bfawho2007[match(upp.age * 100 + mat$sex, age_sex),]
 
   l.val <-
     ifelse(diff.age > 0,
@@ -1112,18 +1193,42 @@ who2007_vec <- function(mydf,
   ###########   Calculating the z-scores for all indicators
   #############################################################################
 
-  sex.x <- as.character(dplyr::pull(mydf, {{sex}}))
-  age.x <- as.double(dplyr::pull(mydf, {{age}}))
-  weight.x <- as.double(dplyr::pull(mydf, {{weight}}))
-  height.x <- as.double(dplyr::pull(mydf, {{height}}))
+  sex.x <- as.character(dplyr::pull(mydf, {
+    {
+      sex
+    }
+  }))
+  age.x <- as.double(dplyr::pull(mydf, {
+    {
+      age
+    }
+  }))
+  weight.x <- as.double(dplyr::pull(mydf, {
+    {
+      weight
+    }
+  }))
+  height.x <- as.double(dplyr::pull(mydf, {
+    {
+      height
+    }
+  }))
   if (!is.na(oedema))
     oedema.vec <-
-    as.character(dplyr::pull(mydf, {{oedema}}))
+    as.character(dplyr::pull(mydf, {
+      {
+        oedema
+      }
+    }))
   else
     oedema.vec <- "n" #oedema
   if (!is.na(sw))
     sw <-
-    as.double(dplyr::pull(mydf, {{sw}}))
+    as.double(dplyr::pull(mydf, {
+      {
+        sw
+      }
+    }))
   else
     sw <- 1 #as.double(sw)
   sw <- ifelse(is.na(sw), 0, sw)
@@ -1136,7 +1241,8 @@ who2007_vec <- function(mydf,
                 sex.x == "1"),
            1,
            ifelse(sex.x != "NA" & (sex.x == "f" |
-                                     sex.x == "F" | sex.x == "2"), 2, NA))
+                                     sex.x == "F" |
+                                     sex.x == "2"), 2, NA))
   age.vec <- age.x
   height.vec <- height.x
   oedema.vec <-
@@ -1155,7 +1261,8 @@ who2007_vec <- function(mydf,
                      oedema.vec,
                      sw,
                      stringsAsFactors = F)
-  names(mat) <- c("age.mo", "sex", "weight", "height", "oedema", "sw")
+  names(mat) <-
+    c("age.mo", "sex", "weight", "height", "oedema", "sw")
 
   mat$cbmi <- mat$weight / ((height.vec / 100) ^ 2)
   mat$zhfa <- NULL

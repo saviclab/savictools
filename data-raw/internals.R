@@ -12,7 +12,7 @@ wfawho2007 <- read.table("data-raw/anthro_files/wfawho2007.txt", header = TRUE)
 wfhanthro <- read.table("data-raw/anthro_files/wfhanthro.txt", header = TRUE)
 wflanthro <- read.table("data-raw/anthro_files/wflanthro.txt", header = TRUE)
 
-# Expwected weight table
+# Expected weight table
 expected_weight_table <- read.csv("data-raw/exp_weight_table.csv")
 
 usethis::use_data(acanthro, bfawho2007, bmianthro, hcanthro, hfawho2007,
