@@ -46,6 +46,7 @@
 #' @param subskin Name of the column containing subscapular skinfold measurements. Measurements must be in millimeters.
 #' @param oedema Name of the column containing oedema information. "Y" or "y" for oedema; "N" or "n" for non-oedema.
 #' @param sw Name of the column containing the sample weights.
+#' @param old_names Whether to use the same output column names as the WHO z-score functions and include flag columns.
 #'
 #' @importFrom magrittr %>%
 #'
@@ -107,7 +108,8 @@ zscores <-
            sw = grep("sw",
                      colnames(data),
                      ignore.case = T,
-                     value = T)) {
+                     value = T),
+           old_names = FALSE) {
     units <- match.arg(units)
     id <- ifelse(identical(id, character(0)), NA, id)
     age <- ifelse(identical(age, character(0)), NA, age)
@@ -151,6 +153,29 @@ zscores <-
     data$ACZ_F <- NA
     data$TSZ_F <- NA
     data$SSZ_F <- NA
+
+    # old column names
+    data$cbmi <- NA
+
+    data$zlen <- NA
+    data$zwei <- NA
+    data$zwfl <- NA
+    data$zbmi <- NA
+
+    data$zhc <- NA
+    data$zac <- NA
+    data$zts <- NA
+    data$zss <- NA
+
+    data$flen <- NA
+    data$fwei <- NA
+    data$fwfl <- NA
+    data$fbmi <- NA
+
+    data$fhc <- NA
+    data$fac <- NA
+    data$fts <- NA
+    data$fss <- NA
 
     age_cutoff <- 1856 / 30.4375 # 60.97741
 
@@ -229,28 +254,32 @@ zscores <-
         "fts",
         "fss"
       )]
-      zvars_below_5 <- dplyr::rename(
-        zvars_below_5,
-        BMI = .data$cbmi,
 
-        HAZ = .data$zlen,
-        WAZ = .data$zwei,
-        WHZ = .data$zwfl,
-        BAZ = .data$zbmi,
-        HCZ = .data$zhc,
-        ACZ = .data$zac,
-        TSZ = .data$zts,
-        SSZ = .data$zss,
+      if (!old_names) {
+        zvars_below_5 <- dplyr::rename(
+          zvars_below_5,
+          BMI = .data$cbmi,
 
-        HAZ_F = .data$flen,
-        WAZ_F = .data$fwei,
-        WHZ_F = .data$fwfl,
-        BAZ_F = .data$fbmi,
-        HCZ_F = .data$fhc,
-        ACZ_F = .data$fac,
-        TSZ_F = .data$fts,
-        SSZ_F = .data$fss
-      )
+          HAZ = .data$zlen,
+          WAZ = .data$zwei,
+          WHZ = .data$zwfl,
+          BAZ = .data$zbmi,
+          HCZ = .data$zhc,
+          ACZ = .data$zac,
+          TSZ = .data$zts,
+          SSZ = .data$zss,
+
+          HAZ_F = .data$flen,
+          WAZ_F = .data$fwei,
+          WHZ_F = .data$fwfl,
+          BAZ_F = .data$fbmi,
+          HCZ_F = .data$fhc,
+          ACZ_F = .data$fac,
+          TSZ_F = .data$fts,
+          SSZ_F = .data$fss
+        )
+      }
+
     }
 
     # Calculate Z-scores
@@ -281,31 +310,50 @@ zscores <-
                                         'fwfa',
                                         'fhfa',
                                         'fbfa')]
-      zvars_above_5 <- dplyr::rename(
-        zvars_above_5,
-        BMI = .data$cbmi,
 
-        HAZ = .data$zhfa,
-        WAZ = .data$zwfa,
-        BAZ = .data$zbfa,
+      if (!old_names) {
+        zvars_above_5 <- dplyr::rename(
+          zvars_above_5,
+          BMI = .data$cbmi,
 
-        HAZ_F = .data$fhfa,
-        WAZ_F = .data$fwfa,
-        BAZ_F = .data$fbfa
-      ) %>%
-        dplyr::mutate(
-          WHZ = NA,
-          HCZ = NA,
-          ACZ = NA,
-          TSZ = NA,
-          SSZ = NA,
+          HAZ = .data$zhfa,
+          WAZ = .data$zwfa,
+          BAZ = .data$zbfa,
 
-          WHZ_F = 0,
-          HCZ_F = 0,
-          ACZ_F = 0,
-          TSZ_F = 0,
-          SSZ_F = 0
-        )
+          HAZ_F = .data$fhfa,
+          WAZ_F = .data$fwfa,
+          BAZ_F = .data$fbfa
+        ) %>%
+          dplyr::mutate(
+            WHZ = NA,
+            HCZ = NA,
+            ACZ = NA,
+            TSZ = NA,
+            SSZ = NA,
+
+            WHZ_F = 0,
+            HCZ_F = 0,
+            ACZ_F = 0,
+            TSZ_F = 0,
+            SSZ_F = 0
+          )
+      } else {
+        zvars_above_5 <- zvars_above_5 %>%
+          dplyr::mutate(
+            zwfl = NA,
+            zhc = NA,
+            zac = NA,
+            zts = NA,
+            zss = NA,
+
+            flen = 0,
+            fhc = 0,
+            fac = 0,
+            fts = 0,
+            fss = 0
+          )
+      }
+
     }
 
     # To merge data sets, first merge z-scores together
@@ -319,26 +367,45 @@ zscores <-
 
     zvars_full <- dplyr::arrange(zvars_full, .data$rownum)
 
-    data$BMI <- zvars_full$BMI
+    # assign z-score columns in data
+    if (!old_names) {
+      data$BMI <- zvars_full$BMI
+      data$HAZ <- zvars_full$HAZ
+      data$WAZ <- zvars_full$WAZ
+      data$WHZ <- zvars_full$WHZ
+      data$BAZ <- zvars_full$BAZ
+      data$HCZ <- zvars_full$HCZ
+      data$ACZ <- zvars_full$ACZ
+      data$TSZ <- zvars_full$TSZ
+      data$SSZ <- zvars_full$SSZ
+      data$HAZ_F <- zvars_full$HAZ_F
+      data$WAZ_F <- zvars_full$WAZ_F
+      data$WHZ_F <- zvars_full$WHZ_F
+      data$BAZ_F <- zvars_full$BAZ_F
+      data$HCZ_F <- zvars_full$HCZ_F
+      data$ACZ_F <- zvars_full$ACZ_F
+      data$TSZ_F <- zvars_full$TSZ_F
+      data$SSZ_F <- zvars_full$SSZ_F
+    } else {
+      data$cbmi <- zvars_full$cbmi
+      data$zlen <- zvars_full$zlen
+      data$zwei <- zvars_full$zwei
+      data$zwfl <- zvars_full$zwfl
+      data$zbmi <- zvars_full$zbmi
+      data$zhc <- zvars_full$zhc
+      data$zac <- zvars_full$zac
+      data$zts <- zvars_full$zts
+      data$zss <- zvars_full$zss
+      data$flen <- zvars_full$flen
+      data$fwei <- zvars_full$fwei
+      data$fwfl <- zvars_full$fwfl
+      data$fbmi <- zvars_full$fbmi
+      data$fhc <- zvars_full$fhc
+      data$fac <- zvars_full$fac
+      data$fts <- zvars_full$fts
+      data$fss <- zvars_full$fss
+    }
 
-    data$HAZ <- zvars_full$HAZ
-    data$WAZ <- zvars_full$WAZ
-    data$WHZ <- zvars_full$WHZ
-    data$BAZ <- zvars_full$BAZ
-
-    data$HCZ <- zvars_full$HCZ
-    data$ACZ <- zvars_full$ACZ
-    data$TSZ <- zvars_full$TSZ
-    data$SSZ <- zvars_full$SSZ
-
-    data$HAZ_F <- zvars_full$HAZ_F
-    data$WAZ_F <- zvars_full$WAZ_F
-    data$WHZ_F <- zvars_full$WHZ_F
-    data$BAZ_F <- zvars_full$BAZ_F
-    data$HCZ_F <- zvars_full$HCZ_F
-    data$ACZ_F <- zvars_full$ACZ_F
-    data$TSZ_F <- zvars_full$TSZ_F
-    data$SSZ_F <- zvars_full$SSZ_F
 
 
     # zvars_full <- zvars_below_5
@@ -347,41 +414,76 @@ zscores <-
 
 
     # deal with missing and extreme values
+if (!old_names) {
+  extreme_parsed <- data %>%  dplyr::mutate(
+    HAZ = ifelse(.data$HAZ_F == 1, extreme_flag, .data$HAZ),
+    WAZ = ifelse(.data$WAZ_F == 1, extreme_flag, .data$WAZ),
+    WHZ = ifelse(.data$WHZ_F == 1, extreme_flag, .data$WHZ),
+    BAZ = ifelse(.data$BAZ_F == 1, extreme_flag, .data$BAZ),
+    HCZ = ifelse(.data$HCZ_F == 1, extreme_flag, .data$HCZ),
+    ACZ = ifelse(.data$ACZ_F == 1, extreme_flag, .data$ACZ),
+    TSZ = ifelse(.data$TSZ_F == 1, extreme_flag, .data$TSZ),
+    SSZ = ifelse(.data$SSZ_F == 1, extreme_flag, .data$SSZ),
+  )
 
-    extreme_parsed <- data %>%  dplyr::mutate(
-      HAZ = ifelse(.data$HAZ_F == 1, extreme_flag, .data$HAZ),
-      WAZ = ifelse(.data$WAZ_F == 1, extreme_flag, .data$WAZ),
-      WHZ = ifelse(.data$WHZ_F == 1, extreme_flag, .data$WHZ),
-      BAZ = ifelse(.data$BAZ_F == 1, extreme_flag, .data$BAZ),
-      HCZ = ifelse(.data$HCZ_F == 1, extreme_flag, .data$HCZ),
-      ACZ = ifelse(.data$ACZ_F == 1, extreme_flag, .data$ACZ),
-      TSZ = ifelse(.data$TSZ_F == 1, extreme_flag, .data$TSZ),
-      SSZ = ifelse(.data$SSZ_F == 1, extreme_flag, .data$SSZ),
+  extreme_parsed$rownum <- NULL
+  extreme_parsed$HAZ_F <- NULL
+  extreme_parsed$WAZ_F <- NULL
+  extreme_parsed$WHZ_F <- NULL
+  extreme_parsed$BAZ_F <- NULL
+  extreme_parsed$HCZ_F <- NULL
+  extreme_parsed$ACZ_F <- NULL
+  extreme_parsed$TSZ_F <- NULL
+  extreme_parsed$SSZ_F <- NULL
+
+  na_parsed <- extreme_parsed %>% tidyr::replace_na(
+    list(
+      BMI = missing_flag,
+      HAZ = missing_flag,
+      WAZ = missing_flag,
+      WHZ = missing_flag,
+      BAZ = missing_flag,
+      HCZ = missing_flag,
+      ACZ = missing_flag,
+      TSZ = missing_flag,
+      SSZ = missing_flag
     )
+  )
+} else {
+  extreme_parsed <- data %>%  dplyr::mutate(
+    zlen = ifelse(.data$flen == 1, extreme_flag, .data$zlen),
+    zwei = ifelse(.data$fwei == 1, extreme_flag, .data$zwei),
+    zwfl = ifelse(.data$fwfl == 1, extreme_flag, .data$zwfl),
+    zbmi = ifelse(.data$fbmi == 1, extreme_flag, .data$zbmi),
+    zhc = ifelse(.data$fhc == 1, extreme_flag, .data$zhc),
+    zac = ifelse(.data$fac == 1, extreme_flag, .data$zac),
+    zts = ifelse(.data$fts == 1, extreme_flag, .data$zts),
+    zss = ifelse(.data$fss == 1, extreme_flag, .data$zss)
+  )
 
-    extreme_parsed$rownum <- NULL
-    extreme_parsed$HAZ_F <- NULL
-    extreme_parsed$WAZ_F <- NULL
-    extreme_parsed$WHZ_F <- NULL
-    extreme_parsed$BAZ_F <- NULL
-    extreme_parsed$HCZ_F <- NULL
-    extreme_parsed$ACZ_F <- NULL
-    extreme_parsed$TSZ_F <- NULL
-    extreme_parsed$SSZ_F <- NULL
-
-    na_parsed <- extreme_parsed %>% tidyr::replace_na(
-      list(
-        BMI = missing_flag,
-        HAZ = missing_flag,
-        WAZ = missing_flag,
-        WHZ = missing_flag,
-        BAZ = missing_flag,
-        HCZ = missing_flag,
-        ACZ = missing_flag,
-        TSZ = missing_flag,
-        SSZ = missing_flag
-      )
+  na_parsed <- extreme_parsed %>% tidyr::replace_na(
+    list(
+      cbmi = missing_flag,
+      zlen = missing_flag,
+      zwei = missing_flag,
+      zwfl = missing_flag,
+      zbmi = missing_flag,
+      zhc = missing_flag,
+      zac = missing_flag,
+      zts = missing_flag,
+      zss = missing_flag,
+      flen = missing_flag,
+      fwei = missing_flag,
+      fwfl = missing_flag,
+      fbmi = missing_flag,
+      fhc  = missing_flag,
+      fac  = missing_flag,
+      fts  = missing_flag,
+      fss  = missing_flag
     )
+  )
+}
+
 
     return(na_parsed)
   }
