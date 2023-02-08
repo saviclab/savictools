@@ -155,16 +155,12 @@ zscores <-
     age_cutoff <- 1856 / 30.4375 # 60.97741
 
     if (is.na(age)) {
-      # if age is missing, then only WHZ can be calculated
-      # therefore we assume all kids are <5 years (since WHZ is only defined for
-      # <5 kids)
-      warning(
-        "When no age column is specified, zscores assumes all kids are under 5 years of age in order to calculate WHZ."
+      # If age is missing, then no z-scores can be calculated
+      # This includes WHZ, which is different depending on if kids are <2 or not
+      stop(
+        "Age column must be specified to calculate z-scores."
       )
-      below_five_frame <- as.data.frame(data)
-      above_five_frame <- data.frame()
-
-    } else {
+}
       # convert units to months, if necessary
       if (units == "years") {
         data[, age] <- dplyr::pull(data, {
@@ -192,7 +188,6 @@ zscores <-
         dplyr::filter(!!rlang::sym(age) > age_cutoff)
 
       above_five_frame <- as.data.frame(above_five)
-    }
 
     if (nrow(below_five_frame) > 0) {
       #calculate Z-scores
@@ -670,7 +665,6 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
         NA
       )
     )
-
 
   s.val <-
     ifelse(
