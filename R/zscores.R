@@ -46,6 +46,7 @@
 #' @param subskin Name of the column containing subscapular skinfold measurements. Measurements must be in millimeters.
 #' @param oedema Name of the column containing oedema information. "Y" or "y" for oedema; "N" or "n" for non-oedema.
 #' @param sw Name of the column containing the sample weights.
+#' @param old_names Whether to use the same output column names as the WHO z-score functions and include flag columns.
 #'
 #' @importFrom magrittr %>%
 #'
@@ -107,7 +108,8 @@ zscores <-
            sw = grep("sw",
                      colnames(data),
                      ignore.case = T,
-                     value = T)) {
+                     value = T),
+           old_names = FALSE) {
     units <- match.arg(units)
     id <- ifelse(identical(id, character(0)), NA, id)
     age <- ifelse(identical(age, character(0)), NA, age)
@@ -157,37 +159,35 @@ zscores <-
     if (is.na(age)) {
       # If age is missing, then no z-scores can be calculated
       # This includes WHZ, which is different depending on if kids are <2 or not
-      stop(
-        "Age column must be specified to calculate z-scores."
-      )
-}
-      # convert units to months, if necessary
-      if (units == "years") {
-        data[, age] <- dplyr::pull(data, {
-          {
-            age
-          }
-        }) * 12
-      }
-      else if (units == "weeks") {
-        data[, age] <- dplyr::pull(data, {
-          {
-            age
-          }
-        }) / 4.345
-      }
+      stop("Age column must be specified to calculate z-scores.")
+    }
+    # convert units to months, if necessary
+    if (units == "years") {
+      data[, age] <- dplyr::pull(data, {
+        {
+          age
+        }
+      }) * 12
+    }
+    else if (units == "weeks") {
+      data[, age] <- dplyr::pull(data, {
+        {
+          age
+        }
+      }) / 4.345
+    }
 
-      # Check for missing
-      below_five <- data %>%
-        dplyr::filter(!!rlang::sym(age) <= age_cutoff |
-                        is.na(!!rlang::sym(age)))
+    # Check for missing
+    below_five <- data %>%
+      dplyr::filter(!!rlang::sym(age) <= age_cutoff |
+                      is.na(!!rlang::sym(age)))
 
-      below_five_frame <- as.data.frame(below_five)
+    below_five_frame <- as.data.frame(below_five)
 
-      above_five <- data %>%
-        dplyr::filter(!!rlang::sym(age) > age_cutoff)
+    above_five <- data %>%
+      dplyr::filter(!!rlang::sym(age) > age_cutoff)
 
-      above_five_frame <- as.data.frame(above_five)
+    above_five_frame <- as.data.frame(above_five)
 
     if (nrow(below_five_frame) > 0) {
       #calculate Z-scores
@@ -360,14 +360,8 @@ zscores <-
     )
 
     extreme_parsed$rownum <- NULL
-    extreme_parsed$HAZ_F <- NULL
-    extreme_parsed$WAZ_F <- NULL
-    extreme_parsed$WHZ_F <- NULL
-    extreme_parsed$BAZ_F <- NULL
-    extreme_parsed$HCZ_F <- NULL
-    extreme_parsed$ACZ_F <- NULL
-    extreme_parsed$TSZ_F <- NULL
-    extreme_parsed$SSZ_F <- NULL
+
+
 
     na_parsed <- extreme_parsed %>% tidyr::replace_na(
       list(
@@ -379,9 +373,69 @@ zscores <-
         HCZ = missing_flag,
         ACZ = missing_flag,
         TSZ = missing_flag,
-        SSZ = missing_flag
+        SSZ = missing_flag,
+        HAZ_F = missing_flag,
+        WAZ_F = missing_flag,
+        WHZ_F = missing_flag,
+        BAZ_F = missing_flag,
+        HCZ_F = missing_flag,
+        ACZ_F = missing_flag,
+        TSZ_F = missing_flag,
+        SSZ_F = missing_flag
       )
     )
+    if (!old_names) {
+      na_parsed$HAZ_F <- NULL
+      na_parsed$WAZ_F <- NULL
+      na_parsed$WHZ_F <- NULL
+      na_parsed$BAZ_F <- NULL
+      na_parsed$HCZ_F <- NULL
+      na_parsed$ACZ_F <- NULL
+      na_parsed$TSZ_F <- NULL
+      na_parsed$SSZ_F <- NULL
+    } else {
+      na_parsed <- na_parsed %>%
+        dplyr::mutate(
+          cbmi = BMI,
+          zlen = HAZ,
+          zwei = WAZ,
+          zwfl = WHZ,
+          zbmi = BAZ,
+          zhc = HCZ,
+          zac = ACZ,
+          zts = TSZ,
+          zss = SSZ,
+          flen = HAZ_F,
+          fwei = WAZ_F,
+          fwfl = WHZ_F,
+          fbmi = BAZ_F,
+          fhc = HCZ_F,
+          fac = ACZ_F,
+          fts = TSZ_F,
+          fss = SSZ_F
+        ) %>%
+        select(
+          -c(
+            BMI,
+            HAZ,
+            WAZ,
+            WHZ,
+            BAZ,
+            HCZ,
+            ACZ,
+            TSZ,
+            SSZ,
+            HAZ_F,
+            WAZ_F,
+            WHZ_F,
+            BAZ_F,
+            HCZ_F,
+            ACZ_F,
+            TSZ_F,
+            SSZ_F
+          )
+        )
+    }
 
     return(na_parsed)
   }
@@ -394,7 +448,7 @@ zscores <-
 calc.zlen_vec <- function(mat, lenanthro) {
   age_sex <- lenanthro$age * 10 + lenanthro$sex
   x <-
-    lenanthro[match(mat$age.days * 10 + mat$sex, age_sex),]
+    lenanthro[match(mat$age.days * 10 + mat$sex, age_sex), ]
 
   l.val <- x$l
   m.val <- x$m
@@ -417,7 +471,7 @@ calc.zlen_vec <- function(mat, lenanthro) {
 calc.zhc_vec <- function(mat, hcanthro) {
   age_sex <- hcanthro$age * 10 + hcanthro$sex
   x <-
-    hcanthro[match(mat$age.days * 10 + mat$sex, age_sex),]
+    hcanthro[match(mat$age.days * 10 + mat$sex, age_sex), ]
 
   l.val <- x$l
   m.val <- x$m
@@ -439,7 +493,7 @@ calc.zhc_vec <- function(mat, hcanthro) {
 calc.zwei_vec <- function(mat, weianthro) {
   age_sex <- weianthro$age * 10 + weianthro$sex
   x <-
-    weianthro[match(mat$age.days * 10 + mat$sex, age_sex),]
+    weianthro[match(mat$age.days * 10 + mat$sex, age_sex), ]
 
   l.val <- x$l
   m.val <- x$m
@@ -483,7 +537,7 @@ calc.zwei_vec <- function(mat, weianthro) {
 calc.zac_vec <- function(mat, acanthro) {
   age_sex <- acanthro$age * 10 + acanthro$sex
   x <-
-    acanthro[match(mat$age.days * 10 + mat$sex, age_sex), ]
+    acanthro[match(mat$age.days * 10 + mat$sex, age_sex),]
 
   l.val <- x$l
   m.val <- x$m
@@ -518,7 +572,7 @@ calc.zac_vec <- function(mat, acanthro) {
 calc.zts_vec <- function(mat, tsanthro) {
   age_sex <- tsanthro$age * 10 + tsanthro$sex
   x <-
-    tsanthro[match(mat$age.days * 10 + mat$sex, age_sex),]
+    tsanthro[match(mat$age.days * 10 + mat$sex, age_sex), ]
 
   l.val <- x$l
   m.val <- x$m
@@ -556,7 +610,7 @@ calc.zts_vec <- function(mat, tsanthro) {
 calc.zss_vec <- function(mat, ssanthro) {
   age_sex <- ssanthro$age * 10 + ssanthro$sex
   x <-
-    ssanthro[match(mat$age.days * 10 + mat$sex, age_sex), ]
+    ssanthro[match(mat$age.days * 10 + mat$sex, age_sex),]
 
   l.val <- x$l
   m.val <- x$m
@@ -600,14 +654,14 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
   height_sex <- wfhanthro$height * 100 + wfhanthro$sex
 
   x_length_low <-
-    wflanthro[match(low.len * 100 + mat$sex, length_sex),]
+    wflanthro[match(low.len * 100 + mat$sex, length_sex), ]
   x_length_upp <-
-    wflanthro[match(upp.len * 100 + mat$sex, length_sex),]
+    wflanthro[match(upp.len * 100 + mat$sex, length_sex), ]
 
   x_height_low <-
-    wfhanthro[match(low.len * 100 + mat$sex, height_sex),]
+    wfhanthro[match(low.len * 100 + mat$sex, height_sex), ]
   x_height_upp <-
-    wfhanthro[match(upp.len * 100 + mat$sex, height_sex),]
+    wfhanthro[match(upp.len * 100 + mat$sex, height_sex), ]
 
   l.val <-
     ifelse(
@@ -735,7 +789,7 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
 calc.zbmi_vec <- function(mat, bmianthro) {
   age_sex <- bmianthro$age * 10 + bmianthro$sex
   x <-
-    bmianthro[match(mat$age.days * 10 + mat$sex, age_sex),]
+    bmianthro[match(mat$age.days * 10 + mat$sex, age_sex), ]
 
   l.val <- x$l
   m.val <- x$m
@@ -1096,9 +1150,9 @@ calc.zhfa2007_vec <- function(mat, hfawho2007) {
   age_sex <- hfawho2007$age * 100 + hfawho2007$sex
 
   x_age_low <-
-    hfawho2007[match(low.age * 100 + mat$sex, age_sex),]
+    hfawho2007[match(low.age * 100 + mat$sex, age_sex), ]
   x_age_upp <-
-    hfawho2007[match(upp.age * 100 + mat$sex, age_sex),]
+    hfawho2007[match(upp.age * 100 + mat$sex, age_sex), ]
 
   l.val <-
     ifelse(diff.age > 0,
@@ -1138,9 +1192,9 @@ calc.zwei2007_vec <- function(mat, wfawho2007) {
   age_sex <- wfawho2007$age * 100 + wfawho2007$sex
 
   x_age_low <-
-    wfawho2007[match(low.age * 100 + mat$sex, age_sex), ]
+    wfawho2007[match(low.age * 100 + mat$sex, age_sex),]
   x_age_upp <-
-    wfawho2007[match(upp.age * 100 + mat$sex, age_sex), ]
+    wfawho2007[match(upp.age * 100 + mat$sex, age_sex),]
 
   l.val <-
     ifelse(diff.age > 0,
@@ -1198,9 +1252,9 @@ calc.zbmi2007_vec <- function(mat, bfawho2007) {
   age_sex <- bfawho2007$age * 100 + bfawho2007$sex
 
   x_age_low <-
-    bfawho2007[match(low.age * 100 + mat$sex, age_sex),]
+    bfawho2007[match(low.age * 100 + mat$sex, age_sex), ]
   x_age_upp <-
-    bfawho2007[match(upp.age * 100 + mat$sex, age_sex),]
+    bfawho2007[match(upp.age * 100 + mat$sex, age_sex), ]
 
   l.val <-
     ifelse(diff.age > 0,
