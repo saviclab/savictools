@@ -133,22 +133,18 @@ zscores <-
 
     # Null out existing z-score columns
     data$BMI <- NA
-
     data$HAZ <- NA
     data$WAZ <- NA
     data$WHZ <- NA
     data$BAZ <- NA
-
     data$HCZ <- NA
     data$ACZ <- NA
     data$TSZ <- NA
     data$SSZ <- NA
-
     data$HAZ_F <- NA
     data$WAZ_F <- NA
     data$WHZ_F <- NA
     data$BAZ_F <- NA
-
     data$HCZ_F <- NA
     data$ACZ_F <- NA
     data$TSZ_F <- NA
