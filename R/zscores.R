@@ -661,13 +661,12 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
 
   l.val <-
     ifelse(
-      mat$age.days < 731 | (
-        is.na(mat$age.days) &
-          (mat$l.h == "l" | mat$l.h == "L" | mat$clenhei < 87)
-      ),
+      (!is.na(mat$age.days) & mat$age.days < 731) |
+        (is.na(mat$age.days) & !is.na(mat$l.h) & (mat$l.h == "l" | mat$l.h == "L")) |
+           (is.na(mat$age.days) & is.na(mat$l.h) & !is.na(mat$clenhei) & mat$clenhei<87),
       # length
       ifelse(
-        mat$clenhei >= 45 & mat$clenhei < 110,
+        !is.na(mat$clenhei) & mat$clenhei >= 45 & mat$clenhei < 110,
         ifelse(
           diff.len > 0,
           x_length_low$l + diff.len * (x_length_upp$l - x_length_low$l),
@@ -677,7 +676,7 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
       ),
       # height
       ifelse(
-        mat$clenhei >= 65 & mat$clenhei <= 120,
+        !is.na(mat$clenhei) & mat$clenhei >= 65 & mat$clenhei <= 120,
         ifelse(
           diff.len > 0,
           x_height_low$l + diff.len * (x_height_upp$l - x_height_low$l),
@@ -689,14 +688,12 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
 
   m.val <-
     ifelse(
-      mat$age.days < 731 | (
-        is.na(mat$age.days) &
-          (mat$l.h == "l" |
-             mat$l.h == "L" | mat$clenhei < 87)
-      ),
+      !is.na(mat$age.days) & mat$age.days < 731 |
+        (is.na(mat$age.days) & !is.na(mat$l.h) & (mat$l.h == "l" | mat$l.h == "L")) |
+         (is.na(mat$age.days) & is.na(mat$l.h) & !is.na(mat$clenhei) & mat$clenhei<87),
       # length
       ifelse(
-        mat$clenhei >= 45 & mat$clenhei < 110,
+        !is.na(mat$clenhei) & mat$clenhei >= 45 & mat$clenhei < 110,
         ifelse(
           diff.len > 0,
           x_length_low$m + diff.len * (x_length_upp$m - x_length_low$m),
@@ -706,7 +703,7 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
       ),
       # height
       ifelse(
-        mat$clenhei >= 65 & mat$clenhei <= 120,
+        !is.na(mat$clenhei) & mat$clenhei >= 65 & mat$clenhei <= 120,
         ifelse(
           diff.len > 0,
           x_height_low$m + diff.len * (x_height_upp$m - x_height_low$m),
@@ -718,14 +715,12 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
 
   s.val <-
     ifelse(
-      mat$age.days < 731 | (
-        is.na(mat$age.days) &
-          (mat$l.h == "l" |
-             mat$l.h == "L" | mat$clenhei < 87)
-      ),
+      !is.na(mat$age.days) & mat$age.days < 731 |
+        (is.na(mat$age.days) & !is.na(mat$l.h) & (mat$l.h == "l" | mat$l.h == "L")) |
+           (is.na(mat$age.days) & is.na(mat$l.h) & !is.na(mat$clenhei) & mat$clenhei<87),
       # length
       ifelse(
-        mat$clenhei >= 45 & mat$clenhei < 110,
+        !is.na(mat$clenhei) & mat$clenhei >= 45 & mat$clenhei < 110,
         ifelse(
           diff.len > 0,
           x_length_low$s + diff.len * (x_length_upp$s - x_length_low$s),
@@ -735,7 +730,7 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
       ),
       # height
       ifelse(
-        mat$clenhei >= 65 & mat$clenhei <= 120,
+        !is.na(mat$clenhei) & mat$clenhei >= 65 & mat$clenhei <= 120,
         ifelse(
           diff.len > 0,
           x_height_low$s + diff.len * (x_height_upp$s - x_height_low$s),
