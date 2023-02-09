@@ -767,13 +767,12 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
   mat$zwfl <- ifelse(
     !is.na(mat$age.days) &
       mat$age.days >= 0 &
-      mat$age.days <= 1856 & mat$oedema != "y",
+      mat$age.days <= 1856 & (is.na(mat$oedema) | mat$oedema != "y"),
     #    mat$age.days >= 91 & mat$age.days <= 1856,
     mat$zwfl,
     NA_real_
   )
   mat
-
 }
 
 
