@@ -642,6 +642,7 @@ calc.zss_vec <- function(mat, ssanthro) {
 ######################################################################################
 
 calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
+  EXTREME_VALUE <- -9999
   low.len <- trunc(mat$clenhei * 10) / 10
   upp.len <- trunc(mat$clenhei * 10 + 1) / 10
   diff.len <- (mat$clenhei - low.len) / 0.1
@@ -740,8 +741,6 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
       )
     )
 
-
-
   mat$zwfl <- (((mat$weight / m.val) ^ l.val) - 1) / (s.val * l.val)
 
   sd3pos <- m.val * ((1 + l.val * s.val * 3) ^ (1 / l.val))
@@ -763,11 +762,15 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
     !is.na(mat$age.days) &
       mat$age.days >= 0 &
       mat$age.days <= 1856 & (is.na(mat$oedema) | mat$oedema != "y"),
-    #    mat$age.days >= 91 & mat$age.days <= 1856,
     ifelse(
       !is.na(mat$zwfl),
       mat$zwfl,
-      NA_real_),
+      # return extreme value if height is outside [65,120]
+      ifelse(
+        !is.na(mat$clenhei) & !is.na(mat$weight) & (mat$clenhei < 65 | mat$clenhei > 120),
+        EXTREME_VALUE,
+        NA_real_
+      )),
     NA_real_
   )
   mat
