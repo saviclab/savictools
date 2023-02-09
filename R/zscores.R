@@ -290,11 +290,11 @@ zscores <-
         BAZ_F = .data$fbfa
       ) %>%
         dplyr::mutate(
-          WHZ = NA,
-          HCZ = NA,
-          ACZ = NA,
-          TSZ = NA,
-          SSZ = NA,
+          WHZ = NA_real_,
+          HCZ = NA_real_,
+          ACZ = NA_real_,
+          TSZ = NA_real_,
+          SSZ = NA_real_,
 
           WHZ_F = 0,
           HCZ_F = 0,
