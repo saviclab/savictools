@@ -132,23 +132,23 @@ zscores <-
     data$rownum <- 1:nrow(data)
 
     # Null out existing z-score columns
-    data$BMI <- NA
-    data$HAZ <- NA
-    data$WAZ <- NA
-    data$WHZ <- NA
-    data$BAZ <- NA
-    data$HCZ <- NA
-    data$ACZ <- NA
-    data$TSZ <- NA
-    data$SSZ <- NA
-    data$HAZ_F <- NA
-    data$WAZ_F <- NA
-    data$WHZ_F <- NA
-    data$BAZ_F <- NA
-    data$HCZ_F <- NA
-    data$ACZ_F <- NA
-    data$TSZ_F <- NA
-    data$SSZ_F <- NA
+    data$BMI <- NA_real_
+    data$HAZ <- NA_real_
+    data$WAZ <- NA_real_
+    data$WHZ <- NA_real_
+    data$BAZ <- NA_real_
+    data$HCZ <- NA_real_
+    data$ACZ <- NA_real_
+    data$TSZ <- NA_real_
+    data$SSZ <- NA_real_
+    data$HAZ_F <- NA_real_
+    data$WAZ_F <- NA_real_
+    data$WHZ_F <- NA_real_
+    data$BAZ_F <- NA_real_
+    data$HCZ_F <- NA_real_
+    data$ACZ_F <- NA_real_
+    data$TSZ_F <- NA_real_
+    data$SSZ_F <- NA_real_
 
     age_cutoff <- 1856 / 30.4375 # 60.97741
 
@@ -673,7 +673,7 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
           x_length_low$l + diff.len * (x_length_upp$l - x_length_low$l),
           x_length_low$l
         ),
-        NA
+        NA_real_
       ),
       # height
       ifelse(
@@ -683,7 +683,7 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
           x_height_low$l + diff.len * (x_height_upp$l - x_height_low$l),
           x_height_low$l
         ),
-        NA
+        NA_real_
       )
     )
 
@@ -702,7 +702,7 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
           x_length_low$m + diff.len * (x_length_upp$m - x_length_low$m),
           x_length_low$m
         ),
-        NA
+        NA_real_
       ),
       # height
       ifelse(
@@ -712,7 +712,7 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
           x_height_low$m + diff.len * (x_height_upp$m - x_height_low$m),
           x_height_low$m
         ),
-        NA
+        NA_real_
       )
     )
 
@@ -731,7 +731,7 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
           x_length_low$s + diff.len * (x_length_upp$s - x_length_low$s),
           x_length_low$s
         ),
-        NA
+        NA_real_
       ),
       # height
       ifelse(
@@ -741,7 +741,7 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
           x_height_low$s + diff.len * (x_height_upp$s - x_height_low$s),
           x_height_low$s
         ),
-        NA
+        NA_real_
       )
     )
 
