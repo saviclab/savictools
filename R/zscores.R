@@ -764,7 +764,10 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
       mat$age.days >= 0 &
       mat$age.days <= 1856 & (is.na(mat$oedema) | mat$oedema != "y"),
     #    mat$age.days >= 91 & mat$age.days <= 1856,
-    mat$zwfl,
+    ifelse(
+      !is.na(mat$zwfl),
+      mat$zwfl,
+      NA_real_),
     NA_real_
   )
   mat
@@ -772,7 +775,7 @@ calc.zwfl_vec <- function(mat, wflanthro, wfhanthro) {
 
 
 ######################################################################################
-### Function for calulating individual BMI-for-age z-scores
+### Function for calculating individual BMI-for-age z-scores
 ######################################################################################
 
 
