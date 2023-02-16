@@ -357,8 +357,6 @@ zscores <-
 
     extreme_parsed$rownum <- NULL
 
-
-
     na_parsed <- extreme_parsed %>% tidyr::replace_na(
       list(
         BMI = missing_flag,
@@ -410,7 +408,7 @@ zscores <-
           fts = TSZ_F,
           fss = SSZ_F
         ) %>%
-        select(
+        dplyr::select(
           -c(
             BMI,
             HAZ,
