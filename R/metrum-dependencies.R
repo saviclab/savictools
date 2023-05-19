@@ -2,31 +2,41 @@
 # removed from CRAN.
 # Author: Tim Bergsma, Metrum Institute
 
-reapply <- function(x, INDEX, FUN, ...)
-{
-  if (!is.list(INDEX))
+reapply <- function(x, INDEX, FUN, ...) {
+  if (!is.list(INDEX)) {
     INDEX <- list(INDEX)
-  INDEX <- lapply(INDEX, function(x)
-    as.integer(factor(x)))
+  }
+  INDEX <- lapply(INDEX, function(x) {
+    as.integer(factor(x))
+  })
   INDEX <- as.integer(do.call(interaction, c(INDEX, drop = TRUE)))
   form <- tapply(x, INDEX)
   calc <- tapply(x, INDEX, FUN, ..., simplify = FALSE)
   need <- table(form)
-  calc <- lapply(seq_along(calc),
-                 function(cell)
-                   rep(calc[[cell]],
-                       length.out = need[[as.character(cell)]]))
+  calc <- lapply(
+    seq_along(calc),
+    function(cell) {
+      rep(calc[[cell]],
+        length.out = need[[as.character(cell)]]
+      )
+    }
+  )
   calc <- c(calc, list(rep(NA, sum(is.na(
     form
   )))))
   form[is.na(form)] <- length(calc)
   grps <- split(form, form)
-  grps <- lapply(grps,
-                 seq_along)
+  grps <- lapply(
+    grps,
+    seq_along
+  )
   elem <- unsplit(grps, form)
-  sapply(seq_along(form),
-         function(i)
-           calc[[form[[i]]]][[elem[[i]]]])
+  sapply(
+    seq_along(form),
+    function(i) {
+      calc[[form[[i]]]][[elem[[i]]]]
+    }
+  )
 }
 
 
@@ -52,21 +62,25 @@ panel.densitystrip <-
            border = col.line,
            col = fill,
            ...) {
-    ordinal <- if (horizontal)
+    ordinal <- if (horizontal) {
       x
-    else
+    } else {
       y
-    level <- if (horizontal)
+    }
+    level <- if (horizontal) {
       unique(y)[[1]]
-    else
+    } else {
       unique(x)[[1]]
+    }
     data <- unitDensity(ordinal, ...)
     data$y <- data$y * factor + level
-    if (missing(col))
+    if (missing(col)) {
       col <- fill
-    if (is.na(col))
+    }
+    if (is.na(col)) {
       col <- fill
-    if (horizontal)
+    }
+    if (horizontal) {
       lattice::panel.polygon(
         x = data$x,
         y = data$y,
@@ -74,7 +88,7 @@ panel.densitystrip <-
         col = col,
         ...
       )
-    else
+    } else {
       lattice::panel.polygon(
         x = data$y,
         y = data$x,
@@ -82,43 +96,48 @@ panel.densitystrip <-
         col = col,
         ...
       )
+    }
   }
-panel.ref <- function(x, y, col = 'grey90', horizontal, rlim, ...) {
+panel.ref <- function(x, y, col = "grey90", horizontal, rlim, ...) {
   x <- as.numeric(x)
   y <- as.numeric(y)
-  if (horizontal)
+  if (horizontal) {
     lattice::panel.rect(
       xleft = rlim[1],
       ybottom = 0,
       xright = rlim[2],
       ytop = max(y) + 1,
-      border = 'transparent',
+      border = "transparent",
       col = col
     )
-  else
+  } else {
     lattice::panel.rect(
       xleft = 0,
       ybottom = rlim[1],
       xright = max(x) + 1,
       ytop = rlim[2],
-      border = 'transparent',
+      border = "transparent",
       col = col
     )
+  }
 }
 
 bin <-
   function(x,
            population = x,
            breaks = stats::quantile(population,
-                                    probs = probs,
-                                    ...),
+             probs = probs,
+             ...
+           ),
            probs = c(0, 0.25, 0.5, 0.75, 1),
            include.lowest = TRUE,
-           ...)
+           ...) {
     table(cut(x,
-              breaks = breaks,
-              include.lowest = include.lowest,
-              ...))
+      breaks = breaks,
+      include.lowest = include.lowest,
+      ...
+    ))
+  }
 
 panel.cuts <- function(x,
                        y,
@@ -129,36 +148,41 @@ panel.cuts <- function(x,
                        horizontal = TRUE,
                        offset = -0.2,
                        increment = 0,
-                       format = function(x, ...)
-                         as.numeric(round(x / sum(x) * 100)),
+                       format = function(x, ...) {
+                         as.numeric(round(x / sum(x) * 100))
+                       },
                        include.range = TRUE,
                        zero.rm = TRUE,
                        cex = 0.7,
                        ...) {
-  ordinal <- if (horizontal)
+  ordinal <- if (horizontal) {
     x
-  else
+  } else {
     y
-  level <- if (horizontal)
+  }
+  level <- if (horizontal) {
     unique(y)[[1]]
-  else
+  } else {
     unique(x)[[1]]
+  }
   cuts <-
     cuts[cuts >= min(ordinal, na.rm = TRUE) &
-           cuts <= max(ordinal, na.rm = TRUE)]
-  if (include.range)
+      cuts <= max(ordinal, na.rm = TRUE)]
+  if (include.range) {
     cuts <- c(range(ordinal), cuts)
+  }
   cuts <- sort(unique(cuts))
   midpoints <- (cuts[1:length(cuts) - 1] + cuts[-1]) / 2
   count <- bin(ordinal, breaks = cuts, ...)
   value <- format(count, ...)
-  if (zero.rm)
+  if (zero.rm) {
     value[value == 0] <- NA
+  }
   value <- as.character(value)
-  value[is.na(value)] <- ''
+  value[is.na(value)] <- ""
   level <- level + offset
   midpoints <- midpoints + increment
-  if (horizontal)
+  if (horizontal) {
     lattice::ltext(
       x = midpoints,
       y = rep(level, length(midpoints)),
@@ -167,7 +191,7 @@ panel.cuts <- function(x,
       col = text,
       ...
     )
-  else
+  } else {
     lattice::ltext(
       y = midpoints,
       x = rep(level, length(midpoints)),
@@ -176,62 +200,74 @@ panel.cuts <- function(x,
       col = text,
       ...
     )
+  }
 }
 panel.stratify <-
   function(x,
            y,
            type = "p",
            groups = NULL,
-           pch = if (is.null(groups))
+           pch = if (is.null(groups)) {
              plot.symbol$pch
-           else
-             superpose.symbol$pch,
+           } else {
+             superpose.symbol$pch
+           },
            col,
-           col.line = if (is.null(groups))
+           col.line = if (is.null(groups)) {
              plot.line$col
-           else
-             superpose.line$col,
-           col.symbol = if (is.null(groups))
+           } else {
+             superpose.line$col
+           },
+           col.symbol = if (is.null(groups)) {
              plot.symbol$col
-           else
-             superpose.symbol$col,
-           font = if (is.null(groups))
+           } else {
+             superpose.symbol$col
+           },
+           font = if (is.null(groups)) {
              plot.symbol$font
-           else
-             superpose.symbol$font,
-           fontfamily = if (is.null(groups))
+           } else {
+             superpose.symbol$font
+           },
+           fontfamily = if (is.null(groups)) {
              plot.symbol$fontfamily
-           else
-             superpose.symbol$fontfamily,
-           fontface = if (is.null(groups))
+           } else {
+             superpose.symbol$fontfamily
+           },
+           fontface = if (is.null(groups)) {
              plot.symbol$fontface
-           else
-             superpose.symbol$fontface,
-           lty = if (is.null(groups))
+           } else {
+             superpose.symbol$fontface
+           },
+           lty = if (is.null(groups)) {
              plot.line$lty
-           else
-             superpose.line$lty,
-           cex = if (is.null(groups))
+           } else {
+             superpose.line$lty
+           },
+           cex = if (is.null(groups)) {
              plot.symbol$cex
-           else
-             superpose.symbol$cex,
-           fill = if (is.null(groups))
+           } else {
+             superpose.symbol$cex
+           },
+           fill = if (is.null(groups)) {
              plot.symbol$fill
-           else
-             superpose.symbol$fill,
-           lwd = if (is.null(groups))
+           } else {
+             superpose.symbol$fill
+           },
+           lwd = if (is.null(groups)) {
              plot.line$lwd
-           else
-             superpose.line$lwd,
+           } else {
+             superpose.line$lwd
+           },
            horizontal = FALSE,
-           panel.levels = 'panel.xyplot',
+           panel.levels = "panel.xyplot",
            ...,
            jitter.x = FALSE,
            jitter.y = FALSE,
            factor = 0.5,
            amount = NULL) {
-    if (all(is.na(x) | is.na(y)))
+    if (all(is.na(x) | is.na(y))) {
       return()
+    }
     x <- as.numeric(x)
     y <- as.numeric(y)
     plot.symbol <- lattice::trellis.par.get("plot.symbol")
@@ -239,12 +275,14 @@ panel.stratify <-
     superpose.symbol <- lattice::trellis.par.get("superpose.symbol")
     superpose.line <- lattice::trellis.par.get("superpose.line")
     if (!missing(col)) {
-      if (missing(col.line))
+      if (missing(col.line)) {
         col.line <- col
-      if (missing(col.symbol))
+      }
+      if (missing(col.symbol)) {
         col.symbol <- col
+      }
     }
-    if (!is.null(groups))
+    if (!is.null(groups)) {
       lattice::panel.superpose(
         x,
         y,
@@ -269,19 +307,21 @@ panel.stratify <-
         panel.levels = panel.levels,
         ...
       )
-    else{
-      levels <- if (horizontal)
+    } else {
+      levels <- if (horizontal) {
         y
-      else
+      } else {
         x
+      }
       x <- split(x, levels)
       y <- split(y, levels)
-      panel.levels <- if (is.function(panel.levels))
+      panel.levels <- if (is.function(panel.levels)) {
         panel.levels
-      else if (is.character(panel.levels))
+      } else if (is.character(panel.levels)) {
         get(panel.levels)
-      else
+      } else {
         eval(panel.levels)
+      }
       for (level in unique(levels)) {
         panel.levels(
           x[[as.character(level)]],
@@ -317,20 +357,21 @@ panel.covplot <- function(x,
                           rlim = ref * c(0.75, 1.25),
                           cuts = ref * c(0.75, 1, 1.25),
                           horizontal = TRUE,
-                          border = 'black',
-                          fill = 'grey',
-                          text = 'black',
-                          shade = 'grey90',
-                          col = 'white',
+                          border = "black",
+                          fill = "grey",
+                          text = "black",
+                          shade = "grey90",
+                          col = "white",
                           ...) {
   x <- as.numeric(x)
   y <- as.numeric(y)
   panel.ref(x,
-            y,
-            rlim = rlim,
-            horizontal = horizontal,
-            col = shade,
-            ...)
+    y,
+    rlim = rlim,
+    horizontal = horizontal,
+    col = shade,
+    ...
+  )
   panel.stratify(
     panel.levels = panel.densitystrip,
     x = x,
@@ -349,14 +390,16 @@ panel.covplot <- function(x,
     text = text,
     ...
   )
-  if (horizontal)
+  if (horizontal) {
     args <- list(v = cuts, col = col, ...)
-  else
+  } else {
     args <- list(h = cuts, col = col, ...)
+  }
   do.call(lattice::panel.abline, args)
-  if (horizontal)
+  if (horizontal) {
     args <- list(v = ref, ...)
-  else
+  } else {
     args <- list(h = ref, ...)
+  }
   do.call(lattice::panel.abline, args)
 }

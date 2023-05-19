@@ -22,20 +22,22 @@ pk_plot <-
            nrow = 4,
            ncol = 4,
            id = NULL,
-           max_tad = 26)
-  {
+           max_tad = 26) {
     if (!exists("TAD", data)) {
       data <- tad(data, expand = T)
     }
     data <- dplyr::filter(curve(data), .data$EVID == 0, .data$TAD <= max_tad)
     if (is.null(id)) {
-      p <- ggplot2::ggplot(data, ggplot2::aes(x = .data$TAD, y = .data$DV,
-                                              group = .data$CURVE))
-    }
-    else {
+      p <- ggplot2::ggplot(data, ggplot2::aes(
+        x = .data$TAD, y = .data$DV,
+        group = .data$CURVE
+      ))
+    } else {
       data <- dplyr::filter(data, .data$ID %in% id)
-      p <- ggplot2::ggplot(data, ggplot2::aes(x = .data$TAD, y = .data$DV,
-                                              group = .data$CURVE))
+      p <- ggplot2::ggplot(data, ggplot2::aes(
+        x = .data$TAD, y = .data$DV,
+        group = .data$CURVE
+      ))
     }
     if (ind) {
       n_ids <- length(unique(data$ID))
@@ -45,9 +47,10 @@ pk_plot <-
       for (i in seq(1, ceiling(n_ids / (nrow * ncol)))) {
         if (n_plots_remaining != 1) {
           plot <- p + ggforce::facet_wrap_paginate("ID",
-                                                   nrow = nrow,
-                                                   ncol = ncol,
-                                                   page = i)
+            nrow = nrow,
+            ncol = ncol,
+            page = i
+          )
           n_plots_remaining <- n_plots_remaining - (nrow * ncol)
         } else {
           title <- as.character(utils::tail(data$ID))
@@ -55,8 +58,7 @@ pk_plot <-
         }
         print(plot)
       }
-    }
-    else {
+    } else {
       p + ggplot2::geom_point(cex = 0.5) +
         ggplot2::geom_line(color = "grey", alpha = 0.3)
     }

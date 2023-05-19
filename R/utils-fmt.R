@@ -10,20 +10,17 @@
 #' @rdname formatting
 #' @export
 
-round_format <- function (x, digits)
-{
+round_format <- function(x, digits) {
   round_lt_0 <- FALSE
   if (digits < 0) {
     fmt <- "%.0f"
     round_lt_0 <- TRUE
-  }
-  else {
+  } else {
     fmt <- paste0("%.", digits, "f")
   }
   if (round_lt_0) {
     suppressWarnings(sprintf(fmt, round(as.numeric(x), digits)))
-  }
-  else {
+  } else {
     suppressWarnings(sprintf(fmt, as.numeric(x)))
   }
 }
@@ -42,7 +39,7 @@ round_format <- function (x, digits)
 #' @rdname formatting
 #' @export
 rounde <- function(x, digits = 0) {
-  expo <- 10 ^ digits
+  expo <- 10^digits
   return(ifelse(
     abs(x * expo) - floor(abs(x * expo)) < 0.5,
     sign(x * expo) * floor(abs(x * expo)),

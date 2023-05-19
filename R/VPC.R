@@ -31,7 +31,6 @@
 #' # run VPC for run46.mod using runno = "run46"
 #' VPC("run46", "-samples=500 -bin_array=-0.5,0.5,1.5,2.5,3.5,5,7,11,13,24.5
 #' -idv=TAD -bin_by_count=0", subset = "TAD <= 24")
-#'
 #' }
 #' @export
 
@@ -59,8 +58,10 @@ VPC <- function(runno,
   # ensure directory argument is included
   if (any(grepl("-directory=", psn_args))) {
     dir <-
-      strsplit(strsplit(grep("-directory=", psn_args, value = TRUE),
-                        "=")[[1]][2], " ")[[1]][1]
+      strsplit(strsplit(
+        grep("-directory=", psn_args, value = TRUE),
+        "="
+      )[[1]][2], " ")[[1]][1]
   } else {
     psn_args <- c(psn_args, paste0("-directory=", dir))
   }

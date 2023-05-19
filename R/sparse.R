@@ -28,10 +28,10 @@ sparse <- function(data,
                    plot = FALSE) {
   data <- data %>%
     dplyr::group_by(.data$ID) %>%
-    dplyr::group_modify( ~ {
+    dplyr::group_modify(~ {
       .x$SPARSE <- 1
       len <- nrow(.x)
-      #distances <- array(, c(len, len))
+      # distances <- array(, c(len, len))
       distances <- array(FALSE, c(len, len))
       for (i in 1:len) {
         if (.x[i, "EVID"] != 0) {
@@ -49,18 +49,16 @@ sparse <- function(data,
             } else {
               next()
             }
-
           } else {
             distances[i, j] <- TRUE
           }
-
         }
       }
 
       clusters <- NULL
 
       for (row in 1:len) {
-        x <- which(distances[row,])
+        x <- which(distances[row, ])
 
         if (length(x) < min_cluster) {
           next()
@@ -75,7 +73,6 @@ sparse <- function(data,
 
       .x[clusters, "SPARSE"] <- 0
       .x
-
     }) %>%
     dplyr::ungroup()
 
@@ -89,7 +86,6 @@ sparse <- function(data,
       ggplot2::scale_color_manual(values = c("red3", "darkblue"))
 
     p
-
   } else {
     data
   }

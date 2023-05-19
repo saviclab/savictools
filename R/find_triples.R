@@ -18,7 +18,7 @@
 #' @examples
 #'
 #' # 1 triple
-#'  find_triples(c(0, 4, 12, 16))
+#' find_triples(c(0, 4, 12, 16))
 #'
 #' # No triples
 #' find_triples(c(0, 12, 25))
@@ -33,15 +33,15 @@ find_triples <- function(x, from = 4.0, to = 12.0) {
   count <- 0
   i <- 1
 
-  while(i < length - 1) {
+  while (i < length - 1) {
     # get first item of potential triple
     first <- x[i]
 
     # scan for other items in range of interest
     in_range <- FALSE
     j <- i + 1
-    while((x[j] - first) <= to & j < length) {
-      if(x[j] >= first + from) {
+    while ((x[j] - first) <= to & j < length) {
+      if (x[j] >= first + from) {
         in_range <- TRUE
         break
       }
@@ -49,7 +49,7 @@ find_triples <- function(x, from = 4.0, to = 12.0) {
     }
 
     # check if an item was found in range. If not, start new search at x[i + 1]
-    if(!in_range) {
+    if (!in_range) {
       i <- i + 1
       next
     }
@@ -58,8 +58,8 @@ find_triples <- function(x, from = 4.0, to = 12.0) {
     in_range <- FALSE
     second <- x[j]
     k <- j + 1
-    while((x[k] - second) <= to & k <= length) {
-      if(x[k] >= second + from) {
+    while ((x[k] - second) <= to & k <= length) {
+      if (x[k] >= second + from) {
         in_range <- TRUE
         break
       }
@@ -67,7 +67,7 @@ find_triples <- function(x, from = 4.0, to = 12.0) {
     }
 
     # check if an item was found in range. If not, start new search at x[i + 1]
-    if(!in_range) {
+    if (!in_range) {
       i <- i + 1
       next
     }

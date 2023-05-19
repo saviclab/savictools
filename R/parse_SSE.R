@@ -27,7 +27,6 @@
 #'
 #' @rdname parse-SSE
 #' @examples
-#'
 #' @export
 
 parse_sse <- function(file = "sse_results.csv",
@@ -36,11 +35,12 @@ parse_sse <- function(file = "sse_results.csv",
                       ofv_colNames = c("effect", "pow.05", "pow.01", "pow.001"),
                       sim_names = NULL,
                       summary = FALSE) {
-
   # read file
   df <- suppressWarnings(
     suppressMessages(
-      readr::read_csv(file, col_names = as.character(1:100), skip_empty_rows = FALSE)))
+      readr::read_csv(file, col_names = as.character(1:100), skip_empty_rows = FALSE)
+    )
+  )
 
   # compute number of THETAs, OMEGAs, and SIGMAs
   n_theta <- sum(grepl("THETA", df[5, ]))
@@ -50,10 +50,12 @@ parse_sse <- function(file = "sse_results.csv",
   # compute param_rows
   param_rows <- lapply(paste0("\\b", param_stats, "\\b"), grep, x = dplyr::pull(df, 1))
   param_rows <- unlist(lapply(param_rows, `[[`, 1))
-  param_cols <- c("metric", "temp", paste0("TH_", 1:n_theta),
-                  paste0("OM_", 1:n_omega), paste0("SI_", 1:n_sigma))
+  param_cols <- c(
+    "metric", "temp", paste0("TH_", 1:n_theta),
+    paste0("OM_", 1:n_omega), paste0("SI_", 1:n_sigma)
+  )
   colnames(df) <- param_cols
-  df[ , length(param_cols) + 1:100] <- NULL
+  df[, length(param_cols) + 1:100] <- NULL
 
   # check format
   if (any(df[param_rows, param_cols[1]] != param_stats, na.rm = TRUE)) {
@@ -64,9 +66,9 @@ parse_sse <- function(file = "sse_results.csv",
   ofv_start <- which(df[, param_cols[1]] == "ofv Statistics")
   ofv_df <- df[ofv_start:nrow(df), ]
   t1_start <- which(ofv_df[, param_cols[1]] ==
-                      "Type I error rate")
+    "Type I error rate")
   t2_start <- which(ofv_df[, param_cols[1]] ==
-                      "1 - type II error rate (power)")
+    "1 - type II error rate (power)")
 
   # format
   t1_df <- ofv_df[(t1_start + 2):(t2_start - 2), ofv_cols]
@@ -75,8 +77,8 @@ parse_sse <- function(file = "sse_results.csv",
   colnames(t1_df) <- ofv_colNames
   colnames(t2_df) <- ofv_colNames
 
-  t1_df <- t1_df[2:nrow(t1_df),]
-  t2_df <- t2_df[2:nrow(t2_df),]
+  t1_df <- t1_df[2:nrow(t1_df), ]
+  t2_df <- t2_df[2:nrow(t2_df), ]
 
   param_df <- df[param_rows, c(1, 3:length(param_cols))]
 
@@ -84,17 +86,19 @@ parse_sse <- function(file = "sse_results.csv",
   if (summary) {
     dir.create("summary")
     readr::write_csv(param_df, file.path("summary", "param_stats.csv"),
-                     append = TRUE)
+      append = TRUE
+    )
     readr::write_csv(t1_df, file.path("summary", "type_I_error_ofv.csv"),
-                     append = TRUE)
+      append = TRUE
+    )
     readr::write_csv(t2_df, file.path("summary", "type_II_error_ofv.csv"),
-                     append = TRUE)
-
+      append = TRUE
+    )
   }
 
   if (!is.null(sim_names)) {
-    t1_df[ , dplyr::sym(ofv_colNames[1])] <- sim_names
-    t2_df[ , dplyr::sym(ofv_colNames[1])] <- sim_names
+    t1_df[, dplyr::sym(ofv_colNames[1])] <- sim_names
+    t2_df[, dplyr::sym(ofv_colNames[1])] <- sim_names
   }
 
   list("params" = param_df, "type_I_error" = t1_df, "type_II_error" = t2_df)
@@ -121,7 +125,7 @@ parse_sse <- function(file = "sse_results.csv",
 #' @rdname parse-SSE
 #' @examples
 #' \dontrun{
-#' setwd(~/Path/To/SSE/Results)
+#' setwd(Path / To / SSE / Results)
 #'
 #' # Parse all "sse_results.csv" files in a directory
 #' parse_all_sse()
@@ -141,11 +145,12 @@ parse_all_sse <- function(path = getwd(), exclude = NULL, file = "sse_results.cs
                           ofv_colNames = c("effect", "pow.05", "pow.01", "pow.001"),
                           sim_names = NULL,
                           summary = FALSE) {
-
   # convert to absolute path platform-independently
   path <- Sys.glob(file.path(path))
-  path_names <- list.files(path, pattern = "sse_results.csv", recursive = TRUE,
-                           full.names = TRUE)
+  path_names <- list.files(path,
+    pattern = "sse_results.csv", recursive = TRUE,
+    full.names = TRUE
+  )
 
   # exclude certain files
   if (!is.null(exclude)) {
@@ -157,17 +162,19 @@ parse_all_sse <- function(path = getwd(), exclude = NULL, file = "sse_results.cs
 
   # subtract 1 so as not to include "sse_results.csv" as a column
   max_depth <- max(sapply(
-    strsplit(relative_paths, .Platform$file.sep), length)) - 1
+    strsplit(relative_paths, .Platform$file.sep), length
+  )) - 1
 
   # parse all sse_results.csv files
 
   all_results <- lapply(path_names,
-                        parse_sse,
-                        param_stats = param_stats,
-                        ofv_cols = ofv_cols,
-                        ofv_colNames = ofv_colNames,
-                        sim_names = sim_names,
-                        summary = summary)
+    parse_sse,
+    param_stats = param_stats,
+    ofv_cols = ofv_cols,
+    ofv_colNames = ofv_colNames,
+    sim_names = sim_names,
+    summary = summary
+  )
 
   # initialize empty lists
   param_dfs <- list()
@@ -176,8 +183,8 @@ parse_all_sse <- function(path = getwd(), exclude = NULL, file = "sse_results.cs
 
   for (i in seq_along(all_results)) {
     params <- all_results[[i]]$params
-    t1  <- all_results[[i]]$type_I_error
-    t2  <- all_results[[i]]$type_II_error
+    t1 <- all_results[[i]]$type_I_error
+    t2 <- all_results[[i]]$type_II_error
 
     params_ncol <- ncol(params)
     t1_ncol <- ncol(t1)
@@ -189,9 +196,9 @@ parse_all_sse <- function(path = getwd(), exclude = NULL, file = "sse_results.cs
 
     # assign new column values
     for (j in 1:(max_depth - 1)) {
-      params[ , as.character(paste0("X", j))] <- substrings[j]
-      t1[ , as.character(paste0("X", j))] <- substrings[j]
-      t2[ , as.character(paste0("X", j))] <- substrings[j]
+      params[, as.character(paste0("X", j))] <- substrings[j]
+      t1[, as.character(paste0("X", j))] <- substrings[j]
+      t2[, as.character(paste0("X", j))] <- substrings[j]
     }
 
     param_dfs[[i]] <- as.data.frame(params)
@@ -204,6 +211,8 @@ parse_all_sse <- function(path = getwd(), exclude = NULL, file = "sse_results.cs
   t1_final <- dplyr::bind_rows(t1_dfs)
   t2_final <- dplyr::bind_rows(t2_dfs)
 
-  list("params" = params_final, "type_I_error" = t1_final,
-       "type_II_error" = t2_final)
+  list(
+    "params" = params_final, "type_I_error" = t1_final,
+    "type_II_error" = t2_final
+  )
 }

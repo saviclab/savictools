@@ -103,8 +103,10 @@
 #' # and 13.6 for HT.
 #'
 #' p1 <-
-#'   list("WT" = list("rnorm", 16, 3.4),
-#'        "HT" = list("rnorm", 132, 13.6))
+#'   list(
+#'     "WT" = list("rnorm", 16, 3.4),
+#'     "HT" = list("rnorm", 132, 13.6)
+#'   )
 #'
 #' cohort(
 #'   param = p1,
@@ -121,7 +123,8 @@
 #'
 #' dose_fun <- function(WT) {
 #'   ifelse(WT < 16, 150,
-#'          ifelse(WT < 20, 200, 250))
+#'     ifelse(WT < 20, 200, 250)
+#'   )
 #' }
 #'
 #' cohort(
@@ -183,7 +186,6 @@ cohort <- function(data = NULL,
   if (!is.null(data)) {
     # use real data
     df <- data
-
   } else {
     # use synthetic data
     if (original_id != FALSE) {
@@ -197,8 +199,10 @@ cohort <- function(data = NULL,
     # names(param) <- lapply(names(param), substring, 1, 4)
 
     # check param names
-    if (length(dplyr::intersect(names(param),
-                                c("ID", "TIME", "EVID", "AMT", "DV"))) > 0) {
+    if (length(dplyr::intersect(
+      names(param),
+      c("ID", "TIME", "EVID", "AMT", "DV")
+    )) > 0) {
       stop('Error: `param` cannot contain any of "ID", "TIME", "EVID", "AMT", or
            "DV".')
     }
@@ -209,7 +213,7 @@ cohort <- function(data = NULL,
       fun <- param[[var]][[1]]
 
       # extract function arguments
-      fun_args <- c(pop_size, utils::tail(param[[var]],-1))
+      fun_args <- c(pop_size, utils::tail(param[[var]], -1))
 
       # sample pop_size times from the distribution
       df[var] <- do.call(fun, fun_args)
@@ -222,18 +226,16 @@ cohort <- function(data = NULL,
 
   # compute pop_size
   if (is.integer(pop_size)) {
-    pop_size  <- pop_size * n
+    pop_size <- pop_size * n
   } else {
     pop_size <- 10 * n
   }
 
   # convert df to numeric
-  df <- dplyr::mutate(df, dplyr::across(.fns = as.numeric, .cols =
-                                          !dplyr::any_of({
-                                            {
-                                              keep
-                                            }
-                                          })))
+  df <- dplyr::mutate(df, dplyr::across(
+    .fns = as.numeric, .cols =
+      !dplyr::any_of({{ keep }})
+  ))
 
   # deal with original ids
   if (original_id != FALSE) {
@@ -285,7 +287,7 @@ cohort <- function(data = NULL,
   # create TIME, EVID, and DV columns
   df$TIME <- rep(times, n)
   df$EVID <- rep(evid, n)
-  df$DV   <- 0
+  df$DV <- 0
 
   # sort by ID and TIME
   df <- dplyr::arrange(df, .data$ID, .data$TIME)
@@ -297,8 +299,10 @@ cohort <- function(data = NULL,
     # extract formals from dosing function and apply where EVID = 1
     dose_args <- as.list(dplyr::syms(names(formals(amt))))
     df <- dplyr::mutate(df,
-                        AMT = dplyr::if_else(.data$EVID == 1,
-                                             do.call(amt, eval(dose_args)), 0))
+      AMT = dplyr::if_else(.data$EVID == 1,
+        do.call(amt, eval(dose_args)), 0
+      )
+    )
   }
 
   df <- dplyr::relocate(df, .data$ID, .data$TIME, .data$EVID, .data$AMT, .data$DV)

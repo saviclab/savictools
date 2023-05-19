@@ -51,7 +51,6 @@ curve <- function(data) {
     }
     current_tad <- tad[i]
     curves[i] <- curve_num
-
   }
   data$CURVE <- curves
   data

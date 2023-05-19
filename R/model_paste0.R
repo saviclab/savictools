@@ -32,6 +32,6 @@ model_paste0 <- function(runno, ext = "") {
   ))),
   paste0("run", runno, ext),
   # If runno is a file name, strip any file extension off and return "runno.ext"
-  paste0(gsub("\\.\\w*", "", runno), ext))
-
+  paste0(gsub("\\.\\w*", "", runno), ext)
+  )
 }

@@ -25,9 +25,11 @@
 #' @examples
 #' \dontrun{
 #' # WT on V, WAZ on F1, FORMULATION on KA
-#' cr_plot(27, VWT = 1 + THETA(12), WAZF1 = 1 + THETA(11),
-#'         KAFORMULATION = 1 + THETA(9))
-#'}
+#' cr_plot(27,
+#'   VWT = 1 + THETA(12), WAZF1 = 1 + THETA(11),
+#'   KAFORMULATION = 1 + THETA(9)
+#' )
+#' }
 #'
 #' @export
 
@@ -77,10 +79,10 @@ cr_plot <-
       boot,
       value >= reapply(value, name, quantile, (1 - width) / 2) &
         value <= reapply(value, name, quantile, 1 - ((1 - width) / 2))
-    ),]
+    ), ]
     # plot
 
-    if (type  == "ggplot") {
+    if (type == "ggplot") {
       ggplot2::ggplot(boot, ggplot2::aes(x = value)) +
         ggplot2::geom_density(adjust = adjust, fill = "grey") +
         ggplot2::annotate(
@@ -98,16 +100,18 @@ cr_plot <-
           switch = "y",
           as.table = FALSE
         ) +
-        #ggplot2::geom_vline(data=mu, ggplot2::aes(xintercept=grp.mean,
-        #colour = name), linetype ="dashed", alpha = 1) + #Draw median line
-        ggplot2::geom_hline(yintercept = 0,
-                            colour = "white",
-                            size = 1) +
-        #Remove baseline of density plot
-        #Shade the range 0.8~1.2
-        #ggplot2::geom_jitter(data = boot, ggplot2::aes(x=value, y=0),
-        #alpha = 0.02, height = 1) +
-        #Make dots of value
+        # ggplot2::geom_vline(data=mu, ggplot2::aes(xintercept=grp.mean,
+        # colour = name), linetype ="dashed", alpha = 1) + #Draw median line
+        ggplot2::geom_hline(
+          yintercept = 0,
+          colour = "white",
+          size = 1
+        ) +
+        # Remove baseline of density plot
+        # Shade the range 0.8~1.2
+        # ggplot2::geom_jitter(data = boot, ggplot2::aes(x=value, y=0),
+        # alpha = 0.02, height = 1) +
+        # Make dots of value
         ggplot2::xlim(0, 2) +
         ggplot2::xlab("Effect size") +
         ggplot2::theme(
@@ -117,7 +121,6 @@ cr_plot <-
           axis.ticks.y = ggplot2::element_blank(),
           axis.text.y = ggplot2::element_blank()
         )
-
     } else if (type == "lattice") {
       pl1 <- lattice::stripplot(
         name ~ value,
@@ -127,8 +130,8 @@ cr_plot <-
         xlim = c(0, 2),
         main = paste("Clinical Relevance of Covariates:", model_paste0(runno)),
         cuts = c(1 - effect_size, 1, 1 + effect_size),
-        xlab = 'Effect size',
-        shade = 'skyblue'
+        xlab = "Effect size",
+        shade = "skyblue"
       )
 
       print(pl1)
@@ -141,7 +144,7 @@ cr_plot <-
 # Helpers --------------------------------------------------------------------
 
 get_cov <- function(file) {
-  utils::read.table(file, skip = 1, header = TRUE)[,-1]
+  utils::read.table(file, skip = 1, header = TRUE)[, -1]
 }
 
 get_final_params <- function(file) {

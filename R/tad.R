@@ -42,7 +42,7 @@ tad <- function(data, cond = "", expand = FALSE) {
   res <- expanded_addl %>%
     dplyr::group_by(.data$ID) %>%
     dplyr::arrange(.data$TIME, .by_group = TRUE) %>%
-    dplyr::group_modify( ~ {
+    dplyr::group_modify(~ {
       evid <- as.integer(.x$EVID)
       time <- .x$TIME
 
@@ -56,7 +56,7 @@ tad <- function(data, cond = "", expand = FALSE) {
 
       # handle case of no dosing records or no observations
       if (!any(c(1, 4) %in% unique(evid)) |
-          !(0 %in% unique(evid))) {
+        !(0 %in% unique(evid))) {
         return(.x)
       }
 
@@ -69,7 +69,7 @@ tad <- function(data, cond = "", expand = FALSE) {
     res
   } else {
     suppressMessages(dplyr::left_join(data, res) %>%
-                       tidyr::replace_na(list(TAD = 0)))
+      tidyr::replace_na(list(TAD = 0)))
   }
 }
 
@@ -81,15 +81,15 @@ tad_old <- function(data, ...) {
   if ("ADDL" %in% colnames(data)) {
     if ("II" %in% colnames(data)) {
       addl_present <- TRUE
-    }
-    else
+    } else {
       (stop("To use the ADDL data record, you must also specify II."))
+    }
   }
 
   data %>%
     dplyr::group_by(.data$ID) %>%
     dplyr::arrange(.data$TIME, .by_group = TRUE) %>%
-    dplyr::group_modify( ~ {
+    dplyr::group_modify(~ {
       evid <- as.integer(dplyr::pull(.x, .data$EVID))
 
       copy <- .x %>%
@@ -101,7 +101,7 @@ tad_old <- function(data, ...) {
 
       # handle case of no dosing records or no observations
       if (!any(c(1, 4) %in% unique(evid)) |
-          !(0 %in% unique(evid))) {
+        !(0 %in% unique(evid))) {
         return(copy)
       }
 
@@ -130,7 +130,7 @@ tad_old <- function(data, ...) {
             # hence the modulo operation below is always appropriate.
             last_dose <- this_time +
               (as.integer(dplyr::pull(.x, ADDL)[i]) *
-                 ii_prev)
+                ii_prev)
           }
 
           # no ADDL
@@ -155,7 +155,6 @@ tad_old <- function(data, ...) {
           }
 
           # if no prior dosing record, leave TAD as NA.
-
         }
       }
       copy

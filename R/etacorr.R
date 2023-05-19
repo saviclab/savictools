@@ -30,7 +30,6 @@
 #' @rdname eta-correlations
 #' @export
 etacorr_cont <- function(runno, eta, ...) {
-
   data <- get_data_from_runno(runno)
   etas <- as.list(paste0("ETA", eta))
   ss <- data[!duplicated(data$ID), ] # 1 obs per ind
@@ -39,11 +38,15 @@ etacorr_cont <- function(runno, eta, ...) {
   plot_cont <- function(eta, var, data) {
     ggplot2::ggplot(data, ggplot2::aes_string(x = var, y = eta)) +
       ggplot2::geom_point(shape = 21) +
-      ggplot2::geom_smooth(method = 'lm', se = FALSE, linetype = 'dashed',
-                           color = 'red')
+      ggplot2::geom_smooth(
+        method = "lm", se = FALSE, linetype = "dashed",
+        color = "red"
+      )
   }
 
-  plot_vars <- function(eta) {lapply(vars, plot_cont, data = ss, eta = eta)}
+  plot_vars <- function(eta) {
+    lapply(vars, plot_cont, data = ss, eta = eta)
+  }
 
   plots <- lapply(etas, plot_vars)
   plots <- as.list(purrr::flatten(plots))
@@ -54,7 +57,6 @@ etacorr_cont <- function(runno, eta, ...) {
 #' @inheritParams etacorr_cont
 #' @export
 etacorr_cat <- function(runno, eta, ...) {
-
   data <- get_data_from_runno(runno)
   etas <- as.list(paste0("ETA", eta))
   ss <- data[!duplicated(data$ID), ] # 1 obs per ind
@@ -65,7 +67,9 @@ etacorr_cat <- function(runno, eta, ...) {
       ggplot2::geom_boxplot(outlier.colour = NA)
   }
 
-  plot_vars <- function(eta) {lapply(vars, plot_cat, data = ss, eta = eta)}
+  plot_vars <- function(eta) {
+    lapply(vars, plot_cat, data = ss, eta = eta)
+  }
 
   plots <- lapply(etas, plot_vars)
   plots <- as.list(purrr::flatten(plots))

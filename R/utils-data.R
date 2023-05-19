@@ -28,8 +28,9 @@ nmcheck <- function(data) {
 #' @export
 
 expand_addl <- function(data, check = TRUE) {
-  if (check)
+  if (check) {
     nmcheck(data)
+  }
   if (!("ADDL" %in% colnames(data))) {
     return(data)
   }
@@ -71,7 +72,6 @@ expand_addl <- function(data, check = TRUE) {
   } else {
     res
   }
-
 }
 
 
@@ -82,78 +82,92 @@ check_evid <- function(data) {
 
   data <- data %>%
     dplyr::mutate(
-      AMT = if ("AMT" %in% colnames(.data))
+      AMT = if ("AMT" %in% colnames(.data)) {
         .data$AMT
-      else
-        NA,
-      RATE = if ("RATE" %in% colnames(.data))
-        .data$RATE
-      else
-        NA,
-      II = if ("II" %in% colnames(.data))
-        .data$II
-      else
-        NA,
-      ADDL = if ("ADDL" %in% colnames(.data))
-        .data$ADDL
-      else
-        NA,
-      SS = if ("SS" %in% colnames(.data))
-        .data$SS
-      else
+      } else {
         NA
+      },
+      RATE = if ("RATE" %in% colnames(.data)) {
+        .data$RATE
+      } else {
+        NA
+      },
+      II = if ("II" %in% colnames(.data)) {
+        .data$II
+      } else {
+        NA
+      },
+      ADDL = if ("ADDL" %in% colnames(.data)) {
+        .data$ADDL
+      } else {
+        NA
+      },
+      SS = if ("SS" %in% colnames(.data)) {
+        .data$SS
+      } else {
+        NA
+      }
     )
 
-  if (any(evid == 0 &
-          (
-            data$AMT != 0 |
-            data$RATE != 0 |
-            data$II != 0 | data$ADDL != 0 | data$SS != 0
-          ),
-          na.rm = TRUE)) {
+  if (any(
+    evid == 0 &
+      (
+        data$AMT != 0 |
+          data$RATE != 0 |
+          data$II != 0 | data$ADDL != 0 | data$SS != 0
+      ),
+    na.rm = TRUE
+  )) {
     stop("When EVID is 0, dose-related data items (AMT, RATE, II, ADDL, SS) must be zero.")
   }
 
-  if (any(evid == 1 &
-          data$AMT == 0 &
-          data$RATE == 0 &
-          data$II == 0 & data$ADDL == 0 & data$SS == 0,
-          na.rm = TRUE)) {
+  if (any(
+    evid == 1 &
+      data$AMT == 0 &
+      data$RATE == 0 &
+      data$II == 0 & data$ADDL == 0 & data$SS == 0,
+    na.rm = TRUE
+  )) {
     stop(
       "When EVID is 1, one or more of AMT, RATE, II, ADDL, SS data items must be non-zero to define the dose."
     )
   }
 
-  if (any(evid == 2 &
-          (
-            data$AMT != 0 |
-            data$RATE != 0 |
-            data$II != 0 | data$ADDL != 0 | data$SS != 0
-          ),
-          na.rm = TRUE)) {
+  if (any(
+    evid == 2 &
+      (
+        data$AMT != 0 |
+          data$RATE != 0 |
+          data$II != 0 | data$ADDL != 0 | data$SS != 0
+      ),
+    na.rm = TRUE
+  )) {
     stop("When EVID is 2, dose-related data items (AMT, RATE, II, ADDL, SS) must be zero.")
   }
 
-  if (any(evid == 3 &
-          (
-            data$AMT != 0 |
-            data$RATE != 0 |
-            data$II != 0 | data$ADDL != 0 | data$SS != 0
-          ),
-          na.rm = TRUE)) {
+  if (any(
+    evid == 3 &
+      (
+        data$AMT != 0 |
+          data$RATE != 0 |
+          data$II != 0 | data$ADDL != 0 | data$SS != 0
+      ),
+    na.rm = TRUE
+  )) {
     stop("When EVID is 3, dose-related data items (AMT, RATE, II, ADDL, SS) must be zero.")
   }
 
-  if (any(evid == 4 &
-          data$AMT == 0 &
-          data$RATE == 0 &
-          data$II == 0 & data$ADDL == 0 & data$SS == 0,
-          na.rm = TRUE)) {
+  if (any(
+    evid == 4 &
+      data$AMT == 0 &
+      data$RATE == 0 &
+      data$II == 0 & data$ADDL == 0 & data$SS == 0,
+    na.rm = TRUE
+  )) {
     stop(
       "When EVID is 4, one or more of AMT, RATE, II, ADDL, SS data items must be non-zero to define the dose."
     )
   }
-
 }
 
 
@@ -174,23 +188,26 @@ check_addl_ii <- function(data) {
   # II present
   data <- data %>%
     dplyr::mutate(
-      SS = if ("SS" %in% colnames(.data))
+      SS = if ("SS" %in% colnames(.data)) {
         .data$SS
-      else
-        NA,
-      RATE = if ("RATE" %in% colnames(.data))
-        .data$RATE
-      else
-        NA,
-      ADDL = if ("ADDL" %in% colnames(.data))
-        .data$ADDL
-      else
+      } else {
         NA
+      },
+      RATE = if ("RATE" %in% colnames(.data)) {
+        .data$RATE
+      } else {
+        NA
+      },
+      ADDL = if ("ADDL" %in% colnames(.data)) {
+        .data$ADDL
+      } else {
+        NA
+      }
     )
 
 
   if (any(data$SS > 0 &
-          data$AMT == 0 & data$RATE > 0 & data$II != 0, na.rm = TRUE)) {
+    data$AMT == 0 & data$RATE > 0 & data$II != 0, na.rm = TRUE)) {
     stop("For a steady-state infusion (AMT=0; RATE>0), II should be 0.")
   }
 
@@ -199,13 +216,12 @@ check_addl_ii <- function(data) {
   }
 
   if (any(data$EVID == 1 &
-          data$II > 0 & data$ADDL <= 0, na.rm = TRUE)) {
+    data$II > 0 & data$ADDL <= 0, na.rm = TRUE)) {
     stop(
       "For non-steady-state doses, II should be a positive number if and only
             if the ADDL data item is a positive number."
     )
   }
-
 }
 
 # SS checker
@@ -218,5 +234,4 @@ check_ss <- function(data) {
   if (!("II" %in% colnames(data))) {
     stop("To use the SS data record, you must also specify II.")
   }
-
 }

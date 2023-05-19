@@ -131,8 +131,7 @@ param_table <-
       } else {
         readr::write_csv(result, filename, na = "")
       }
-    }
-    else {
+    } else {
       result
     }
   }
@@ -147,9 +146,10 @@ nmsum <- function(runno,
   runno <- model_paste0(runno)
   xpdb <-
     xpose::xpose_data(runno,
-                      prefix = "",
-                      ext = ".lst",
-                      quiet = TRUE)
+      prefix = "",
+      ext = ".lst",
+      quiet = TRUE
+    )
   summary <- xpose::get_summary(xpdb)
   ofv <- dplyr::filter(summary, .data$label == "ofv")$value
   ref <- paste0("run", dplyr::filter(summary, .data$label == "ref")$value)
@@ -157,8 +157,10 @@ nmsum <- function(runno,
 
   param_tab <- xpose::get_prm(xpdb, transform = transform) %>%
     dplyr::select(.data$name, .data$label, .data$value, .data$rse, .data$fixed) %>%
-    dplyr::mutate(rse = ifelse(.data$fixed == TRUE, "FIX", .data$rse),
-                  value = as.character(.data$value)) %>%
+    dplyr::mutate(
+      rse = ifelse(.data$fixed == TRUE, "FIX", .data$rse),
+      value = as.character(.data$value)
+    ) %>%
     dplyr::select(-.data$fixed)
 
   xpsum <-
