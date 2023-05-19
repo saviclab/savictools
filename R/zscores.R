@@ -22,7 +22,7 @@
 #'
 #' All variables in the input dataset used for z-score calculation should be
 #' numeric. `zscores` will automatically detect columns in the input dataset,
-#' case-insensitively, matching the names: "id", "age", "sex", "weight" (or "wt"),
+#' case-insensitively, matching the names: "age", "sex", "weight" (or "wt"),
 #' "height" (or "ht"), "measure", "headc", "armc", "triskin", "subskin", "oedema" (or "edema"), and "sw".
 #'
 #' Currently, `zscores` does not use the `sw` argument. It is included only for
@@ -30,11 +30,10 @@
 #'
 #' @returns A [tibble::tibble()] with z-score columns appended.
 #'
-#' @param data A data frame or data frame extension with ID, AGE, SEX, WT, and HT columns.
+#' @param data A data frame or data frame extension.
 #' @param units Units for age. Must be one of 'months', "years", or "days". Default is "months".
 #' @param missing_flag Value used to replace missing z-scores Default is NA.
 #' @param extreme_flag Value used to replace extreme/implausible z-scores. Default is NA.
-#' @param id Name of the patient identifier column.
 #' @param age Name of the age column.
 #' @param sex Name of the sex column.
 #' @param weight Name of the weight column.
@@ -61,10 +60,6 @@ zscores <-
            units = c("months", "years", "weeks"),
            missing_flag = NA,
            extreme_flag = NA,
-           id = grep("id",
-                     colnames(data),
-                     ignore.case = T,
-                     value = T),
            age = grep("age",
                       colnames(data),
                       ignore.case = T,
@@ -111,7 +106,6 @@ zscores <-
                      value = T),
            old_names = FALSE) {
     units <- match.arg(units)
-    id <- ifelse(identical(id, character(0)), NA, id)
     age <- ifelse(identical(age, character(0)), NA, age)
     sex <- ifelse(identical(sex, character(0)), NA, sex)
     weight <- ifelse(identical(weight, character(0)), NA, weight)
@@ -159,31 +153,39 @@ zscores <-
     }
     # convert units to months, if necessary
     if (units == "years") {
-      data[, age] <- dplyr::pull(data, {
+
+      age <- dplyr::pull(data, {
         {
           age
         }
       }) * 12
+
+      # data[, age] <- dplyr::pull(data, {
+      #   {
+      #     age
+      #   }
+      # }) * 12
     }
     else if (units == "weeks") {
-      data[, age] <- dplyr::pull(data, {
+      age <- dplyr::pull(data, {
         {
           age
         }
       }) / 4.345
+     # data[, age] <- dplyr::pull(data, {
+     #   {
+     #     age
+     #   }
+     # }) / 4.345
     }
 
     # Check for missing
-    below_five <- data %>%
-      dplyr::filter(!!rlang::sym(age) <= age_cutoff |
-                      is.na(!!rlang::sym(age)))
+    below_five_frame <- as.data.frame(
+      data[which(age <= age_cutoff | !is.na(age)), ]
+    )
 
-    below_five_frame <- as.data.frame(below_five)
+    above_five_frame <- as.data.frame(data[which(age > age_cutoff), ])
 
-    above_five <- data %>%
-      dplyr::filter(!!rlang::sym(age) > age_cutoff)
-
-    above_five_frame <- as.data.frame(above_five)
 
     if (nrow(below_five_frame) > 0) {
       #calculate Z-scores
@@ -204,9 +206,9 @@ zscores <-
       )
 
       # select and rename columns
-      zvars_below_5 <- matz_below_5[, c(
-        'ID',
-        'rownum',
+      zvars_below_5 <- matz_below_5 %>%
+        dplyr::select(
+        "rownum",
         "cbmi",
         "zlen",
         "zwei",
@@ -224,9 +226,9 @@ zscores <-
         "fac",
         "fts",
         "fss"
-      )]
-      zvars_below_5 <- dplyr::rename(
-        zvars_below_5,
+      )
+      zvars_below_5 <- zvars_below_5 %>%
+        dplyr::rename(
         BMI = .data$cbmi,
 
         HAZ = .data$zlen,
@@ -254,7 +256,13 @@ zscores <-
 
     if (nrow(above_five_frame) > 0) {
       no_under_61 <- above_five_frame %>%
-        dplyr::mutate(AGE = dplyr::if_else(.data$AGE < 61, 61, .data$AGE))
+        dplyr::mutate(
+          tidyselect::matches("age", ignore.case = TRUE) = ifelse(
+            tidyselect::matches("age", ignore.case = TRUE) < 61,
+            61,
+            tidyselect::matches("age", ignore.case = TRUE)
+          )
+        )
 
       matz_above_5 <- who2007_vec(
         mydf = no_under_61,
@@ -266,19 +274,23 @@ zscores <-
         sw = sw
       )
 
+      # HERE
+
       matz_above_5$AGE <- above_five_frame$AGE
 
-      zvars_above_5 <- matz_above_5[, c('ID',
-                                        'rownum',
-                                        'cbmi',
-                                        'zwfa',
-                                        'zhfa',
-                                        'zbfa',
-                                        'fwfa',
-                                        'fhfa',
-                                        'fbfa')]
-      zvars_above_5 <- dplyr::rename(
-        zvars_above_5,
+      zvars_above_5 <- matz_above_5 %>%
+        dplyr::select(
+                                        "rownum",
+                                        "cbmi",
+                                        "zwfa",
+                                        "zhfa",
+                                        "zbfa",
+                                        "fwfa",
+                                        "fhfa",
+                                        "fbfa")
+      zvars_above_5 <- zvars_above_5 %>%
+        dplyr::rename(
+
         BMI = .data$cbmi,
 
         HAZ = .data$zhfa,
