@@ -41,16 +41,14 @@ expwt <- function(data,
   age <- ifelse(identical(age, character(0)), NA, age)
   sex <- ifelse(identical(sex, character(0)), NA, sex)
   height <- ifelse(identical(height, character(0)), NA, height)
-
-
   age_vec <- dplyr::pull(data, {{ age }})
 
+  # convert ager to months
   if (units == "years") {
     age_vec <- age_vec * 12
   } else if (units == "weeks") {
     age_vec <- age_vec / 4.345
   }
-
 
   calc_expwt <- function(age, sex, height) {
     age_days <- round(age * 30.4375)
