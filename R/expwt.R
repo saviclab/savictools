@@ -57,7 +57,7 @@ expwt <- function(data,
   } else if (units == "weeks") {
     age_months <- age / WEEKS_PER_MONTH
   } else if (units == "days") {
-    age_months <- age / DAYS_PER_YEAR
+    age_months <- age / DAYS_PER_MONTH
   }
   age_days <- round(age_months * DAYS_PER_MONTH) # must be integer for EXPWT
   age_years <- age_months * MONTHS_PER_YEAR
