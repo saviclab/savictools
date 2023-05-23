@@ -28,22 +28,22 @@ expwt <- function(data,
                     colnames(data),
                     ignore.case = T,
                     value = T
-                  ),
+                  )[1],
                   sex = grep("sex",
                     colnames(data),
                     ignore.case = T,
                     value = T
-                  ),
+                  )[1],
                   weight = grep("weight|wt",
                                 colnames(data),
                                 ignore.case = T,
                                 value = T
-                  ),
+                  )[1],
                   height = grep("height|ht",
                     colnames(data),
                     ignore.case = T,
                     value = T
-                  )) {
+                  )[1]) {
   units <- match.arg(units)
   age <- ifelse(identical(age, character(0)), NA, dplyr::pull(data, {{ age }}))
   sex <- ifelse(identical(sex, character(0)), NA, dplyr::pull(data, {{ sex }}))
@@ -63,9 +63,9 @@ expwt <- function(data,
   age_years <- age_months * MONTHS_PER_YEAR
 
   data %>% dplyr::mutate(
-    EXPWT = mapply(calc_expwt, age_days, sex, height),
-    FFM = mapply(calc_ffm, age_years, sex, weight, height),
-    BSA = mapply(calc_bsa, eight, height)
+    EXPWT = mapply(calc_expwt, age_days, sex, height)#,
+    #FFM = mapply(calc_ffm, age_years, sex, weight, height),
+    #BSA = mapply(calc_bsa, weight, height)
     )
 }
 
