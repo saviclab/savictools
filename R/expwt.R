@@ -45,11 +45,13 @@ expwt <- function(data,
                     value = T
                   )[1]) {
   units <- match.arg(units)
-  age <- ifelse(identical(age, character(0)), NA, dplyr::pull(data, {{ age }}))
-  sex <- ifelse(identical(sex, character(0)), NA, dplyr::pull(data, {{ sex }}))
-  weight <- ifelse(identical(weight, character(0)), NA, dplyr::pull(data, {{ weight }}))
-  height <- ifelse(identical(height, character(0)), NA, dplyr::pull(data, {{ height }}))
-
+  len <- nrow(data)
+  
+  age <- if(identical(age, character(0))) rep(NA, len) else dplyr::pull(data, {{ age }})
+  sex <- if(identical(sex, character(0))) rep(NA, len) else dplyr::pull(data, {{ sex }})
+  weight <- if(identical(weight, character(0))) rep(NA, len) else dplyr::pull(data, {{ weight }})
+  height <- if(identical(height, character(0))) rep(NA, len) else dplyr::pull(data, {{ height }})
+    
   # convert age to months
   age_months <- age
   if (units == "years") {
